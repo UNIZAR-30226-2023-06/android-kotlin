@@ -19,30 +19,19 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.mycatan.ui.theme.Purple700
 
 @Composable
 fun LoginPage(navController: NavHostController) {
-    Box(modifier = Modifier.fillMaxSize()) {
-        ClickableText(
-            text = AnnotatedString("Sign up here"),
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(20.dp),
-            onClick = { },
-            style = TextStyle(
-                fontSize = 14.sp,
-                fontFamily = FontFamily.Default,
-                textDecoration = TextDecoration.Underline,
-                color = Purple700
-            )
-        )
-    }
+
     Column(
-        modifier = Modifier.padding(20.dp),
+        modifier = Modifier
+            .fillMaxWidth(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -72,7 +61,7 @@ fun LoginPage(navController: NavHostController) {
                 onClick = { navController.navigate(Routes.Home.route)},
                 shape = RoundedCornerShape(50.dp),
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .width(280.dp)
                     .height(50.dp)
             ) {
                 Text(text = "Login")
@@ -88,6 +77,23 @@ fun LoginPage(navController: NavHostController) {
                 fontFamily = FontFamily.Default
             )
         )
+        ClickableText(
+            text = AnnotatedString("Sign up here"),
+            onClick = { },
+            style = TextStyle(
+                fontSize = 14.sp,
+                fontFamily = FontFamily.Default,
+                textDecoration = TextDecoration.Underline,
+                color = Purple700
+            )
+        )
     }
 
+}
+
+@Preview(showBackground = true)
+@Composable
+fun DefaultPreview3() {
+    val navController = rememberNavController()
+    LoginPage(navController = navController)
 }
