@@ -48,7 +48,8 @@ fun LoginPage(navController: NavHostController) {
 
         Text(text = "Iniciar sesión", style = TextStyle(fontSize = 40.sp, color = AzulOscuro, fontWeight = FontWeight.Bold))
 
-        Spacer(modifier = Modifier.height(10.dp))
+
+
         OutlinedTextField(
             label = { Text(text = "Correo electrónico") },
             value = username.value,
@@ -56,7 +57,7 @@ fun LoginPage(navController: NavHostController) {
                 backgroundColor = Blanco),
             onValueChange = { username.value = it })
 
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(5.dp))
         OutlinedTextField(
             label = { Text(text = "Contraseña") },
             value = password.value,
@@ -94,7 +95,7 @@ fun LoginPage(navController: NavHostController) {
             }
         }
 
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(5.dp))
         Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp), ) {
             Button(
                 onClick = { navController.navigate(Routes.Registro.route)},
