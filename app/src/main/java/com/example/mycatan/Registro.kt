@@ -9,6 +9,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,11 +26,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.mycatan.ui.theme.AzulClaro
-import com.example.mycatan.ui.theme.AzulOscuro
-import com.example.mycatan.ui.theme.Blanco
-import com.example.mycatan.ui.theme.Purple700
+import com.example.mycatan.ui.theme.*
 
+var error = false
 @Composable
 fun RegistroPage(navController: NavHostController) {
     Column(modifier = Modifier
@@ -43,6 +42,7 @@ fun RegistroPage(navController: NavHostController) {
         val password = remember { mutableStateOf(TextFieldValue()) }
         val nombre = remember { mutableStateOf(TextFieldValue()) }
         val confirmarContrasena = remember { mutableStateOf(TextFieldValue()) }
+        var ruta = Routes.Login.route;
         Spacer(modifier = Modifier.height(30.dp))
 
         Row{
@@ -80,10 +80,25 @@ fun RegistroPage(navController: NavHostController) {
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 onValueChange = { confirmarContrasena.value = it })
         }
-        Spacer(modifier = Modifier.height(30.dp))
+        Spacer(modifier = Modifier.height(10.dp))
+
+        if(error){
+            Text(text = "ERROR: Las contraseñas no coinciden. Vuelva a intentarlo.", style = TextStyle(color = Rojo))
+        }
+        Spacer(modifier = Modifier.height(10.dp))
         Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp), ) {
             Button(
-                onClick = { navController.navigate(Routes.Login.route)},
+                onClick = {
+                    if(password.value != confirmarContrasena.value){
+                        error = true
+                        ruta = Routes.Registro.route
+                    }else{
+                        error = false
+                        ruta = Routes.Login.route
+                    }
+                    navController.navigate(ruta)
+
+                          },
                 shape = RoundedCornerShape(50.dp),
                 modifier = Modifier
                     .width(280.dp)
@@ -97,6 +112,7 @@ fun RegistroPage(navController: NavHostController) {
 
             }
         }
+
     }
 
 
