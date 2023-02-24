@@ -28,7 +28,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.mycatan.ui.theme.*
 
-var error = false
+var errorPswd = false
+var errorNombres = false
 @Composable
 fun RegistroPage(navController: NavHostController) {
     Column(modifier = Modifier
@@ -43,17 +44,24 @@ fun RegistroPage(navController: NavHostController) {
         val nombre = remember { mutableStateOf(TextFieldValue()) }
         val confirmarContrasena = remember { mutableStateOf(TextFieldValue()) }
         var ruta = Routes.Login.route;
-        Spacer(modifier = Modifier.height(30.dp))
+        Spacer(modifier = Modifier.height(10.dp))
 
         Row{
             OutlinedTextField(
+                modifier = Modifier
+                    .height(65.dp),
                 label = { Text(text = "Correo electrónico") },
                 value = correo.value,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     backgroundColor = Blanco),
-                onValueChange = { correo.value = it })
+                onValueChange = {
+                    if( it.text.length <= 76)
+                        correo.value = it }
+                )
             Spacer(modifier = Modifier.width(10.dp))
             OutlinedTextField(
+                modifier = Modifier
+                    .height(65.dp),
                 label = { Text(text = "Nombre") },
                 value = nombre.value,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -82,20 +90,36 @@ fun RegistroPage(navController: NavHostController) {
         }
         Spacer(modifier = Modifier.height(10.dp))
 
-        if(error){
-            Text(text = "ERROR: Las contraseñas no coinciden. Vuelva a intentarlo.", style = TextStyle(color = Rojo))
+        if(errorNombres){
+            Text(text = "ERROR: El correo o el nombre estan vacíos no coinciden", style = TextStyle(color = Rojo))
+        }
+        else if(errorPswd){
+            Text(text = "ERROR: Las contraseñas no coinciden  o están vacías. Vuelva a intentarlo.", style = TextStyle(color = Rojo))
         }
         Spacer(modifier = Modifier.height(10.dp))
         Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp), ) {
             Button(
                 onClick = {
-                    if(password.value != confirmarContrasena.value){
-                        error = true
+                    if ( nombre.value.text.isEmpty()
+                        || correo.value.text.isEmpty()){
+
+                        errorNombres = true
                         ruta = Routes.Registro.route
-                    }else{
-                        error = false
+
+                    }else if ( password.value != confirmarContrasena.value
+                        || password.value.text.isEmpty()
+                        || confirmarContrasena.value.text.isEmpty()) {
+
+                        errorNombres=false
+                        errorPswd= true
+                        ruta = Routes.Registro.route
+                    }
+                    else {
+                        errorPswd = false
+                        errorNombres = false
                         ruta = Routes.Login.route
                     }
+
                     navController.navigate(ruta)
 
                           },
