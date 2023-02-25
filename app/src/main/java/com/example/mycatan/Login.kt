@@ -51,6 +51,7 @@ fun LoginPage(navController: NavHostController) {
 
 
         OutlinedTextField(
+            singleLine = true,
             label = { Text(text = "Correo electrónico") },
             value = username.value,
             colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -59,6 +60,7 @@ fun LoginPage(navController: NavHostController) {
 
         Spacer(modifier = Modifier.height(5.dp))
         OutlinedTextField(
+            singleLine = true,
             label = { Text(text = "Contraseña") },
             value = password.value,
             colors = TextFieldDefaults.outlinedTextFieldColors(

@@ -6,9 +6,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,8 +46,7 @@ fun RegistroPage(navController: NavHostController) {
 
         Row{
             OutlinedTextField(
-                modifier = Modifier
-                    .height(65.dp),
+                singleLine = true,
                 label = { Text(text = "Correo electrónico") },
                 value = correo.value,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -60,8 +57,7 @@ fun RegistroPage(navController: NavHostController) {
                 )
             Spacer(modifier = Modifier.width(10.dp))
             OutlinedTextField(
-                modifier = Modifier
-                    .height(65.dp),
+                singleLine = true,
                 label = { Text(text = "Nombre") },
                 value = nombre.value,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -71,6 +67,7 @@ fun RegistroPage(navController: NavHostController) {
         Spacer(modifier = Modifier.height(30.dp))
         Row{
             OutlinedTextField(
+                singleLine = true,
                 label = { Text(text = "Contraseña") },
                 value = password.value,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -80,6 +77,7 @@ fun RegistroPage(navController: NavHostController) {
                 onValueChange = { password.value = it })
             Spacer(modifier = Modifier.width(10.dp))
             OutlinedTextField(
+                singleLine = true,
                 label = { Text(text = "Confirmar contraseña") },
                 value = confirmarContrasena.value,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
