@@ -43,11 +43,14 @@ fun HomePage(navController: NavHostController) {
                         Icon(imageVector = Icons.Default.Menu, contentDescription = null, tint = AzulOscuro)
                     }
                 },
-                backgroundColor = AzulClaro
+                backgroundColor = AzulClaro,
+
+
             )
         },
         modifier = Modifier.fillMaxSize()
     ) {
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -164,21 +167,22 @@ fun HomePage(navController: NavHostController) {
                 .clickable { menuVisible = !menuVisible },
             color = Color.Black.copy(alpha = 0.6f)
         ){
+            MenuScreen(navController)
         }
     }
 
-    AnimatedVisibility(visible = menuVisible,
+   /*AnimatedVisibility(visible = menuVisible,
         enter = expandHorizontally (animationSpec = tween(1000)),
         exit = shrinkHorizontally(animationSpec = tween(1000)) ) {
         Surface(
             modifier = Modifier
                 .fillMaxHeight()
-                .fillMaxWidth(0.70f) // 70% of screen
-                .background(Color.White)
+                .fillMaxWidth(0.20f) // 70% of screen
+                //.background(Color.White)
         ) {
             MenuScreen(navController, {menuVisible = it})
         }
-    }
+    }*/
 
 
 }

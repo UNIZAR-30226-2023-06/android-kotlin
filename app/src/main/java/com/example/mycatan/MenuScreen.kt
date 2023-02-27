@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -13,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -21,19 +23,22 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.mycatan.ui.theme.AzulOscuro
+import com.example.mycatan.ui.theme.Blanco
 
 @Composable
-fun MenuScreen(navController: NavHostController, setMenuVisible: (Boolean) -> Unit) {
+fun MenuScreen(navController: NavHostController) {
 
-    LazyColumn(
-        modifier = Modifier.fillMaxWidth()
+    Column(
+        modifier = Modifier.fillMaxWidth(0.40f)
+            .fillMaxHeight()
+            //.background(color=Blanco)
     ) {
 
-        item {
+
             // IMAGE, PERFIL DEL USUARIO
             Row (
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxWidth(0.40f)
                     .height(120.dp)
                     .background(Brush.verticalGradient(0f to AzulOscuro, 1000f to AzulOscuro)),
                 horizontalArrangement = Arrangement.Center,
@@ -47,41 +52,36 @@ fun MenuScreen(navController: NavHostController, setMenuVisible: (Boolean) -> Un
                     fontWeight = FontWeight.Bold
                 )
             }
-        }
+
 
 
         // BUTTONS
-        item {
-            RowMenu(navController, setMenuVisible,  "Inicio", Icons.Default.Home)
+        Box(
+            modifier = Modifier
+                //.fillMaxWidth(0.40f)
+                .fillMaxHeight()
+                .background(color= Blanco)
+
+        ){
+            Button(
+                onClick = { navController.navigate(Routes.Registro.route)},
+                shape = RoundedCornerShape(50.dp),
+                modifier = Modifier
+                    .width(280.dp)
+                    .height(50.dp),
+                colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
+
+            ) {
+                Text(text = "Iniciar sesión",
+                    style = TextStyle(color = Blanco)
+                )
+
+            }
+
         }
 
     }
 
-}
-
-@Composable
-fun RowMenu(navController: NavHostController, setMenuVisible: (Boolean) -> Unit, text: String, imageVector: ImageVector) {
-    var menuVisible by remember { mutableStateOf(true) }
-    Row (
-        modifier = Modifier.fillMaxWidth()
-            .clickable { menuVisible = !menuVisible }
-    ){
-        setMenuVisible(menuVisible)
-        Icon(
-            imageVector = imageVector,
-            contentDescription = null,
-            tint = Color.LightGray,
-            modifier = Modifier
-                .size(50.dp)
-                .padding(10.dp)
-        )
-
-        Text(text = text,
-            modifier = Modifier.align(CenterVertically),
-            color = Color.DarkGray,
-            fontFamily = FontFamily.SansSerif
-        )
-    }
 }
 
 
