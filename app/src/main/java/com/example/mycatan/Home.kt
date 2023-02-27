@@ -34,34 +34,104 @@ import com.example.mycatan.ui.theme.*
 @Composable
 fun HomePage(navController: NavHostController) {
     var menuVisible by remember { mutableStateOf(false) }
-    Scaffold (
-        topBar = {
-            TopAppBar (
-                title = { Text(text = "", color = Color.White, fontFamily = FontFamily.SansSerif) },
-                navigationIcon = {
-                    IconButton(onClick = { menuVisible =! menuVisible }) {
-                        Icon(imageVector = Icons.Default.Menu, contentDescription = null, tint = AzulOscuro)
-                    }
-                },
-                backgroundColor = AzulClaro,
 
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .background(color = AzulClaro))
+    {
 
+        //boton perfil
+        Button(
+            onClick = { menuVisible =! menuVisible },
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .width(65.dp)
+                .height(65.dp)
+                .border(
+                    width = 3.dp,
+                    color = AzulOscuro,
+                    shape = RoundedCornerShape(15.dp)
+                ),
+                //maybe padding o algo para que no  quede tan a a la  esquina
+
+            shape = RoundedCornerShape(15.dp),
+            colors = ButtonDefaults.buttonColors(backgroundColor = Amarillo)
+
+        ) {
+            //imagen|icono
+            Icon(imageVector = Icons.Default.Menu, contentDescription = null, tint = AzulOscuro)
+
+        }
+
+        //marca de agua
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.BottomEnd
+        ) {
+            Text(
+                text = "CATAN INC.", style =
+                TextStyle(fontSize = 20.sp, color = GrisAzulado, fontWeight = FontWeight.Bold)
             )
-        },
-        modifier = Modifier.fillMaxSize()
-    ) {
+        }
+
+        //boton tienda
+        Button(
+            onClick = { /*dirigira a la tienda */ },
+            modifier = Modifier
+                .align(Alignment.TopEnd )
+                .width(65.dp)
+                .height(65.dp)
+                .border(
+                    width = 3.dp,
+                    color = AzulOscuro,
+                    shape = RoundedCornerShape(15.dp)
+                ),
+            //maybe padding o algo para que no  quede tan a a la  esquina
+
+            shape = RoundedCornerShape(15.dp),
+            colors = ButtonDefaults.buttonColors(backgroundColor = Amarillo)
+
+        ) {
+            //imagen|icono
+
+
+        }
+
+        //boton amigos
+        Button(
+            onClick = { /* cosas de los amigos*/ },
+            modifier = Modifier
+                .align(Alignment.BottomStart )
+                .width(65.dp)
+                .height(65.dp)
+                .border(
+                    width = 3.dp,
+                    color = AzulOscuro,
+                    shape = RoundedCornerShape(15.dp)
+                ),
+            //maybe padding o algo para que no  quede tan a a la  esquina
+
+            shape = RoundedCornerShape(15.dp),
+            colors = ButtonDefaults.buttonColors(backgroundColor = Amarillo)
+
+        ) {
+            //imagen|icono
+
+
+        }
+
 
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .fillMaxWidth()
-                .background(color = AzulClaro),
+                .fillMaxSize(),
+                //.fillMaxWidth()
+                //.background(color = AzulClaro),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
 
             ) {
 
-            Spacer(modifier = Modifier.height(20.dp))
+
             Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp),) {
                 Button(
                     onClick = { navController.navigate(Routes.Home.route) },
@@ -145,15 +215,7 @@ fun HomePage(navController: NavHostController) {
                 }
             }
 
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.BottomEnd
-            ) {
-                Text(
-                    text = "CATAN INC.", style =
-                    TextStyle(fontSize = 20.sp, color = GrisAzulado, fontWeight = FontWeight.Bold)
-                )
-            }
+
         }
 
     }
@@ -163,7 +225,8 @@ fun HomePage(navController: NavHostController) {
         enter = fadeIn(animationSpec = tween(1000)),
         exit = fadeOut(animationSpec = tween(1000)) ){
         Surface(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
                 .clickable { menuVisible = !menuVisible },
             color = Color.Black.copy(alpha = 0.6f)
         ){
