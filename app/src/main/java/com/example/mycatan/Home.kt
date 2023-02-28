@@ -255,22 +255,14 @@ fun HomePage(navController: NavHostController) {
                 .clickable { menuVisible = !menuVisible },
             color = Color.Black.copy(alpha = 0.6f)
         ){
-            MenuScreen(navController)
+
         }
     }
-
-   /*AnimatedVisibility(visible = menuVisible,
+    AnimatedVisibility(visible = menuVisible,
         enter = expandHorizontally (animationSpec = tween(1000)),
         exit = shrinkHorizontally(animationSpec = tween(1000)) ) {
-        Surface(
-            modifier = Modifier
-                .fillMaxHeight()
-                .fillMaxWidth(0.20f) // 70% of screen
-                //.background(Color.White)
-        ) {
-            MenuScreen(navController, {menuVisible = it})
-        }
-    }*/
+        MenuScreen(navController)
+    }
 
 
 }
