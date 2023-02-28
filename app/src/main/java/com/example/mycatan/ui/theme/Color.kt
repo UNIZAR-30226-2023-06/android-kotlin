@@ -12,4 +12,5 @@ val Blanco = Color(0xFFFEFFFF)
 val AzulClaro = Color(0xFF44B5F1)
 val Amarillo = Color(0xFFE0CF28)
 val GrisAzulado = Color(0xFF36515F)
+val AzulMedio = Color(0xFF1C5775)
 

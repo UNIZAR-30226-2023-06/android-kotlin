@@ -12,6 +12,9 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,7 +40,8 @@ fun HomePage(navController: NavHostController) {
 
     Box(modifier = Modifier
         .fillMaxSize()
-        .background(color = AzulClaro))
+        .background(color = AzulClaro)
+        .padding(10.dp, 10.dp, 10.dp, 10.dp))
     {
 
         //boton perfil
@@ -45,21 +49,21 @@ fun HomePage(navController: NavHostController) {
             onClick = { menuVisible =! menuVisible },
             modifier = Modifier
                 .align(Alignment.TopStart)
-                .width(65.dp)
-                .height(65.dp)
-                .border(
-                    width = 3.dp,
-                    color = AzulOscuro,
-                    shape = RoundedCornerShape(15.dp)
-                ),
+                .width(50.dp)
+                .height(50.dp),
                 //maybe padding o algo para que no  quede tan a a la  esquina
 
             shape = RoundedCornerShape(15.dp),
-            colors = ButtonDefaults.buttonColors(backgroundColor = Amarillo)
+            colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
 
         ) {
             //imagen|icono
-            Icon(imageVector = Icons.Default.Menu, contentDescription = null, tint = AzulOscuro)
+            Icon(imageVector = Icons.Default.Person,
+                contentDescription = null,
+                tint = Blanco,
+                modifier = Modifier.width(50.dp)
+                    .height(50.dp)
+            )
 
         }
 
@@ -74,32 +78,55 @@ fun HomePage(navController: NavHostController) {
             )
         }
 
-        //boton tienda
-        Button(
-            onClick = { /*dirigira a la tienda */ },
-            modifier = Modifier
-                .align(Alignment.TopEnd )
-                .width(65.dp)
-                .height(65.dp)
-                .border(
-                    width = 3.dp,
-                    color = AzulOscuro,
-                    shape = RoundedCornerShape(15.dp)
-                ),
-            //maybe padding o algo para que no  quede tan a a la  esquina
-
-            shape = RoundedCornerShape(15.dp),
-            colors = ButtonDefaults.buttonColors(backgroundColor = Amarillo)
-
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.TopEnd
         ) {
-            //imagen|icono
+            Row(){
+                Column(){
 
+                    Icon(imageVector = Icons.Default.Star,
+                        contentDescription = null,
+                        tint = Amarillo)
+
+                    Text(
+                        text = "12$",
+                        style = TextStyle(
+                            color = Blanco,
+                            fontWeight = FontWeight.Bold
+                        )
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(10.dp))
+                //boton tienda
+                Button(
+                    onClick = { /*dirigira a la tienda */ },
+                    modifier = Modifier
+                        .width(50.dp)
+                        .height(50.dp),
+                    //maybe padding o algo para que no  quede tan a a la  esquina
+
+                    shape = RoundedCornerShape(15.dp),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
+
+                ) {
+                    //imagen|icono
+                    Icon(imageVector = Icons.Default.ShoppingCart,
+                        contentDescription = null,
+                        tint = Blanco,
+                        modifier = Modifier.width(50.dp)
+                            .height(50.dp))
+
+                }
+            }
 
         }
 
+
         //boton amigos
-        Button(
-            onClick = { /* cosas de los amigos*/ },
+        /*Button(
+            onClick = {  cosas de los amigos },
             modifier = Modifier
                 .align(Alignment.BottomStart )
                 .width(65.dp)
@@ -116,9 +143,7 @@ fun HomePage(navController: NavHostController) {
 
         ) {
             //imagen|icono
-
-
-        }
+        }*/
 
 
         Column(
