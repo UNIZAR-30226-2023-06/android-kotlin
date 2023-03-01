@@ -21,5 +21,8 @@ fun ScreenMain(){
         composable(Routes.Registro.route) {
             RegistroPage(navController = navController)
         }
+        composable(Routes.CrearPartida.route) {
+            CrearPartidaPage(navController = navController)
+        }
     }
 }
