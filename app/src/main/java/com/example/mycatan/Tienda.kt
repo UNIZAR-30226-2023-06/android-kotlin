@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -63,7 +64,7 @@ fun TiendaPage(navController: NavHostController) {
                     items(9)  {
                         /*var foto: String
                         foto = "personaje$it"*/
-                        RackItem(/*foto*/)
+                        RackItem(it)
                     }
                 }
 
@@ -81,7 +82,7 @@ fun TiendaPage(navController: NavHostController) {
                 ) {
 
                     items(9) {
-                        RackItem()
+                        RackItem(it)
                     }
                 }
             }
@@ -95,7 +96,7 @@ fun TiendaPage(navController: NavHostController) {
 
             Row(modifier = Modifier
                 .background(AzulOscuro)
-                .padding(10.dp,5.dp),
+                .padding(10.dp, 5.dp),
 
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
@@ -120,9 +121,36 @@ fun TiendaPage(navController: NavHostController) {
 }
 
 @Composable
-fun RackItem( /*foto: String*/ ){
+fun RackItem( foto: Int ){
 
-
+    var painterID : Painter
+    //Estoes muy cutre pero no se hacerlo mejor
+    if(foto==0){
+        painterID = painterResource(R.drawable.personaje1)
+    }
+    else if(foto==1){
+        painterID = painterResource(R.drawable.personaje2)
+    }
+    else if(foto==2){
+        painterID = painterResource(R.drawable.personaje3)
+    }
+    else if(foto==3){
+        painterID = painterResource(R.drawable.personaje4)
+    }
+    else if(foto==4){
+        painterID = painterResource(R.drawable.personaje5)
+    }
+    else if(foto==5){
+        painterID = painterResource(R.drawable.personaje6)
+    }
+    else if(foto==6){
+        painterID = painterResource(R.drawable.personaje7)
+    }
+    else if(foto==7){
+        painterID = painterResource(R.drawable.personaje8)
+    }else {
+        painterID = painterResource(R.drawable.personaje9)
+    }
 
     Card(
         modifier = Modifier
@@ -142,7 +170,8 @@ fun RackItem( /*foto: String*/ ){
         ) {
 
             Image(
-                painter = painterResource(R.drawable.personaje1), // HAY QUE HACER QUE PINTE R.drawable.foto PERO NO SE COMO
+
+                painter = painterID,
                 contentDescription = null,
                 modifier = Modifier.height(76.dp)
 
@@ -154,8 +183,9 @@ fun RackItem( /*foto: String*/ ){
                 .background(AzulOscuro)
                 .fillMaxSize()
                 .border(
-                        width = 4.dp,
-                        color=AzulOscuro),
+                    width = 4.dp,
+                    color = AzulOscuro
+                ),
                 contentAlignment = Alignment.Center
             ) {
 
