@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -29,34 +30,9 @@ fun TiendaPage(navController: NavHostController) {
     Box(modifier = Modifier
         .fillMaxSize()
         .background(AzulClaro)
+        .padding(10.dp, 10.dp, 10.dp, 10.dp)
     )
     {
-
-        //SALDO
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.TopEnd
-        ) {
-
-            Column(modifier = Modifier
-                .border(
-                    width = 4.dp,
-                    color = AzulOscuro
-                ))
-            {
-                Icon(imageVector = Icons.Default.Star,
-                    contentDescription = null,
-                    tint = Amarillo)
-
-                Text(
-                    text = "12$",
-                    style = TextStyle(
-                        color = Blanco,
-                        fontWeight = FontWeight.Bold
-                    )
-                )
-            }
-        }
 
         LazyColumn(
             modifier = Modifier
@@ -85,8 +61,10 @@ fun TiendaPage(navController: NavHostController) {
                     contentPadding = PaddingValues(25.dp)
                 ) {
 
-                    items(9) {
-                        RackItem()
+                    items(9)  {
+                        /*var foto: String
+                        foto = "personaje$it"*/
+                        RackItem(it)
                     }
                 }
 
@@ -104,16 +82,76 @@ fun TiendaPage(navController: NavHostController) {
                 ) {
 
                     items(9) {
-                        RackItem()
+                        RackItem(it)
                     }
                 }
             }
+        }
+
+        //SALDO
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.TopEnd
+        ) {
+
+            Row(modifier = Modifier
+                .background(AzulOscuro)
+                .padding(10.dp, 5.dp),
+
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            )
+            {
+
+                Icon(imageVector = Icons.Default.Star,
+                    contentDescription = null,
+                    tint = Amarillo)
+
+                Text(
+                    text = "12$",
+                    style = TextStyle(
+                        color = Blanco,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+            }
+
         }
     }
 }
 
 @Composable
-fun RackItem(){
+fun RackItem( foto: Int ){
+
+    var painterID : Painter
+    //Estoes muy cutre pero no se hacerlo mejor
+    if(foto==0){
+        painterID = painterResource(R.drawable.personaje1)
+    }
+    else if(foto==1){
+        painterID = painterResource(R.drawable.personaje2)
+    }
+    else if(foto==2){
+        painterID = painterResource(R.drawable.personaje3)
+    }
+    else if(foto==3){
+        painterID = painterResource(R.drawable.personaje4)
+    }
+    else if(foto==4){
+        painterID = painterResource(R.drawable.personaje5)
+    }
+    else if(foto==5){
+        painterID = painterResource(R.drawable.personaje6)
+    }
+    else if(foto==6){
+        painterID = painterResource(R.drawable.personaje7)
+    }
+    else if(foto==7){
+        painterID = painterResource(R.drawable.personaje8)
+    }else {
+        painterID = painterResource(R.drawable.personaje9)
+    }
+
     Card(
         modifier = Modifier
             .clickable {/*movidas*/ }
@@ -132,7 +170,8 @@ fun RackItem(){
         ) {
 
             Image(
-                painter = painterResource(R.drawable.personaje1),
+
+                painter = painterID,
                 contentDescription = null,
                 modifier = Modifier.height(76.dp)
 
@@ -144,8 +183,9 @@ fun RackItem(){
                 .background(AzulOscuro)
                 .fillMaxSize()
                 .border(
-                        width = 4.dp,
-                        color=AzulOscuro),
+                    width = 4.dp,
+                    color = AzulOscuro
+                ),
                 contentAlignment = Alignment.Center
             ) {
 
