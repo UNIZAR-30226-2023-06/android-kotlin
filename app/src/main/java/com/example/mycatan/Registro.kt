@@ -39,7 +39,7 @@ fun RegistroPage(navController: NavHostController) {
         .fillMaxHeight()
         .background(color= Transp)
         .paint(
-            painterResource(R.drawable.wave_1),
+            painterResource(R.drawable.wave_3),
             contentScale = ContentScale.FillBounds),
         contentAlignment = Alignment.Center
     ){

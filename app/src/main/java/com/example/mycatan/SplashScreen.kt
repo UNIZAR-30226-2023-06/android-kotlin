@@ -36,7 +36,7 @@ fun SplashScreen(navController: NavHostController) {
 fun Splash() {
     Column(modifier = Modifier
         .fillMaxSize()
-        .paint(painterResource(R.drawable.wave_1),
+        .paint(painterResource(R.drawable.wave_3),
             contentScale = ContentScale.FillBounds)
         .background(color= Transp),
         verticalArrangement = Arrangement.Center,
@@ -47,7 +47,6 @@ fun Splash() {
             contentDescription = null,
             modifier = Modifier.size(150.dp)
         )
-        Spacer(modifier = Modifier.height(10.dp))
         LinearProgressIndicator(
             modifier = Modifier.width(150.dp),
             color = AzulClaro,

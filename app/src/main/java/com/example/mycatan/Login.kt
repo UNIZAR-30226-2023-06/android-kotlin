@@ -46,7 +46,7 @@ fun LoginPage(navController: NavHostController) {
         )*/
     Box(modifier = Modifier
         .fillMaxHeight()
-        .paint(painterResource(R.drawable.wave_1),
+        .paint(painterResource(R.drawable.wave_3),
             contentScale = ContentScale.FillBounds),
             contentAlignment = Alignment.Center
     ){
@@ -68,7 +68,7 @@ fun LoginPage(navController: NavHostController) {
             Image(
                 painter = painterResource(R.drawable.image),
                 contentDescription = "My image",
-                modifier = Modifier.width(200.dp)
+                modifier = Modifier.width(150.dp)
 
             )
 
@@ -82,7 +82,6 @@ fun LoginPage(navController: NavHostController) {
                 shape = RoundedCornerShape(50.dp),
                 onValueChange = { username.value = it })
 
-            Spacer(modifier = Modifier.height(5.dp))
             TextField(
                 modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp),
                 singleLine = true,
