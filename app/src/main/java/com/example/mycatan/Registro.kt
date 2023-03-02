@@ -37,6 +37,7 @@ fun RegistroPage(navController: NavHostController) {
 
     Box(modifier = Modifier
         .fillMaxHeight()
+        .background(color= Transp)
         .paint(
             painterResource(R.drawable.wave_1),
             contentScale = ContentScale.FillBounds),
@@ -44,8 +45,7 @@ fun RegistroPage(navController: NavHostController) {
     ){
         Column(modifier = Modifier
             .fillMaxSize()
-            .fillMaxWidth()
-            .background(color= Transp),
+            .fillMaxWidth(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,){
             Text(text = "Registro", style = TextStyle(fontSize = 40.sp, color = AzulOscuro, fontWeight = FontWeight.Bold))
@@ -59,47 +59,54 @@ fun RegistroPage(navController: NavHostController) {
             var ruta = Routes.Login.route;
             Spacer(modifier = Modifier.height(10.dp))
 
+            Row(horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically){
+                TextField(
+                    singleLine = true,
+                    label = { Text(text = "Correo electrónico") },
+                    value = correo.value,
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        backgroundColor = Color.Transparent),
+                    onValueChange = {
+                        if( it.text.length <= 76)
+                            correo.value = it }
+                )
+                Spacer(modifier = Modifier.width(5.dp))
+                TextField(
+                    singleLine = true,
+                    label = { Text(text = "Nombre") },
+                    value = nombre.value,
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        backgroundColor = Color.Transparent),
+                    onValueChange = { nombre.value = it })
+            }
 
-            TextField(
-                singleLine = true,
-                label = { Text(text = "Correo electrónico") },
-                value = correo.value,
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    backgroundColor = Color.Transparent),
-                onValueChange = {
-                    if( it.text.length <= 76)
-                        correo.value = it }
-            )
-            Spacer(modifier = Modifier.height(5.dp))
-            TextField(
-                singleLine = true,
-                label = { Text(text = "Nombre") },
-                value = nombre.value,
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    backgroundColor = Color.Transparent),
-                onValueChange = { nombre.value = it })
 
             Spacer(modifier = Modifier.height(5.dp))
 
-            TextField(
-                singleLine = true,
-                label = { Text(text = "Contraseña") },
-                value = password.value,
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    backgroundColor = Color.Transparent),
-                visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                onValueChange = { password.value = it })
-            Spacer(modifier = Modifier.height(5.dp))
-            TextField(
-                singleLine = true,
-                label = { Text(text = "Confirmar contraseña") },
-                value = confirmarContrasena.value,
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    backgroundColor = Color.Transparent),
-                visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                onValueChange = { confirmarContrasena.value = it })
+            Row(horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically){
+                TextField(
+                    singleLine = true,
+                    label = { Text(text = "Contraseña") },
+                    value = password.value,
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        backgroundColor = Color.Transparent),
+                    visualTransformation = PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                    onValueChange = { password.value = it })
+                Spacer(modifier = Modifier.width(5.dp))
+                TextField(
+                    singleLine = true,
+                    label = { Text(text = "Confirmar contraseña") },
+                    value = confirmarContrasena.value,
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        backgroundColor = Color.Transparent),
+                    visualTransformation = PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                    onValueChange = { confirmarContrasena.value = it })
+            }
+
 
             Spacer(modifier = Modifier.height(10.dp))
 
