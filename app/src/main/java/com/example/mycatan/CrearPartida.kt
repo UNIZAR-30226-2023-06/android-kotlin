@@ -6,15 +6,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.runtime.*
@@ -47,31 +45,129 @@ fun CrearPartidaPage(navController: NavHostController) {
         Column (
             modifier = Modifier
                 .fillMaxHeight()
-                .fillMaxWidth(0.50f)
+                .fillMaxWidth(0.40f)
                 .background(color = AzulOscuro)
                 .padding(10.dp, 10.dp, 10.dp, 10.dp),
 
             ) {
+
             Text(text = "CONFIGURACIÓN",
                 fontSize = 20.sp,
                 color = Color.White,
                 fontFamily = FontFamily.SansSerif,
                 fontWeight = FontWeight.Bold
             )
+
+            Spacer(modifier = Modifier.height(5.dp))
+
+            Divider(color = Color.White, thickness = 1.dp)
+
+            Spacer(modifier = Modifier.height(10.dp))
+
             Row(modifier = Modifier
                 .padding(5.dp, 5.dp, 5.dp, 5.dp),
-                horizontalArrangement = Arrangement.Center
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ){
+
                 Text(text = "Tiempo de turno",
-                    fontSize = 20.sp,
+                    fontSize = 10.sp,
                     color = Color.White,
                     fontFamily = FontFamily.SansSerif,
                     fontWeight = FontWeight.Bold
                 )
-                Spacer(modifier = Modifier.width(5.dp))
                 // INCREMENTADOR/DECREMENTADOR NUMERO
+                var count by remember { mutableStateOf(60) }
+                
+                Row (modifier = Modifier
+                    .background(Color.White, RoundedCornerShape(20.dp)),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
 
+                ){
+                    IconButton(onClick = { count-- },modifier = Modifier.size(30.dp)  ) {
+                        Icon(Icons.Filled.KeyboardArrowDown,contentDescription = "Decrement",)
+                    }
+                    Text(text = count.toString())
+                    IconButton(onClick = { count++ },modifier = Modifier.size(30.dp) ) {
+                        Icon(Icons.Filled.KeyboardArrowUp, contentDescription = "Increment")
+                    }
+                }
+            }
 
+            Row(modifier = Modifier
+                .padding(5.dp, 5.dp, 5.dp, 5.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ){
+                Text(text = "Ladrón",
+                    fontSize = 10.sp,
+                    color = Color.White,
+                    fontFamily = FontFamily.SansSerif,
+                    fontWeight = FontWeight.Bold
+                )
+
+            }
+
+            Row(modifier = Modifier
+                .padding(5.dp, 5.dp, 5.dp, 5.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ){
+                Text(text = "Puntos de victoria",
+                    fontSize = 10.sp,
+                    color = Color.White,
+                    fontFamily = FontFamily.SansSerif,
+                    fontWeight = FontWeight.Bold
+                )
+                // INCREMENTADOR/DECREMENTADOR NUMERO
+                var countVictoria by remember { mutableStateOf(10) }
+
+                Row (modifier = Modifier
+                    .background(Color.White, RoundedCornerShape(20.dp)),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ){
+                    IconButton(onClick = { countVictoria-- },modifier = Modifier.size(30.dp)  ) {
+                        Icon(Icons.Filled.KeyboardArrowDown,contentDescription = "Decrement",)
+                    }
+                    Text(text = countVictoria.toString())
+                    IconButton(onClick = { countVictoria++ },modifier = Modifier.size(30.dp) ) {
+                        Icon(Icons.Filled.KeyboardArrowUp, contentDescription = "Increment")
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+            Row(modifier = Modifier
+                .padding(5.dp, 5.dp, 5.dp, 5.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ){
+                Text(text = "Numero de jugadores",
+                    fontSize = 10.sp,
+                    color = Color.White,
+                    fontFamily = FontFamily.SansSerif,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.width(15.dp))
+
+                // INCREMENTADOR/DECREMENTADOR NUMERO
+                var countJugadores by remember { mutableStateOf(4) }
+
+                Row (modifier = Modifier
+                    .background(Color.White, RoundedCornerShape(20.dp)),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ){
+                    IconButton(onClick = { countJugadores-- },modifier = Modifier.size(30.dp)  ) {
+                        Icon(Icons.Filled.KeyboardArrowDown,contentDescription = "Decrement",)
+                    }
+                    Text(text = countJugadores.toString())
+                    IconButton(onClick = { countJugadores++ },modifier = Modifier.size(30.dp) ) {
+                        Icon(Icons.Filled.KeyboardArrowUp, contentDescription = "Increment")
+                    }
+                }
             }
 
         }
@@ -93,29 +189,9 @@ fun CrearPartidaPage(navController: NavHostController) {
 
 }
 
-/*
-data class QuantityState(
-    val quantity: String,
-    val minusDisabled: Boolean,
-    val moreDisabled: Boolean
-)
-
+@Preview(showBackground = true)
 @Composable
-fun QuantitySelection(
-    value: Int,
-    maxValue: Int = Int.MAX_VALUE,
-    onValueChanged: (newValue: Int) -> Unit,
-    onMinusClicked: (newValue: Int) -> Unit = {},
-    onMoreClicked: (newValue: Int) -> Unit = {}
-) {
-    val quantityState = state {
-        QuantityState(
-            quantity = "$value",
-            minusDisabled = value == 0,
-            moreDisabled = value == maxValue
-        )
-    }
-    // You code of your composable here...
-}*/
-
-
+fun DefaultPreview7() {
+    val navController = rememberNavController()
+    CrearPartidaPage(navController = navController)
+}
