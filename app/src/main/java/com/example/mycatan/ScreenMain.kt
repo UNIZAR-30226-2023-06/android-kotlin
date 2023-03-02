@@ -25,5 +25,9 @@ fun ScreenMain(){
             LockScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
             CrearPartidaPage(navController = navController)
         }
+        composable(Routes.Tienda.route) {
+            LockScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
+            TiendaPage(navController = navController)
+        }
     }
 }

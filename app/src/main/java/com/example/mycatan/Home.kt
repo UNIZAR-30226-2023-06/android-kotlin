@@ -101,7 +101,7 @@ fun HomePage(navController: NavHostController) {
                 Spacer(modifier = Modifier.width(10.dp))
                 //boton tienda
                 Button(
-                    onClick = { /*dirigira a la tienda */ },
+                    onClick = { navController.navigate(Routes.Tienda.route) },
                     modifier = Modifier
                         .width(50.dp)
                         .height(50.dp),
