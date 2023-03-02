@@ -29,34 +29,9 @@ fun TiendaPage(navController: NavHostController) {
     Box(modifier = Modifier
         .fillMaxSize()
         .background(AzulClaro)
+        .padding(10.dp, 10.dp, 10.dp, 10.dp)
     )
     {
-
-        //SALDO
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.TopEnd
-        ) {
-
-            Column(modifier = Modifier
-                .border(
-                    width = 4.dp,
-                    color = AzulOscuro
-                ))
-            {
-                Icon(imageVector = Icons.Default.Star,
-                    contentDescription = null,
-                    tint = Amarillo)
-
-                Text(
-                    text = "12$",
-                    style = TextStyle(
-                        color = Blanco,
-                        fontWeight = FontWeight.Bold
-                    )
-                )
-            }
-        }
 
         LazyColumn(
             modifier = Modifier
@@ -85,8 +60,10 @@ fun TiendaPage(navController: NavHostController) {
                     contentPadding = PaddingValues(25.dp)
                 ) {
 
-                    items(9) {
-                        RackItem()
+                    items(9)  {
+                        /*var foto: String
+                        foto = "personaje$it"*/
+                        RackItem(/*foto*/)
                     }
                 }
 
@@ -109,11 +86,44 @@ fun TiendaPage(navController: NavHostController) {
                 }
             }
         }
+
+        //SALDO
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.TopEnd
+        ) {
+
+            Row(modifier = Modifier
+                .background(AzulOscuro)
+                .padding(10.dp,5.dp),
+
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            )
+            {
+
+                Icon(imageVector = Icons.Default.Star,
+                    contentDescription = null,
+                    tint = Amarillo)
+
+                Text(
+                    text = "12$",
+                    style = TextStyle(
+                        color = Blanco,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+            }
+
+        }
     }
 }
 
 @Composable
-fun RackItem(){
+fun RackItem( /*foto: String*/ ){
+
+
+
     Card(
         modifier = Modifier
             .clickable {/*movidas*/ }
@@ -132,7 +142,7 @@ fun RackItem(){
         ) {
 
             Image(
-                painter = painterResource(R.drawable.personaje1),
+                painter = painterResource(R.drawable.personaje1), // HAY QUE HACER QUE PINTE R.drawable.foto PERO NO SE COMO
                 contentDescription = null,
                 modifier = Modifier.height(76.dp)
 
