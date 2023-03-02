@@ -15,6 +15,6 @@ val GrisAzulado = Color(0xFF36515F)
 val AzulMedio = Color(0xFF1C5775)
 val Azul= Color(0xFF16445C)
 val Negro= Color(0xFF000000)
-val Transp= Color(0xA40098FE)
+val Transp= Color(0x950098FE)
 
 

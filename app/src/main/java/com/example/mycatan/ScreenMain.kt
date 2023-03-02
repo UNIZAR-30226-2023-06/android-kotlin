@@ -31,5 +31,9 @@ fun ScreenMain(){
            LockScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
             TiendaPage(navController = navController)
         }
+        composable(Routes.Splash.route) {
+            LockScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
+            SplashScreen(navController = navController)
+        }
     }
 }
