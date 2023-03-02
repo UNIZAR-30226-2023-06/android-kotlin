@@ -9,19 +9,20 @@ import androidx.navigation.compose.rememberNavController
 @Composable
 fun ScreenMain(){
     val navController = rememberNavController()
-    LockScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
     NavHost(navController = navController, startDestination = Routes.Login.route) {
 
         composable(Routes.Login.route) {
             LoginPage(navController = navController)
         }
         composable(Routes.Home.route) {
+            LockScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
             HomePage(navController = navController)
         }
         composable(Routes.Registro.route) {
             RegistroPage(navController = navController)
         }
         composable(Routes.CrearPartida.route) {
+            LockScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
             CrearPartidaPage(navController = navController)
         }
     }

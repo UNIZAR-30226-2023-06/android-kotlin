@@ -78,7 +78,7 @@ fun CrearPartidaPage(navController: NavHostController) {
                 )
                 // INCREMENTADOR/DECREMENTADOR NUMERO
                 var count by remember { mutableStateOf(60) }
-                
+
                 Row (modifier = Modifier
                     .background(Color.White, RoundedCornerShape(20.dp)),
                     horizontalArrangement = Arrangement.Center,

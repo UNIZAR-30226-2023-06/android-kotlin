@@ -1,17 +1,23 @@
 package com.example.mycatan
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.Role.Companion.Image
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -25,10 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.mycatan.ui.theme.AzulClaro
-import com.example.mycatan.ui.theme.AzulOscuro
-import com.example.mycatan.ui.theme.Blanco
-import com.example.mycatan.ui.theme.Purple700
+import com.example.mycatan.ui.theme.*
 
 @Composable
 fun LoginPage(navController: NavHostController) {
@@ -37,7 +40,7 @@ fun LoginPage(navController: NavHostController) {
         modifier = Modifier
             .fillMaxSize()
             .fillMaxWidth()
-            .background(color = AzulClaro),
+            .background(color= AzulClaro),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
 
@@ -46,26 +49,31 @@ fun LoginPage(navController: NavHostController) {
         val username = remember { mutableStateOf(TextFieldValue()) }
         val password = remember { mutableStateOf(TextFieldValue()) }
 
-        Text(text = "Iniciar sesión", style = TextStyle(fontSize = 40.sp, color = AzulOscuro, fontWeight = FontWeight.Bold))
+        Image(
+            painter = painterResource(R.drawable.image),
+            contentDescription = "My image",
+            modifier = Modifier.width(280.dp)
 
+        )
 
-
-        OutlinedTextField(
+        TextField(
             singleLine = true,
             label = { Text(text = "Correo electrónico") },
             value = username.value,
             colors = TextFieldDefaults.outlinedTextFieldColors(
-                backgroundColor = Blanco),
+                backgroundColor = Color.Transparent),
+            shape = RoundedCornerShape(50.dp),
             onValueChange = { username.value = it })
 
         Spacer(modifier = Modifier.height(5.dp))
-        OutlinedTextField(
+        TextField(
             singleLine = true,
             label = { Text(text = "Contraseña") },
             value = password.value,
             colors = TextFieldDefaults.outlinedTextFieldColors(
-                backgroundColor = Blanco),
+                backgroundColor = Color.Transparent),
             visualTransformation = PasswordVisualTransformation(),
+            shape = RoundedCornerShape(50.dp),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             onValueChange = { password.value = it })
 
@@ -79,7 +87,7 @@ fun LoginPage(navController: NavHostController) {
                 color = AzulOscuro
             )
         )
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(20.dp))
         Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp), ) {
             Button(
                 onClick = { navController.navigate(Routes.Home.route)},
@@ -98,21 +106,29 @@ fun LoginPage(navController: NavHostController) {
         }
 
         Spacer(modifier = Modifier.height(5.dp))
-        Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp), ) {
-            Button(
-                onClick = { navController.navigate(Routes.Registro.route)},
-                shape = RoundedCornerShape(50.dp),
-                modifier = Modifier
-                    .width(280.dp)
-                    .height(50.dp),
-                colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
 
-            ) {
-                Text(text = "Registrarse",
-                    style = TextStyle(color = Blanco)
+        Row{
+            Text(
+                text = AnnotatedString("¿Nuevo usuario? "),
+                style = TextStyle(
+                    fontSize = 14.sp,
+                    fontFamily = FontFamily.Default,
+                    color = AzulOscuro
                 )
-            }
+            )
+
+            ClickableText(
+                text = AnnotatedString("Registrate"),
+                onClick = { navController.navigate(Routes.Registro.route)},
+                style = TextStyle(
+                    fontSize = 14.sp,
+                    fontFamily = FontFamily.Default,
+                    color = AzulOscuro,
+                    fontWeight = FontWeight.Bold
+                )
+            )
         }
+
 
     }
 
