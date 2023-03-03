@@ -49,7 +49,8 @@ fun CrearPartidaPage(navController: NavHostController) {
                 .background(color = AzulOscuro)
                 .padding(10.dp, 10.dp, 10.dp, 10.dp),
 
-            ) {
+            )
+        {
 
             Text(text = "CONFIGURACIÓN",
                 fontSize = 20.sp,
@@ -64,112 +65,66 @@ fun CrearPartidaPage(navController: NavHostController) {
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            Row(modifier = Modifier
+            Column(modifier = Modifier
                 .padding(5.dp, 5.dp, 5.dp, 5.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalArrangement = Arrangement.spacedBy(20.dp),
+                horizontalAlignment = Alignment.Start
             ){
 
-                Text(text = "Tiempo de turno",
-                    fontSize = 10.sp,
-                    color = Color.White,
-                    fontFamily = FontFamily.SansSerif,
-                    fontWeight = FontWeight.Bold
-                )
-                // INCREMENTADOR/DECREMENTADOR NUMERO
-                var count by remember { mutableStateOf(60) }
+                Row(
+                   horizontalArrangement = Arrangement.SpaceEvenly,
+                   verticalAlignment = Alignment.CenterVertically)
+                {
+                    Text(
+                        text = "Tiempo de turno",
+                        fontSize = 14.sp,
+                        color = Color.White,
+                        fontFamily = FontFamily.SansSerif,
+                        fontWeight = FontWeight.Bold
+                    )
 
-                Row (modifier = Modifier
-                    .background(Color.White, RoundedCornerShape(20.dp)),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically,
+                    Spacer(modifier = Modifier.width(40.dp))
+                    incrementador()
+                }
 
-                ){
-                    IconButton(onClick = { count-- },modifier = Modifier.size(30.dp)  ) {
-                        Icon(Icons.Filled.KeyboardArrowDown,contentDescription = "Decrement",)
-                    }
-                    Text(text = count.toString())
-                    IconButton(onClick = { count++ },modifier = Modifier.size(30.dp) ) {
-                        Icon(Icons.Filled.KeyboardArrowUp, contentDescription = "Increment")
-                    }
+                Row(
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically)
+                {
+                    Text(text = "Ladrón",
+                        fontSize = 14.sp,
+                        color = Color.White,
+                        fontFamily = FontFamily.SansSerif,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                Row(
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically)
+                {
+                    Text(text = "Puntos de victoria",
+                        fontSize = 14.sp,
+                        color = Color.White,
+                        fontFamily = FontFamily.SansSerif,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.width(32.dp))
+                    incrementador()
+                }
+                Row(
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically)
+                {
+                    Text(text = "Numero de jugadores",
+                        fontSize = 14.sp,
+                        color = Color.White,
+                        fontFamily = FontFamily.SansSerif,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    incrementador()
                 }
             }
-
-            Row(modifier = Modifier
-                .padding(5.dp, 5.dp, 5.dp, 5.dp),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ){
-                Text(text = "Ladrón",
-                    fontSize = 10.sp,
-                    color = Color.White,
-                    fontFamily = FontFamily.SansSerif,
-                    fontWeight = FontWeight.Bold
-                )
-
-            }
-
-            Row(modifier = Modifier
-                .padding(5.dp, 5.dp, 5.dp, 5.dp),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ){
-                Text(text = "Puntos de victoria",
-                    fontSize = 10.sp,
-                    color = Color.White,
-                    fontFamily = FontFamily.SansSerif,
-                    fontWeight = FontWeight.Bold
-                )
-                // INCREMENTADOR/DECREMENTADOR NUMERO
-                var countVictoria by remember { mutableStateOf(10) }
-
-                Row (modifier = Modifier
-                    .background(Color.White, RoundedCornerShape(20.dp)),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ){
-                    IconButton(onClick = { countVictoria-- },modifier = Modifier.size(30.dp)  ) {
-                        Icon(Icons.Filled.KeyboardArrowDown,contentDescription = "Decrement",)
-                    }
-                    Text(text = countVictoria.toString())
-                    IconButton(onClick = { countVictoria++ },modifier = Modifier.size(30.dp) ) {
-                        Icon(Icons.Filled.KeyboardArrowUp, contentDescription = "Increment")
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(10.dp))
-            Row(modifier = Modifier
-                .padding(5.dp, 5.dp, 5.dp, 5.dp),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ){
-                Text(text = "Numero de jugadores",
-                    fontSize = 10.sp,
-                    color = Color.White,
-                    fontFamily = FontFamily.SansSerif,
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.width(15.dp))
-
-                // INCREMENTADOR/DECREMENTADOR NUMERO
-                var countJugadores by remember { mutableStateOf(4) }
-
-                Row (modifier = Modifier
-                    .background(Color.White, RoundedCornerShape(20.dp)),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ){
-                    IconButton(onClick = { countJugadores-- },modifier = Modifier.size(30.dp)  ) {
-                        Icon(Icons.Filled.KeyboardArrowDown,contentDescription = "Decrement",)
-                    }
-                    Text(text = countJugadores.toString())
-                    IconButton(onClick = { countJugadores++ },modifier = Modifier.size(30.dp) ) {
-                        Icon(Icons.Filled.KeyboardArrowUp, contentDescription = "Increment")
-                    }
-                }
-            }
-
         }
 
         Column (
@@ -188,6 +143,27 @@ fun CrearPartidaPage(navController: NavHostController) {
     }
 
 }
+@Composable
+fun incrementador(){
+    // INCREMENTADOR/DECREMENTADOR NUMERO
+    var count by remember { mutableStateOf(60) }
+
+    Row (modifier = Modifier
+        .background(Color.White, RoundedCornerShape(20.dp)),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+
+        ){
+        IconButton(onClick = { count-- },modifier = Modifier.size(30.dp)  ) {
+            Icon(Icons.Filled.KeyboardArrowDown,contentDescription = "Decrement",)
+        }
+        Text(text = count.toString())
+        IconButton(onClick = { count++ },modifier = Modifier.size(30.dp) ) {
+            Icon(Icons.Filled.KeyboardArrowUp, contentDescription = "Increment")
+        }
+    }
+}
+
 
 @Preview(showBackground = true)
 @Composable
