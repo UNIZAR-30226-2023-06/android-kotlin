@@ -43,7 +43,7 @@ fun Splash() {
         horizontalAlignment = Alignment.CenterHorizontally
     ){
         Image(
-            painter = painterResource(id = R.drawable.logo),
+            painter = painterResource(id = R.drawable.image),
             contentDescription = null,
             modifier = Modifier.size(150.dp)
         )
