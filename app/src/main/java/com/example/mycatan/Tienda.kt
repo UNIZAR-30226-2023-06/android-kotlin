@@ -1,5 +1,7 @@
 package com.example.mycatan
 
+import androidx.compose.animation.*
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -8,12 +10,14 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -26,6 +30,9 @@ import com.example.mycatan.ui.theme.*
 
 @Composable
 fun TiendaPage(navController: NavHostController) {
+
+    var menuVisible by remember { mutableStateOf(false) }
+    var fotoPopUp by remember { mutableStateOf(-1) }
 
     Box(modifier = Modifier
         .fillMaxSize()
@@ -62,9 +69,10 @@ fun TiendaPage(navController: NavHostController) {
                 ) {
 
                     items(9)  {
-                        /*var foto: String
-                        foto = "personaje$it"*/
-                        RackItem(it)
+                        RackItem(it,
+                            onCardClick = {
+                                menuVisible = !menuVisible
+                                fotoPopUp = it })
                     }
                 }
 
@@ -81,8 +89,11 @@ fun TiendaPage(navController: NavHostController) {
                     contentPadding = PaddingValues(25.dp)
                 ) {
 
-                    items(9) {
-                        RackItem(it)
+                    items(9)  {
+                        RackItem(it,
+                            onCardClick = {
+                                menuVisible = !menuVisible
+                                fotoPopUp = it })
                     }
                 }
             }
@@ -118,10 +129,30 @@ fun TiendaPage(navController: NavHostController) {
 
         }
     }
+
+
+    // OPTIONS MENU
+    AnimatedVisibility(visible = menuVisible,
+        enter = fadeIn(animationSpec = tween(1000)),
+        exit = fadeOut(animationSpec = tween(1000)) ){
+        Surface(
+            modifier = Modifier
+                .fillMaxSize()
+                .clickable { menuVisible = !menuVisible },
+            color = Color.Black.copy(alpha = 0.6f)
+        ){
+
+        }
+    }
+    AnimatedVisibility(visible = menuVisible,
+        enter = expandHorizontally (animationSpec = tween(1000)),
+        exit = shrinkHorizontally(animationSpec = tween(1000)) ) {
+        TiendaScreen(fotoPopUp, navController)
+    }
 }
 
 @Composable
-fun RackItem( foto: Int ){
+fun RackItem( foto: Int ,  onCardClick: () -> Unit ){
 
     var painterID : Painter
     //Estoes muy cutre pero no se hacerlo mejor
@@ -154,7 +185,7 @@ fun RackItem( foto: Int ){
 
     Card(
         modifier = Modifier
-            .clickable {/*movidas*/ }
+            .clickable { onCardClick()}
             .width(105.dp)
             .height(105.dp),
 
@@ -163,6 +194,8 @@ fun RackItem( foto: Int ){
         border = BorderStroke(5.dp, AzulOscuro),
 
     ) {
+
+
         Column (
             //modifier = Modifier
             verticalArrangement = Arrangement.SpaceEvenly,
