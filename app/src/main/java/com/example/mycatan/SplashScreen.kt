@@ -45,7 +45,7 @@ fun Splash() {
         Image(
             painter = painterResource(id = R.drawable.image),
             contentDescription = null,
-            modifier = Modifier.size(150.dp)
+            modifier = Modifier.width(150.dp)
         )
         LinearProgressIndicator(
             modifier = Modifier.width(150.dp),

@@ -1,9 +1,7 @@
 package com.example.mycatan
 
 import androidx.compose.animation.*
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -38,7 +36,6 @@ import com.example.mycatan.ui.theme.*
 
 @Composable
 fun CrearPartidaPage(navController: NavHostController) {
-    var numberValue: Int by rememberSaveable { mutableStateOf(15) }
 
     Row(){
         // MENU LATERAL
@@ -84,7 +81,7 @@ fun CrearPartidaPage(navController: NavHostController) {
                     )
 
                     Spacer(modifier = Modifier.width(40.dp))
-                    incrementador()
+                    incrementador("turno")
                 }
 
                 Row(
@@ -96,6 +93,19 @@ fun CrearPartidaPage(navController: NavHostController) {
                         color = Color.White,
                         fontFamily = FontFamily.SansSerif,
                         fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.width(100.dp))
+                    var ladron = remember { mutableStateOf(true) }
+                    Switch(
+                        checked = (ladron.value),
+                        onCheckedChange = { ladron.value = it},
+                        modifier = Modifier.padding(end = 15.dp),
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = Color.LightGray,
+                            uncheckedThumbColor = Color.Gray,
+                            checkedTrackColor = AzulClaro,
+                            uncheckedTrackColor = Color.White,
+                        )
                     )
                 }
                 Row(
@@ -109,7 +119,7 @@ fun CrearPartidaPage(navController: NavHostController) {
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.width(32.dp))
-                    incrementador()
+                    incrementador("victoria")
                 }
                 Row(
                     horizontalArrangement = Arrangement.SpaceEvenly,
@@ -121,8 +131,8 @@ fun CrearPartidaPage(navController: NavHostController) {
                         fontFamily = FontFamily.SansSerif,
                         fontWeight = FontWeight.Bold
                     )
-                    Spacer(modifier = Modifier.width(12.dp))
-                    incrementador()
+                    Spacer(modifier = Modifier.width(18.dp))
+                    incrementador("jugadores")
                 }
             }
         }
@@ -144,9 +154,19 @@ fun CrearPartidaPage(navController: NavHostController) {
 
 }
 @Composable
-fun incrementador(){
+fun incrementador(tipo: String){
     // INCREMENTADOR/DECREMENTADOR NUMERO
-    var count by remember { mutableStateOf(60) }
+    var inicio = 0;
+    if(tipo == "turno"){
+        inicio = 60;
+    }
+    if(tipo == "victoria"){
+        inicio = 10;
+    }
+    if(tipo == "jugadores"){
+        inicio = 4;
+    }
+    var count by remember { mutableStateOf(inicio) }
 
     Row (modifier = Modifier
         .background(Color.White, RoundedCornerShape(20.dp)),
@@ -154,11 +174,30 @@ fun incrementador(){
         verticalAlignment = Alignment.CenterVertically,
 
         ){
-        IconButton(onClick = { count-- },modifier = Modifier.size(30.dp)  ) {
+
+        IconButton(
+            onClick = {
+                if(count != 2){
+                    count--
+                } },
+            modifier = Modifier.size(25.dp)  ) {
             Icon(Icons.Filled.KeyboardArrowDown,contentDescription = "Decrement",)
         }
-        Text(text = count.toString())
-        IconButton(onClick = { count++ },modifier = Modifier.size(30.dp) ) {
+        Text(text = count.toString(), fontSize = 14.sp,)
+        IconButton(
+            onClick = {
+                if(tipo == "turno" && count != 300){
+                    count++
+                }
+                if(tipo == "victoria" && count != 30){
+                    count++
+                }
+                if(tipo == "jugadores" && count != 4){
+                    count++
+                }
+                 },
+
+            modifier = Modifier.size(25.dp) ) {
             Icon(Icons.Filled.KeyboardArrowUp, contentDescription = "Increment")
         }
     }

@@ -2,6 +2,7 @@ package com.example.mycatan
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -18,7 +19,10 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -39,8 +43,10 @@ fun HomePage(navController: NavHostController) {
     var menuVisible by remember { mutableStateOf(false) }
 
     Box(modifier = Modifier
-        .fillMaxSize()
-        .background(color = AzulClaro)
+        .paint(
+            painterResource(R.drawable.wave_3),
+            contentScale = ContentScale.FillBounds)
+        .background(color = Transp)
         .padding(10.dp, 10.dp, 10.dp, 10.dp))
     {
 
@@ -72,9 +78,14 @@ fun HomePage(navController: NavHostController) {
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.BottomEnd
         ) {
-            Text(
+            /*Text(
                 text = "CATAN INC.", style =
                 TextStyle(fontSize = 20.sp, color = GrisAzulado, fontWeight = FontWeight.Bold)
+            )*/
+            Image(
+                painter = painterResource(R.drawable.image),
+                contentDescription = "My image",
+                modifier = Modifier.width(100.dp)
             )
         }
 
@@ -123,29 +134,6 @@ fun HomePage(navController: NavHostController) {
 
         }
 
-
-        //boton amigos
-        /*Button(
-            onClick = {  cosas de los amigos },
-            modifier = Modifier
-                .align(Alignment.BottomStart )
-                .width(65.dp)
-                .height(65.dp)
-                .border(
-                    width = 3.dp,
-                    color = AzulOscuro,
-                    shape = RoundedCornerShape(15.dp)
-                ),
-            //maybe padding o algo para que no  quede tan a a la  esquina
-
-            shape = RoundedCornerShape(15.dp),
-            colors = ButtonDefaults.buttonColors(backgroundColor = Amarillo)
-
-        ) {
-            //imagen|icono
-        }*/
-
-
         Column(
             modifier = Modifier
                 .fillMaxSize(),
@@ -162,12 +150,7 @@ fun HomePage(navController: NavHostController) {
                     onClick = { navController.navigate(Routes.Home.route) },
                     modifier = Modifier
                         .width(280.dp)
-                        .height(50.dp)
-                        .border(
-                            width = 3.dp,
-                            color = AzulOscuro,
-                            shape = RoundedCornerShape(15.dp)
-                        ),
+                        .height(60.dp),
 
                     shape = RoundedCornerShape(15.dp),
                     colors = ButtonDefaults.buttonColors(backgroundColor = Amarillo)
@@ -190,12 +173,7 @@ fun HomePage(navController: NavHostController) {
                     onClick = { navController.navigate(Routes.CrearPartida.route) },
                     modifier = Modifier
                         .width(280.dp)
-                        .height(50.dp)
-                        .border(
-                            width = 3.dp,
-                            color = AzulOscuro,
-                            shape = RoundedCornerShape(15.dp)
-                        ),
+                        .height(60.dp),
 
                     shape = RoundedCornerShape(15.dp),
                     colors = ButtonDefaults.buttonColors(backgroundColor = Amarillo)
@@ -203,34 +181,6 @@ fun HomePage(navController: NavHostController) {
                 ) {
                     Text(
                         text = "CREAR PARTIDA CON AMIGOS",
-                        style = TextStyle(
-                            color = AzulOscuro,
-                            fontWeight = FontWeight.Bold
-                        )
-                    )
-
-                }
-            }
-
-            Spacer(modifier = Modifier.height(20.dp))
-            Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp),) {
-                Button(
-                    onClick = { navController.navigate(Routes.Home.route) },
-                    modifier = Modifier
-                        .width(280.dp)
-                        .height(50.dp)
-                        .border(
-                            width = 3.dp,
-                            color = AzulOscuro,
-                            shape = RoundedCornerShape(15.dp)
-                        ),
-
-                    shape = RoundedCornerShape(15.dp),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Amarillo)
-
-                ) {
-                    Text(
-                        text = "RECUPERAR PARTIDA",
                         style = TextStyle(
                             color = AzulOscuro,
                             fontWeight = FontWeight.Bold
