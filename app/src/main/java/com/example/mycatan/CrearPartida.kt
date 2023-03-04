@@ -17,8 +17,11 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -34,16 +37,20 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.mycatan.ui.theme.*
 
+var numeroJugadores = 4;
 @Composable
 fun CrearPartidaPage(navController: NavHostController) {
 
-    Row(){
+    Row(modifier = Modifier
+        .paint(
+            painterResource(R.drawable.wave_3),
+            contentScale = ContentScale.FillBounds)){
         // MENU LATERAL
         Column (
             modifier = Modifier
                 .fillMaxHeight()
                 .fillMaxWidth(0.40f)
-                .background(color = AzulOscuro)
+                .background(color = TranspOscuro)
                 .padding(10.dp, 10.dp, 10.dp, 10.dp),
 
             )
@@ -141,11 +148,42 @@ fun CrearPartidaPage(navController: NavHostController) {
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight()
-                .background(color = AzulClaro)
+                .background(color = Transp)
                 .padding(10.dp, 10.dp, 10.dp, 10.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
 
             ) {
+            Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp),) {
+                Button(
+                    onClick = { },
+                    modifier = Modifier
+                        .width(280.dp)
+                        .height(60.dp)
+                        .padding(10.dp, 10.dp, 10.dp, 10.dp),
+
+                    shape = RoundedCornerShape(15.dp),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Amarillo)
+
+                ) {
+                    Text(
+                        text = "YO",
+                        style = TextStyle(
+                            color = AzulOscuro,
+                            fontWeight = FontWeight.Bold
+                        )
+                    )
+
+                }
+            }
+            botones()
+            if( numeroJugadores == 4){
+                botones()
+                botones()
+            } else if (numeroJugadores == 3){
+                botones()
+            }
+
 
         }
 
@@ -179,6 +217,9 @@ fun incrementador(tipo: String){
             onClick = {
                 if(count != 2){
                     count--
+                    if(tipo == "jugadores"){
+                        numeroJugadores = count;
+                    }
                 } },
             modifier = Modifier.size(25.dp)  ) {
             Icon(Icons.Filled.KeyboardArrowDown,contentDescription = "Decrement",)
@@ -194,11 +235,40 @@ fun incrementador(tipo: String){
                 }
                 if(tipo == "jugadores" && count != 4){
                     count++
+                   /* LaunchedEffect(count) {
+                        numeroJugadores = count;
+                    }*/
                 }
                  },
 
             modifier = Modifier.size(25.dp) ) {
             Icon(Icons.Filled.KeyboardArrowUp, contentDescription = "Increment")
+        }
+    }
+}
+
+@Composable
+fun botones(){
+    Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp),) {
+        Button(
+            onClick = { },
+            modifier = Modifier
+                .width(280.dp)
+                .height(60.dp)
+                .padding(10.dp, 10.dp, 10.dp, 10.dp),
+
+            shape = RoundedCornerShape(15.dp),
+            colors = ButtonDefaults.buttonColors(backgroundColor = Amarillo)
+
+        ) {
+            Text(
+                text = "INVITAR",
+                style = TextStyle(
+                    color = AzulOscuro,
+                    fontWeight = FontWeight.Bold
+                )
+            )
+
         }
     }
 }
