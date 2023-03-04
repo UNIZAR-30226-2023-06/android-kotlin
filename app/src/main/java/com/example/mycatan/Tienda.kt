@@ -7,12 +7,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -22,7 +22,6 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -33,6 +32,13 @@ fun TiendaPage(navController: NavHostController) {
 
     var menuVisible by remember { mutableStateOf(false) }
     var fotoPopUp by remember { mutableStateOf(-1) }
+
+    //no se guarda si vas para atras
+    var fotosCompradas by remember { mutableStateOf( BooleanArray(9)) }
+
+    val onConfirmed: (Int) -> Unit = { index ->
+        fotosCompradas[index] = true
+    }
 
     Box(modifier = Modifier
         .fillMaxSize()
@@ -69,7 +75,8 @@ fun TiendaPage(navController: NavHostController) {
                 ) {
 
                     items(9)  {
-                        RackItem(it,
+                        RackItem(foto = it,
+                            comprada = fotosCompradas[it],
                             onCardClick = {
                                 menuVisible = !menuVisible
                                 fotoPopUp = it })
@@ -90,7 +97,8 @@ fun TiendaPage(navController: NavHostController) {
                 ) {
 
                     items(9)  {
-                        RackItem(it,
+                        RackItem(foto = it,
+                            comprada = fotosCompradas[it],
                             onCardClick = {
                                 menuVisible = !menuVisible
                                 fotoPopUp = it })
@@ -100,6 +108,7 @@ fun TiendaPage(navController: NavHostController) {
         }
 
         //SALDO
+
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.TopEnd
@@ -146,13 +155,14 @@ fun TiendaPage(navController: NavHostController) {
     }
     AnimatedVisibility(visible = menuVisible,
         enter = expandHorizontally (animationSpec = tween(1000)),
-        exit = shrinkHorizontally(animationSpec = tween(1000)) ) {
-        TiendaScreen(fotoPopUp, navController)
+        exit = shrinkHorizontally(animationSpec = tween(1000)) )
+    {
+        TiendaScreen(fotoPopUp, navController, onConfirmed)
     }
 }
 
 @Composable
-fun RackItem( foto: Int ,  onCardClick: () -> Unit ){
+fun RackItem( foto: Int ,  comprada: Boolean,   onCardClick: () -> Unit ){
 
     var painterID : Painter
     //Estoes muy cutre pero no se hacerlo mejor
@@ -185,7 +195,7 @@ fun RackItem( foto: Int ,  onCardClick: () -> Unit ){
 
     Card(
         modifier = Modifier
-            .clickable { onCardClick()}
+            .clickable { onCardClick() }
             .width(105.dp)
             .height(105.dp),
 
@@ -243,6 +253,18 @@ fun RackItem( foto: Int ,  onCardClick: () -> Unit ){
                     )
                 }
             }
+        }
+
+        //el problema esque aunq se actualicen las fotosCompradas  no se actualizan los rackitems
+        if (comprada)
+        {
+            Icon(imageVector = Icons.Default.ShoppingCart,
+                contentDescription = null,
+                tint = Negro,
+                modifier = Modifier
+                    .width(50.dp)
+                    .height(50.dp))
+
         }
     }
 }

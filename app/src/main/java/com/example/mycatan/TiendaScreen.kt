@@ -13,8 +13,6 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.PointerId
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -23,7 +21,7 @@ import androidx.navigation.NavHostController
 import com.example.mycatan.ui.theme.*
 
 @Composable
-fun TiendaScreen(fotoId: Int,navController: NavHostController) {
+fun TiendaScreen(fotoId: Int, navController: NavHostController, onConfirm: (Int) -> Unit) {
 
     Box(
         Modifier
@@ -43,7 +41,7 @@ fun TiendaScreen(fotoId: Int,navController: NavHostController) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ){
 
-                RackItem(foto = fotoId) {}
+                RackItem(foto = fotoId, comprada = false) {}
 
                 Spacer(modifier = Modifier.height(5.dp))
 
@@ -81,7 +79,7 @@ fun TiendaScreen(fotoId: Int,navController: NavHostController) {
                     Spacer(modifier = Modifier.width(10.dp))
 
                     Button(
-                        onClick = { navController.navigate(Routes.Tienda.route)},
+                        onClick = { onConfirm(fotoId)},
                         modifier = Modifier
                             .width(100.dp)
                             .height(50.dp),
