@@ -150,9 +150,48 @@ fun LoginPage(navController: NavHostController) {
         }
     }
 
+}
+
+
+//val client = OkHttpClient()
+//
+//val mediaType = MediaType.parse("application/x-www-form-urlencoded")
+//val body = RequestBody.create(mediaType, "grant_type=&username=hash%40hash&password=1234&scope=&client_id=&client_secret=")
+//val request = Request.Builder()
+//  .url("http://localhost:8000/login")
+//  .post(body)
+//  .addHeader("accept", "application/json")
+//  .addHeader("Content-Type", "application/x-www-form-urlencoded")
+//  .build()
+//
+//val response = client.newCall(request).execute()
+
+fun enviarLogin( username: String, password: String ){
+    " &password=" + password.value + "&scope=&client_id=&client_secret=")
+    val request = Request.Builder()
+        .url("http://localhost:8000/login")
+        .post(body)
+        .addHeader("accept", "application/json")
+        .addHeader("Content-Type", "application/x-www-form-urlencoded")
+        .build()
+
+    val response = client.newCall(request).execute()
 
 
 
+    val values = mapOf("username" to username.value, "occupation" to "gardener")
+
+    val objectMapper = ObjectMapper()
+    val requestBody: String = objectMapper
+        .writeValueAsString(values)
+
+    val client = HttpClient.newBuilder().build();
+    val request = HttpRequest.newBuilder()
+        .uri(URI.create("https://httpbin.org/post"))
+        .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+        .build()
+    val response = client.send(request, HttpResponse.BodyHandlers.ofString());
+    println(response.body())
 }
 
 @Preview(showBackground = true)
