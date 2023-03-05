@@ -34,6 +34,11 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.mycatan.ui.theme.*
+import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody
 
 @Composable
 fun LoginPage(navController: NavHostController) {
@@ -107,7 +112,11 @@ fun LoginPage(navController: NavHostController) {
             Spacer(modifier = Modifier.height(20.dp))
             Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp), ) {
                 Button(
-                    onClick = { navController.navigate(Routes.Splash.route)},
+                    onClick = {
+                        println("EIIIIIIIIIIIIIIIIII")
+                        enviarLogin( username.value.text , password.value.text)
+                        navController.navigate(Routes.Splash.route)
+                        },
                     shape = RoundedCornerShape(50.dp),
                     modifier = Modifier
                         .width(280.dp)
@@ -166,8 +175,16 @@ fun LoginPage(navController: NavHostController) {
 //
 //val response = client.newCall(request).execute()
 
-fun enviarLogin( username: String, password: String ){
-    " &password=" + password.value + "&scope=&client_id=&client_secret=")
+fun enviarLogin( username: String, password: String ): String {
+    //TODO: hacer la función bien
+    println("username:" + username)
+    println("password: $password")
+    val client = OkHttpClient()
+
+    val mediaType = "application/x-www-form-urlencoded".toMediaTypeOrNull()
+    val body = RequestBody.create(mediaType,
+        "&grant_type=&username=$username&password=$password&scope=&client_id=&client_secret="
+    )
     val request = Request.Builder()
         .url("http://localhost:8000/login")
         .post(body)
@@ -176,22 +193,9 @@ fun enviarLogin( username: String, password: String ){
         .build()
 
     val response = client.newCall(request).execute()
-
-
-
-    val values = mapOf("username" to username.value, "occupation" to "gardener")
-
-    val objectMapper = ObjectMapper()
-    val requestBody: String = objectMapper
-        .writeValueAsString(values)
-
-    val client = HttpClient.newBuilder().build();
-    val request = HttpRequest.newBuilder()
-        .uri(URI.create("https://httpbin.org/post"))
-        .POST(HttpRequest.BodyPublishers.ofString(requestBody))
-        .build()
-    val response = client.send(request, HttpResponse.BodyHandlers.ofString());
-    println(response.body())
+    println(response.body)
+    println(response.message)
+    return response.message
 }
 
 @Preview(showBackground = true)
