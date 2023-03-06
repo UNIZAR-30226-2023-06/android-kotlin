@@ -34,11 +34,17 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.mycatan.ui.theme.*
+import kotlinx.coroutines.CoroutineScope
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
+
 
 @Composable
 fun LoginPage(navController: NavHostController) {
@@ -175,7 +181,7 @@ fun LoginPage(navController: NavHostController) {
 //
 //val response = client.newCall(request).execute()
 
-fun enviarLogin( username: String, password: String ): String {
+/*fun enviarLogin( username: String, password: String ): String {
     //TODO: hacer la función bien
     println("username:" + username)
     println("password: $password")
@@ -204,3 +210,45 @@ fun DefaultPreview3() {
     val navController = rememberNavController()
     LoginPage(navController = navController)
 }
+*/
+
+fun enviarLogin(username: String, password: String) {
+    println("username: $username")
+    println("password: $password")
+
+    // Inicie un subproceso en segundo plano
+    CoroutineScope(Dispatchers.IO).launch {
+        val client = OkHttpClient()
+
+        val mediaType = "application/x-www-form-urlencoded".toMediaTypeOrNull()
+        val body = RequestBody.create(
+            mediaType,
+            "&grant_type=password&username=$username&password=$password&scope=&client_id=client&client_secret=secret"
+        )
+        val request = Request.Builder()
+            .url("http://localhost:8000/login")
+            .post(body)
+            .addHeader("accept", "application/json")
+            .addHeader("Content-Type", "application/x-www-form-urlencoded")
+            .build()
+
+        try {
+            val response = client.newCall(request).execute()
+            val responseBody = response.body?.string()
+            response.close()
+
+            // Actualizar la IU en el subproceso principal
+            withContext(Dispatchers.Main) {
+                // Use el resultado de la llamada al método para actualizar la IU
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+
+            // Actualizar la IU en el subproceso principal
+            withContext(Dispatchers.Main) {
+                // Use el resultado de la llamada al método para actualizar la IU
+            }
+        }
+    }
+}
+
