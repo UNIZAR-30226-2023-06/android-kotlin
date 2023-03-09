@@ -33,17 +33,25 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.auth0.jwt.JWT
 import com.example.mycatan.ui.theme.*
 import kotlinx.coroutines.CoroutineScope
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.*
+import org.json.JSONObject
+import java.io.IOException
 
+/*import java.net.URL
+import java.net.http.HttpClient
+import java.net.http.HttpRequest
+import java.net.http.HttpResponse*/
+import kotlinx.serialization.json.Json
+import okhttp3.internal.ignoreIoExceptions
+import com.auth0.jwt.interfaces.DecodedJWT
+import com.auth0.jwt.interfaces.JWTPartsParser
 
 
 @Composable
@@ -57,15 +65,17 @@ fun LoginPage(navController: NavHostController) {
         )*/
     Box(modifier = Modifier
         .fillMaxHeight()
-        .paint(painterResource(R.drawable.wave_3),
-            contentScale = ContentScale.FillBounds),
+        .paint(
+            painterResource(R.drawable.wave_3),
+            contentScale = ContentScale.FillBounds
+        ),
             contentAlignment = Alignment.Center
     ){
         Column(
             modifier = Modifier
                 .fillMaxHeight()
                 .fillMaxWidth()
-                .background(color= Transp),
+                .background(color = Transp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
 
@@ -217,7 +227,6 @@ fun enviarLogin(username: String, password: String) {
     println("password: $password")
 
     // Inicie un subproceso en segundo plano
-    CoroutineScope(Dispatchers.IO).launch {
         val client = OkHttpClient()
 
         val mediaType = "application/x-www-form-urlencoded".toMediaTypeOrNull()
@@ -226,29 +235,46 @@ fun enviarLogin(username: String, password: String) {
             "&grant_type=password&username=$username&password=$password&scope=&client_id=client&client_secret=secret"
         )
         val request = Request.Builder()
-            .url("http://localhost:8000/login")
+            .url("http://10.1.54.60:8000/login")
             .post(body)
             .addHeader("accept", "application/json")
             .addHeader("Content-Type", "application/x-www-form-urlencoded")
             .build()
 
-        try {
-            val response = client.newCall(request).execute()
-            val responseBody = response.body?.string()
-            response.close()
+
+            //val response = client.newCall(request).execute()
+            client.newCall(request).enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    // manejo de errores
+                    println(call)
+                    println("ERROR al conectar con backend")
+                }
+
+                override fun onResponse(call: Call, response: Response) {
+                    val respuesta = response.body?.string().toString()
+                    //transform the string to json object
+                    val json = JSONObject(respuesta)
+                    //get the string from the response
+                    val status = json.getString("detail")
+                    if(status == "Incorrect email"){
+                        //TODO: gestionar email incorrecto
+                        println("EMAIL INCORRECTO")
+                    }else if (status == "Incorrect password"){
+                        //TODO: gestional contraseña incorrecta
+                        println("CONTRASEÑA INCORRECTA")
+                    }else if (status == "Logged in successfully"){
+                        val accessToken = json.getString("access_token")
+                        println("TOKEN DE ACCESO $accessToken")
+                        val user = JWT.decode(accessToken)
+                        println(user.claims.keys)
+                        //TODO: terminar esto
+                    }
+                }
+            })
+            //response.close()
 
             // Actualizar la IU en el subproceso principal
-            withContext(Dispatchers.Main) {
-                // Use el resultado de la llamada al método para actualizar la IU
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
 
-            // Actualizar la IU en el subproceso principal
-            withContext(Dispatchers.Main) {
-                // Use el resultado de la llamada al método para actualizar la IU
-            }
-        }
-    }
 }
+
 
