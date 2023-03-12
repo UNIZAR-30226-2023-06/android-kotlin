@@ -37,10 +37,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.mycatan.ui.theme.*
 
-var numeroJugadores = 4;
 @Composable
 fun CrearPartidaPage(navController: NavHostController) {
-
+    var numeroJugadores by remember { mutableStateOf(4) }
     Row(modifier = Modifier
         .paint(
             painterResource(R.drawable.wave_3),
@@ -50,7 +49,7 @@ fun CrearPartidaPage(navController: NavHostController) {
             modifier = Modifier
                 .fillMaxHeight()
                 .fillMaxWidth(0.40f)
-                .background(color = TranspOscuro)
+                .background(color = AzulMedio)
                 .padding(10.dp, 10.dp, 10.dp, 10.dp),
 
             )
@@ -88,7 +87,7 @@ fun CrearPartidaPage(navController: NavHostController) {
                     )
 
                     Spacer(modifier = Modifier.width(40.dp))
-                    incrementador("turno")
+                    incrementador("turno", onFlechaClick = {})
                 }
 
                 Row(
@@ -126,7 +125,7 @@ fun CrearPartidaPage(navController: NavHostController) {
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.width(32.dp))
-                    incrementador("victoria")
+                    incrementador("victoria", onFlechaClick = {})
                 }
                 Row(
                     horizontalArrangement = Arrangement.SpaceEvenly,
@@ -139,7 +138,7 @@ fun CrearPartidaPage(navController: NavHostController) {
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.width(18.dp))
-                    incrementador("jugadores")
+                    incrementador("jugadores", onFlechaClick = {numeroJugadores = it})
                 }
             }
         }
@@ -192,7 +191,7 @@ fun CrearPartidaPage(navController: NavHostController) {
 
 }
 @Composable
-fun incrementador(tipo: String){
+fun incrementador(tipo: String, onFlechaClick: (num: Int) -> Unit ){
     // INCREMENTADOR/DECREMENTADOR NUMERO
     var inicio = 0;
     if(tipo == "turno"){
@@ -218,7 +217,7 @@ fun incrementador(tipo: String){
                 if(count != 2){
                     count--
                     if(tipo == "jugadores"){
-                        numeroJugadores = count;
+                        onFlechaClick(count);
                     }
                 } },
             modifier = Modifier.size(25.dp)  ) {
@@ -235,9 +234,7 @@ fun incrementador(tipo: String){
                 }
                 if(tipo == "jugadores" && count != 4){
                     count++
-                   /* LaunchedEffect(count) {
-                        numeroJugadores = count;
-                    }*/
+                    onFlechaClick(count);
                 }
                  },
 
@@ -246,6 +243,7 @@ fun incrementador(tipo: String){
         }
     }
 }
+
 
 @Composable
 fun botones(){
