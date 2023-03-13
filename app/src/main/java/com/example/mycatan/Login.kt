@@ -9,9 +9,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
@@ -54,15 +52,11 @@ import com.auth0.jwt.interfaces.DecodedJWT
 import com.auth0.jwt.interfaces.JWTPartsParser
 
 
+
 @Composable
 fun LoginPage(navController: NavHostController) {
+    var errorDatosIncorrectos by remember { mutableStateOf(false) }
 
-        /*Image(
-            painter = painterResource(R.drawable.wave),
-            contentDescription = "My image",
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.FillBounds
-        )*/
     Box(modifier = Modifier
         .fillMaxHeight()
         .paint(
@@ -125,14 +119,24 @@ fun LoginPage(navController: NavHostController) {
                     color = AzulOscuro
                 )
             )
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(10.dp))
+            if(errorDatosIncorrectos){
+                Text(text = "ERROR: Datos incorrectos", style = TextStyle(color = Rojo, fontWeight = FontWeight.Bold))
+            }
+            Spacer(modifier = Modifier.height(5.dp))
+
             Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp), ) {
                 Button(
                     onClick = {
-                        println("EIIIIIIIIIIIIIIIIII")
-                        enviarLogin( username.value.text , password.value.text)
-                        navController.navigate(Routes.Splash.route)
-                        },
+                        enviarLogin( username.value.text ,
+                            password.value.text,
+                            onErrorClick = {errorDatosIncorrectos=it
+                                if(!errorDatosIncorrectos){navController.navigate(Routes.Splash.route)}
+                                    })
+                        if (username.value.text.isEmpty() || password.value.text.isEmpty()){
+                            errorDatosIncorrectos = true
+                        }
+                         },
                     shape = RoundedCornerShape(50.dp),
                     modifier = Modifier
                         .width(280.dp)
@@ -177,57 +181,11 @@ fun LoginPage(navController: NavHostController) {
 
 }
 
-
-//val client = OkHttpClient()
-//
-//val mediaType = MediaType.parse("application/x-www-form-urlencoded")
-//val body = RequestBody.create(mediaType, "grant_type=&username=hash%40hash&password=1234&scope=&client_id=&client_secret=")
-//val request = Request.Builder()
-//  .url("http://localhost:8000/login")
-//  .post(body)
-//  .addHeader("accept", "application/json")
-//  .addHeader("Content-Type", "application/x-www-form-urlencoded")
-//  .build()
-//
-//val response = client.newCall(request).execute()
-
-/*fun enviarLogin( username: String, password: String ): String {
-    //TODO: hacer la función bien
-    println("username:" + username)
-    println("password: $password")
-    val client = OkHttpClient()
-
-    val mediaType = "application/x-www-form-urlencoded".toMediaTypeOrNull()
-    val body = RequestBody.create(mediaType,
-        "&grant_type=&username=$username&password=$password&scope=&client_id=&client_secret="
-    )
-    val request = Request.Builder()
-        .url("http://localhost:8000/login")
-        .post(body)
-        .addHeader("accept", "application/json")
-        .addHeader("Content-Type", "application/x-www-form-urlencoded")
-        .build()
-
-    val response = client.newCall(request).execute()
-    println(response.body)
-    println(response.message)
-    return response.message
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview3() {
-    val navController = rememberNavController()
-    LoginPage(navController = navController)
-}
-*/
-
-fun enviarLogin(username: String, password: String) {
+fun enviarLogin(username: String, password: String, onErrorClick: (err: Boolean) -> Unit ) {
     println("username: $username")
     println("password: $password")
 
     // Inicie un subproceso en segundo plano
-        val client = OkHttpClient()
 
         val mediaType = "application/x-www-form-urlencoded".toMediaTypeOrNull()
         val body = RequestBody.create(
@@ -235,12 +193,13 @@ fun enviarLogin(username: String, password: String) {
             "&grant_type=password&username=$username&password=$password&scope=&client_id=client&client_secret=secret"
         )
         val request = Request.Builder()
-            .url("http://10.1.54.60:8000/login")
+            .url("http://10.1.50.161:8000/login")
             .post(body)
             .addHeader("accept", "application/json")
             .addHeader("Content-Type", "application/x-www-form-urlencoded")
             .build()
 
+            val client = OkHttpClient()
 
             //val response = client.newCall(request).execute()
             client.newCall(request).enqueue(object : Callback {
@@ -259,14 +218,20 @@ fun enviarLogin(username: String, password: String) {
                     if(status == "Incorrect email"){
                         //TODO: gestionar email incorrecto
                         println("EMAIL INCORRECTO")
+                        onErrorClick(true)
                     }else if (status == "Incorrect password"){
                         //TODO: gestional contraseña incorrecta
                         println("CONTRASEÑA INCORRECTA")
+                        onErrorClick(true)
                     }else if (status == "Logged in successfully"){
+                        onErrorClick(false)
+
                         val accessToken = json.getString("access_token")
                         println("TOKEN DE ACCESO $accessToken")
                         val user = JWT.decode(accessToken)
-                        println(user.claims.keys)
+                        val id = user.getClaim("id").asInt()
+                        val email = user.getClaim("email").asString()
+                        val username = user.getClaim("username").asString()
                         //TODO: terminar esto
                     }
                 }
