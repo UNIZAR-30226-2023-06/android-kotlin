@@ -28,10 +28,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.auth0.jwt.JWT
 import com.example.mycatan.ui.theme.*
+import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import org.json.JSONObject
+import java.io.IOException
 
 var errorPswd = false
 var errorNombres = false
+val ipBackend = "192.168.1.39"
 @Composable
 fun RegistroPage(navController: NavHostController) {
 
@@ -138,9 +144,13 @@ fun RegistroPage(navController: NavHostController) {
                             errorPswd = false
                             errorNombres = false
                             ruta = Routes.Login.route
+
+                            enviarRegistro(correo.value.text, password.value.text, nombre.value.text)
                         }
 
-                        navController.navigate(ruta)
+
+
+                        //navController.navigate(ruta)
 
                     },
                     shape = RoundedCornerShape(50.dp),
@@ -184,6 +194,73 @@ fun RegistroPage(navController: NavHostController) {
     }
 
 
+
+}
+
+fun enviarRegistro(correo: String, password: String, nombre:String, /*onErrorClick: (err: Boolean) -> Unit*/) {
+    println("username: $correo")
+    println("username: $nombre")
+    println("password: $password")
+
+    // Inicie un subproceso en segundo plano
+
+    val mediaType = "application/x-www-form-urlencoded".toMediaTypeOrNull()
+    val body = RequestBody.create(
+        mediaType,
+        "&name=$nombre&email=$correo&password=$password&coins=0&selected_grid_skin=default&selected_piece_skin=default&saved_music=default&elo=500"
+    )
+    val request = Request.Builder()
+
+        .url("http://$ipBackend:8000/register")
+        .post(body)
+        .addHeader("accept", "application/json")
+        .addHeader("Content-Type", "application/x-www-form-urlencoded")
+        .build()
+
+    println(request)
+
+    val client = OkHttpClient()
+
+    //val response = client.newCall(request).execute()
+    client.newCall(request).enqueue(object : Callback {
+        override fun onFailure(call: Call, e: IOException) {
+            // manejo de errores
+            println(call)
+            println("ERROR al conectar con backend")
+        }
+
+        override fun onResponse(call: Call, response: Response) {
+            val respuesta = response.body?.string().toString()
+
+            println(respuesta)
+            //transform the string to json object
+            val json = JSONObject(respuesta)
+            //get the string from the response
+            val status = json.getString("detail")
+
+            println(status)
+
+            if(status == "Incorrect email"){
+                //TODO: gestionar email incorrecto
+                println("EMAIL INCORRECTO")
+                //onErrorClick(true)
+            }else if (status == "Incorrect password"){
+                //TODO: gestional contraseña incorrecta
+                println("CONTRASEÑA INCORRECTA")
+                //onErrorClick(true)
+            }else if (status == "Logged in successfully"){
+                //onErrorClick(false)
+
+                val accessToken = json.getString("access_token")
+                println("TOKEN DE ACCESO $accessToken")
+                val user = JWT.decode(accessToken)
+                val id = user.getClaim("id").asInt()
+                val email = user.getClaim("email").asString()
+                val username = user.getClaim("username").asString()
+                //TODO: terminar esto
+            }
+        }
+    })
 
 }
 

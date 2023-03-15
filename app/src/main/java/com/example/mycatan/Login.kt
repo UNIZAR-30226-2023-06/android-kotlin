@@ -203,7 +203,7 @@ fun enviarLogin(username: String, password: String, onErrorClick: (err: Boolean)
         )
         val request = Request.Builder()
 
-            .url("http://192.168.1.39:8000/login")
+            .url("http://$ipBackend:8000/login")
             .post(body)
             .addHeader("accept", "application/json")
             .addHeader("Content-Type", "application/x-www-form-urlencoded")
