@@ -202,7 +202,11 @@ fun enviarLogin(username: String, password: String, onErrorClick: (err: Boolean)
             "&grant_type=password&username=$username&password=$password&scope=&client_id=client&client_secret=secret"
         )
         val request = Request.Builder()
+<<<<<<< Updated upstream
             .url("http://192.168.1.39:8000/login")
+=======
+            .url("http://192.168.1.39/:8000/login")
+>>>>>>> Stashed changes
             .post(body)
             .addHeader("accept", "application/json")
             .addHeader("Content-Type", "application/x-www-form-urlencoded")
