@@ -183,6 +183,23 @@ fun CrearPartidaPage(navController: NavHostController) {
                 botones()
             }
 
+            Button(
+                onClick = {
+                   navController.navigate(Routes.CatanBoard.route)
+                },
+                shape = RoundedCornerShape(50.dp),
+                modifier = Modifier
+                    .width(280.dp)
+                    .height(50.dp),
+                colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
+
+            ) {
+                Text(text = "Comenzar",
+                    style = TextStyle(color = Blanco)
+                )
+
+            }
+
 
         }
 

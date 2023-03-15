@@ -7,4 +7,5 @@ sealed class Routes(val route: String) { //para navegar entre pantallas
     object CrearPartida : Routes("CrearPartida")
     object Tienda : Routes("Tienda")
     object Splash : Routes("Splash")
+    object CatanBoard : Routes("CatanBoard")
 }

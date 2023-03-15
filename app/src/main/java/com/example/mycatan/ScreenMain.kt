@@ -31,5 +31,8 @@ fun ScreenMain(){
         composable(Routes.Splash.route) {
             SplashScreen(navController = navController)
         }
+        composable(Routes.CatanBoard.route) {
+            CatanBoard(navController = navController)
+        }
     }
 }

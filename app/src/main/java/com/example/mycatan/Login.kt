@@ -127,16 +127,18 @@ fun LoginPage(navController: NavHostController) {
 
             Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp), ) {
                 Button(
+
                     onClick = {
-                        enviarLogin( username.value.text ,
-                            password.value.text,
-                            onErrorClick = {errorDatosIncorrectos=it
-                                if(!errorDatosIncorrectos){navController.navigate(Routes.Splash.route)}
-                                    })
                         if (username.value.text.isEmpty() || password.value.text.isEmpty()){
                             errorDatosIncorrectos = true
                         }
-                         },
+                        enviarLogin( username.value.text ,
+                            password.value.text,
+                            onErrorClick = {  errorDatosIncorrectos=it }
+                        )
+                        if(!errorDatosIncorrectos){navController.navigate(Routes.Splash.route)}
+
+                    },
                     shape = RoundedCornerShape(50.dp),
                     modifier = Modifier
                         .width(280.dp)
@@ -193,7 +195,7 @@ fun enviarLogin(username: String, password: String, onErrorClick: (err: Boolean)
             "&grant_type=password&username=$username&password=$password&scope=&client_id=client&client_secret=secret"
         )
         val request = Request.Builder()
-            .url("http://10.1.50.161:8000/login")
+            .url("http://192.168.1.136:8000/login")
             .post(body)
             .addHeader("accept", "application/json")
             .addHeader("Content-Type", "application/x-www-form-urlencoded")
@@ -236,9 +238,6 @@ fun enviarLogin(username: String, password: String, onErrorClick: (err: Boolean)
                     }
                 }
             })
-            //response.close()
-
-            // Actualizar la IU en el subproceso principal
 
 }
 
