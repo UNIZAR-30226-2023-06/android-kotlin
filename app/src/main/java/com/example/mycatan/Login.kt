@@ -56,6 +56,7 @@ import com.auth0.jwt.interfaces.JWTPartsParser
 @Composable
 fun LoginPage(navController: NavHostController) {
     var errorDatosIncorrectos by remember { mutableStateOf(false) }
+    var errorActualizado by remember { mutableStateOf(false) }
 
     Box(modifier = Modifier
         .fillMaxHeight()
@@ -123,6 +124,10 @@ fun LoginPage(navController: NavHostController) {
             if(errorDatosIncorrectos){
                 Text(text = "ERROR: Datos incorrectos", style = TextStyle(color = Rojo, fontWeight = FontWeight.Bold))
             }
+            else if(errorActualizado){
+                errorActualizado = false
+                navController.navigate(Routes.Splash.route)
+            }
             Spacer(modifier = Modifier.height(5.dp))
 
             Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp), ) {
@@ -134,9 +139,11 @@ fun LoginPage(navController: NavHostController) {
                         }
                         enviarLogin( username.value.text ,
                             password.value.text,
-                            onErrorClick = {  errorDatosIncorrectos=it }
+                            onErrorClick = {  errorDatosIncorrectos=it
+                                            errorActualizado = true},
+
                         )
-                        if(!errorDatosIncorrectos){navController.navigate(Routes.Splash.route)}
+
 
                     },
                     shape = RoundedCornerShape(50.dp),
@@ -183,7 +190,7 @@ fun LoginPage(navController: NavHostController) {
 
 }
 
-fun enviarLogin(username: String, password: String, onErrorClick: (err: Boolean) -> Unit ) {
+fun enviarLogin(username: String, password: String, onErrorClick: (err: Boolean) -> Unit) {
     println("username: $username")
     println("password: $password")
 
@@ -195,7 +202,7 @@ fun enviarLogin(username: String, password: String, onErrorClick: (err: Boolean)
             "&grant_type=password&username=$username&password=$password&scope=&client_id=client&client_secret=secret"
         )
         val request = Request.Builder()
-            .url("http://192.168.1.136:8000/login")
+            .url("http://192.168.1.39:8000/login")
             .post(body)
             .addHeader("accept", "application/json")
             .addHeader("Content-Type", "application/x-www-form-urlencoded")
