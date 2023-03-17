@@ -76,39 +76,21 @@ fun MenuScreen(navController: NavHostController) {
 
                 }
                 Spacer(modifier = Modifier.height(10.dp))
-                Row(modifier = Modifier
-                    .padding(5.dp, 5.dp, 5.dp, 5.dp)
-                    .fillMaxHeight(0.90f),
-                    verticalAlignment = Alignment.Bottom,
-                    horizontalArrangement = Arrangement.Center
-                ){
-                    OutlinedTextField(
-                        modifier = Modifier.width(200.dp),
-                        singleLine = true,
-                        label = { Text(text = "Nombre#1234") },
-                        value = amigo.value,
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                            backgroundColor = Blanco),
-                        onValueChange = {
-                            if( it.text.length <= 76)
-                                amigo.value = it }
+                Button(
+                    onClick = { navController.navigate(Routes.Registro.route)},
+                    shape = RoundedCornerShape(50.dp),
+                    modifier = Modifier
+                        .width(150.dp)
+                        .height(50.dp),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
+
+                ) {
+                    Text(text = "Amigos",
+                        style = TextStyle(color = Blanco)
                     )
-                    Spacer(modifier = Modifier.width(5.dp))
-                    Button(
-                        onClick = { navController.navigate(Routes.Registro.route)},
-                        shape = RoundedCornerShape(50.dp),
-                        modifier = Modifier
-                            .width(100.dp)
-                            .height(50.dp),
-                        colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
 
-                    ) {
-                        Text(text = "Enviar",
-                            style = TextStyle(color = Blanco)
-                        )
-
-                    }
                 }
+
             }
 
 

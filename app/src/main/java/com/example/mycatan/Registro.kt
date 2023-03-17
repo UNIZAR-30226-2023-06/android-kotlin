@@ -32,15 +32,18 @@ import com.auth0.jwt.JWT
 import com.example.mycatan.ui.theme.*
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import org.json.JSONArray
+import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
 
-var errorPswd = false
-var errorNombres = false
-val ipBackend = "192.168.1.39"
+val ipBackend = "192.168.1.144"
 @Composable
 fun RegistroPage(navController: NavHostController) {
-
+    var errorPswd by remember { mutableStateOf(false) }
+    var errorNombres by remember { mutableStateOf(false) }
+    var errorRegistro by remember { mutableStateOf(false) }
+    var errorActualizado by remember { mutableStateOf(false) }
     Box(modifier = Modifier
         .fillMaxHeight()
         .background(color= Transp)
@@ -62,7 +65,6 @@ fun RegistroPage(navController: NavHostController) {
             val password = remember { mutableStateOf(TextFieldValue()) }
             val nombre = remember { mutableStateOf(TextFieldValue()) }
             val confirmarContrasena = remember { mutableStateOf(TextFieldValue()) }
-            var ruta = Routes.Login.route;
             Spacer(modifier = Modifier.height(10.dp))
 
             Row(horizontalArrangement = Arrangement.Center,
@@ -122,6 +124,13 @@ fun RegistroPage(navController: NavHostController) {
             else if(errorPswd){
                 Text(text = "ERROR: Las contraseñas no coinciden  o están vacías. Vuelva a intentarlo.", style = TextStyle(color = Rojo))
             }
+            else if(errorRegistro){
+                Text(text = "ERROR: El email introducido está siendo usado o es incorrecto", style = TextStyle(color = Rojo))
+            }
+            else if(errorActualizado){
+                errorActualizado = false
+                navController.navigate(Routes.Login.route)
+            }
             Spacer(modifier = Modifier.height(10.dp))
             Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp), ) {
                 Button(
@@ -130,27 +139,26 @@ fun RegistroPage(navController: NavHostController) {
                             || correo.value.text.isEmpty()){
 
                             errorNombres = true
-                            ruta = Routes.Registro.route
 
-                        }else if ( password.value != confirmarContrasena.value
+                        }
+                        else if ( password.value != confirmarContrasena.value
                             || password.value.text.isEmpty()
                             || confirmarContrasena.value.text.isEmpty()) {
 
                             errorNombres=false
                             errorPswd= true
-                            ruta = Routes.Registro.route
                         }
                         else {
                             errorPswd = false
                             errorNombres = false
-                            ruta = Routes.Login.route
 
-                            enviarRegistro(correo.value.text, password.value.text, nombre.value.text)
+                            enviarRegistro(
+                                correo.value.text,
+                                password.value.text,
+                                nombre.value.text,
+                                onErrorClick = {  errorRegistro=it
+                                    errorActualizado = true})
                         }
-
-
-
-                        //navController.navigate(ruta)
 
                     },
                     shape = RoundedCornerShape(50.dp),
@@ -197,9 +205,9 @@ fun RegistroPage(navController: NavHostController) {
 
 }
 
-fun enviarRegistro(correo: String, password: String, nombre:String, /*onErrorClick: (err: Boolean) -> Unit*/) {
-    println("username: $correo")
-    println("username: $nombre")
+fun enviarRegistro(email: String, password: String, name:String, onErrorClick: (err: Boolean) -> Unit) {
+    println("correo: $email")
+    println("username: $name")
     println("password: $password")
 
     // Inicie un subproceso en segundo plano
@@ -207,11 +215,10 @@ fun enviarRegistro(correo: String, password: String, nombre:String, /*onErrorCli
     val mediaType = "application/x-www-form-urlencoded".toMediaTypeOrNull()
     val body = RequestBody.create(
         mediaType,
-        "&name=$nombre&email=$correo&password=$password&coins=0&selected_grid_skin=default&selected_piece_skin=default&saved_music=default&elo=500"
+        ""
     )
     val request = Request.Builder()
-
-        .url("http://$ipBackend:8000/register")
+        .url("http://$ipBackend:8000/register?name=$name&email=$email&password=$password&coins=0&selected_grid_skin=default&selected_piece_skin=default&saved_music=default&elo=500")
         .post(body)
         .addHeader("accept", "application/json")
         .addHeader("Content-Type", "application/x-www-form-urlencoded")
@@ -230,6 +237,7 @@ fun enviarRegistro(correo: String, password: String, nombre:String, /*onErrorCli
         }
 
         override fun onResponse(call: Call, response: Response) {
+            var invalidEmail = ""
             val respuesta = response.body?.string().toString()
 
             println(respuesta)
@@ -237,19 +245,26 @@ fun enviarRegistro(correo: String, password: String, nombre:String, /*onErrorCli
             val json = JSONObject(respuesta)
             //get the string from the response
             val status = json.getString("detail")
+            val jsonArray = try {
+                JSONArray(status)
+            } catch (e: JSONException) {
+                null
+            }
+            if(jsonArray != null){
+                val jsonObject = jsonArray.getJSONObject(0)
+                invalidEmail = jsonObject.getString("msg")
+            }
 
-            println(status)
-
-            if(status == "Incorrect email"){
+            if(invalidEmail == "value is not a valid email address"){     // Correo invalido
                 //TODO: gestionar email incorrecto
                 println("EMAIL INCORRECTO")
-                //onErrorClick(true)
-            }else if (status == "Incorrect password"){
-                //TODO: gestional contraseña incorrecta
-                println("CONTRASEÑA INCORRECTA")
-                //onErrorClick(true)
-            }else if (status == "Logged in successfully"){
-                //onErrorClick(false)
+                onErrorClick(true)
+            }else if (status == "Email already exists"){            // Ya existe el email
+                //TODO: gestional email ya existente
+                println("EMAIL YA EXISTE")
+                onErrorClick(true)
+            }else if (status == "User created"){                    // Usuario creado
+                onErrorClick(false)
 
                 val accessToken = json.getString("access_token")
                 println("TOKEN DE ACCESO $accessToken")
@@ -257,7 +272,7 @@ fun enviarRegistro(correo: String, password: String, nombre:String, /*onErrorCli
                 val id = user.getClaim("id").asInt()
                 val email = user.getClaim("email").asString()
                 val username = user.getClaim("username").asString()
-                //TODO: terminar esto
+                println(" ID: $id, EMAIL: $email, USERNAME: $username")
             }
         }
     })
