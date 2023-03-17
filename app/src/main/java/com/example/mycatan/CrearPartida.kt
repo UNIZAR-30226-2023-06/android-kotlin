@@ -1,6 +1,7 @@
 package com.example.mycatan
 
 import androidx.compose.animation.*
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -183,22 +184,28 @@ fun CrearPartidaPage(navController: NavHostController) {
                 botones()
             }
 
-            Button(
-                onClick = {
-                   navController.navigate(Routes.CatanBoard.route)
-                },
-                shape = RoundedCornerShape(50.dp),
-                modifier = Modifier
-                    .width(280.dp)
-                    .height(50.dp),
-                colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
-
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.BottomEnd
             ) {
-                Text(text = "Comenzar",
-                    style = TextStyle(color = Blanco)
-                )
+                Button(
+                    onClick = {
+                        navController.navigate(Routes.CatanBoard.route)
+                    },
+                    shape = RoundedCornerShape(50.dp),
+                    modifier = Modifier
+                        .width(280.dp)
+                        .height(50.dp),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
 
+                ) {
+                    Text(text = "Comenzar",
+                        style = TextStyle(color = Blanco)
+                    )
+
+                }
             }
+
 
 
         }

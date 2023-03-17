@@ -66,7 +66,7 @@ fun MenuScreen(navController: NavHostController) {
                     shape = RoundedCornerShape(50.dp),
                     modifier = Modifier
                         .width(150.dp)
-                        .height(50.dp),
+                        .height(40.dp),
                     colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
 
                 ) {
@@ -77,11 +77,11 @@ fun MenuScreen(navController: NavHostController) {
                 }
                 Spacer(modifier = Modifier.height(10.dp))
                 Button(
-                    onClick = { navController.navigate(Routes.Registro.route)},
+                    onClick = { navController.navigate(Routes.Amigos.route)},
                     shape = RoundedCornerShape(50.dp),
                     modifier = Modifier
                         .width(150.dp)
-                        .height(50.dp),
+                        .height(40.dp),
                     colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
 
                 ) {

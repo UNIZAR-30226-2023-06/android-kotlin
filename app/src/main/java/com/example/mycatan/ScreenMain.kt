@@ -34,5 +34,8 @@ fun ScreenMain(){
         composable(Routes.CatanBoard.route) {
             CatanBoard(navController = navController)
         }
+        composable(Routes.Amigos.route) {
+            AmigosPage(navController = navController)
+        }
     }
 }
