@@ -33,11 +33,12 @@ fun TiendaPage(navController: NavHostController) {
     var menuVisible by remember { mutableStateOf(false) }
     var fotoPopUp by remember { mutableStateOf(-1) }
 
+
     //no se guarda si vas para atras
-    var fotosCompradas by remember { mutableStateOf( BooleanArray(9)) }
+
 
     val onConfirmed: (Int) -> Unit = { index ->
-        fotosCompradas[index] = true
+        Globals.fotosCompradas[index] = true
     }
 
     Box(modifier = Modifier
@@ -59,7 +60,7 @@ fun TiendaPage(navController: NavHostController) {
                     style = TextStyle
                         (fontSize = 40.sp, color = AzulOscuro, fontWeight = FontWeight.Bold))*/
 
-                Spacer(modifier = Modifier.height(15.dp))
+
 
                 Text(text = "    Personajes",
                     style = TextStyle
@@ -73,10 +74,9 @@ fun TiendaPage(navController: NavHostController) {
                     verticalAlignment = Alignment.CenterVertically,
                     contentPadding = PaddingValues(25.dp)
                 ) {
-
                     items(9)  {
                         RackItem(foto = it,
-                            comprada = fotosCompradas[it],
+                            comprada = Globals.fotosCompradas[it],
                             onCardClick = {
                                 menuVisible = !menuVisible
                                 fotoPopUp = it })
@@ -98,7 +98,7 @@ fun TiendaPage(navController: NavHostController) {
 
                     items(9)  {
                         RackItem(foto = it,
-                            comprada = fotosCompradas[it],
+                            comprada = Globals.fotosCompradas[it],
                             onCardClick = {
                                 menuVisible = !menuVisible
                                 fotoPopUp = it })
@@ -216,7 +216,7 @@ fun RackItem( foto: Int ,  comprada: Boolean,   onCardClick: () -> Unit ){
 
                 painter = painterID,
                 contentDescription = null,
-                modifier = Modifier.height(76.dp)
+                modifier = Modifier.size(74.dp)
 
             )
 

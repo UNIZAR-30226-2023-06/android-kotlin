@@ -21,7 +21,7 @@ import androidx.navigation.NavHostController
 import com.example.mycatan.ui.theme.*
 
 @Composable
-fun TiendaScreen(fotoId: Int, navController: NavHostController, onConfirm: (Int) -> Unit) {
+fun TiendaScreen(fotoId: Int, navController: NavHostController, onConfirmed: (Int) -> Unit) {
 
     Box(
         Modifier
@@ -79,7 +79,8 @@ fun TiendaScreen(fotoId: Int, navController: NavHostController, onConfirm: (Int)
                     Spacer(modifier = Modifier.width(10.dp))
 
                     Button(
-                        onClick = { onConfirm(fotoId)},
+                        onClick = { onConfirmed(fotoId)
+                            navController.navigate(Routes.Tienda.route)},
                         modifier = Modifier
                             .width(100.dp)
                             .height(50.dp),

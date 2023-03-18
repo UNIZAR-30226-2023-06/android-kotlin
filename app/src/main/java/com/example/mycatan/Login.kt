@@ -239,9 +239,14 @@ fun enviarLogin(username: String, password: String, onErrorClick: (err: Boolean)
                         val accessToken = json.getString("access_token")
                         println("TOKEN DE ACCESO $accessToken")
                         val user = JWT.decode(accessToken)
-                        val id = user.getClaim("id").asInt()
-                        val email = user.getClaim("email").asString()
-                        val username = user.getClaim("username").asString()
+                        var tempId = user.getClaim("id").asInt()
+                        Globals.Id = tempId.toString()
+                        Globals.Email = user.getClaim("email").asString()
+                        Globals.Username = user.getClaim("username").asString()
+
+                        //de momento xq no esta en el backend
+                        Globals.fotosCompradas = BooleanArray(9)
+                        Globals.fotosCompradas.fill(false)
                         //TODO: terminar esto
                     }
                 }

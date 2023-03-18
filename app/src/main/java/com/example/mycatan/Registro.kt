@@ -1,5 +1,6 @@
 package com.example.mycatan
 
+import android.provider.ContactsContract.CommonDataKinds.Email
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -37,7 +38,9 @@ import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
 
-val ipBackend = "192.168.1.144"
+
+
+
 @Composable
 fun RegistroPage(navController: NavHostController) {
     var errorPswd by remember { mutableStateOf(false) }
@@ -269,10 +272,11 @@ fun enviarRegistro(email: String, password: String, name:String, onErrorClick: (
                 val accessToken = json.getString("access_token")
                 println("TOKEN DE ACCESO $accessToken")
                 val user = JWT.decode(accessToken)
-                val id = user.getClaim("id").asInt()
-                val email = user.getClaim("email").asString()
-                val username = user.getClaim("username").asString()
-                println(" ID: $id, EMAIL: $email, USERNAME: $username")
+                var tempId = user.getClaim("id").asInt()
+                Globals.Id = tempId.toString()
+                Globals.Email = user.getClaim("email").asString()
+                Globals.Username = user.getClaim("username").asString()
+                println(" ID: ${Globals.Id}, EMAIL: ${Globals.Email}, USERNAME: ${Globals.Username}")
             }
         }
     })

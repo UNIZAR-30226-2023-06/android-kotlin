@@ -54,7 +54,7 @@ fun MenuScreen(navController: NavHostController) {
                     modifier = Modifier.size(70.dp)
                 )
                 Spacer(modifier = Modifier.height(10.dp))
-                Text(text = "JTorci#1234",
+                Text(text = "${Globals.Username} #1234",
                     fontSize = 20.sp,
                     color = Color.White,
                     fontFamily = FontFamily.SansSerif,
