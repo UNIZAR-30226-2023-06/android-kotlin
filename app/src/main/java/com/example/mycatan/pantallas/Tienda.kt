@@ -1,4 +1,4 @@
-package com.example.mycatan
+package com.example.mycatan.pantallas
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
@@ -25,6 +25,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.mycatan.R
+import com.example.mycatan.others.Globals
 import com.example.mycatan.ui.theme.*
 
 @Composable

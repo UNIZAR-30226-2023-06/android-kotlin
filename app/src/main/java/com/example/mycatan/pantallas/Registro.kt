@@ -1,6 +1,5 @@
-package com.example.mycatan
+package com.example.mycatan.pantallas
 
-import android.provider.ContactsContract.CommonDataKinds.Email
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -8,11 +7,9 @@ import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -23,22 +20,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.auth0.jwt.JWT
+import com.example.mycatan.R
+import com.example.mycatan.dBaux.enviarRegistro
+import com.example.mycatan.others.Routes
 import com.example.mycatan.ui.theme.*
-import okhttp3.*
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import org.json.JSONArray
-import org.json.JSONException
-import org.json.JSONObject
-import java.io.IOException
-
-
 
 
 @Composable
@@ -208,80 +198,6 @@ fun RegistroPage(navController: NavHostController) {
 
 }
 
-fun enviarRegistro(email: String, password: String, name:String, onErrorClick: (err: Boolean) -> Unit) {
-    println("correo: $email")
-    println("username: $name")
-    println("password: $password")
-
-    // Inicie un subproceso en segundo plano
-
-    val mediaType = "application/x-www-form-urlencoded".toMediaTypeOrNull()
-    val body = RequestBody.create(
-        mediaType,
-        ""
-    )
-    val request = Request.Builder()
-        .url("http://$ipBackend:8000/register?name=$name&email=$email&password=$password&coins=0&selected_grid_skin=default&selected_piece_skin=default&saved_music=default&elo=500")
-        .post(body)
-        .addHeader("accept", "application/json")
-        .addHeader("Content-Type", "application/x-www-form-urlencoded")
-        .build()
-
-    println(request)
-
-    val client = OkHttpClient()
-
-    //val response = client.newCall(request).execute()
-    client.newCall(request).enqueue(object : Callback {
-        override fun onFailure(call: Call, e: IOException) {
-            // manejo de errores
-            println(call)
-            println("ERROR al conectar con backend")
-        }
-
-        override fun onResponse(call: Call, response: Response) {
-            var invalidEmail = ""
-            val respuesta = response.body?.string().toString()
-
-            println(respuesta)
-            //transform the string to json object
-            val json = JSONObject(respuesta)
-            //get the string from the response
-            val status = json.getString("detail")
-            val jsonArray = try {
-                JSONArray(status)
-            } catch (e: JSONException) {
-                null
-            }
-            if(jsonArray != null){
-                val jsonObject = jsonArray.getJSONObject(0)
-                invalidEmail = jsonObject.getString("msg")
-            }
-
-            if(invalidEmail == "value is not a valid email address"){     // Correo invalido
-                //TODO: gestionar email incorrecto
-                println("EMAIL INCORRECTO")
-                onErrorClick(true)
-            }else if (status == "Email already exists"){            // Ya existe el email
-                //TODO: gestional email ya existente
-                println("EMAIL YA EXISTE")
-                onErrorClick(true)
-            }else if (status == "User created"){                    // Usuario creado
-                onErrorClick(false)
-
-                val accessToken = json.getString("access_token")
-                println("TOKEN DE ACCESO $accessToken")
-                val user = JWT.decode(accessToken)
-                var tempId = user.getClaim("id").asInt()
-                Globals.Id = tempId.toString()
-                Globals.Email = user.getClaim("email").asString()
-                Globals.Username = user.getClaim("username").asString()
-                println(" ID: ${Globals.Id}, EMAIL: ${Globals.Email}, USERNAME: ${Globals.Username}")
-            }
-        }
-    })
-
-}
 
 @Preview(showBackground = true)
 @Composable

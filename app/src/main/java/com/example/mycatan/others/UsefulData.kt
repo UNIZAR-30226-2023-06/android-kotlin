@@ -1,4 +1,4 @@
-package com.example.mycatan
+package com.example.mycatan.others
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf

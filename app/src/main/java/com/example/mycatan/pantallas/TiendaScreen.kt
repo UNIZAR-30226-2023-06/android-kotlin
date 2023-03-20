@@ -1,4 +1,4 @@
-package com.example.mycatan
+package com.example.mycatan.pantallas
 
 
 import androidx.compose.foundation.BorderStroke
@@ -18,6 +18,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.mycatan.others.Routes
+import com.example.mycatan.pantallas.RackItem
 import com.example.mycatan.ui.theme.*
 
 @Composable

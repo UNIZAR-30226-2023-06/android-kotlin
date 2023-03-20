@@ -1,4 +1,4 @@
-package com.example.mycatan
+package com.example.mycatan.pantallas
 
 import android.graphics.Paint
 import android.util.Log

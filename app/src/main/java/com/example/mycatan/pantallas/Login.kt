@@ -1,4 +1,4 @@
-package com.example.mycatan
+package com.example.mycatan.pantallas
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -7,17 +7,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.semantics.Role.Companion.Image
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -25,32 +21,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
-import com.auth0.jwt.JWT
+import com.example.mycatan.R
 import com.example.mycatan.ui.theme.*
-import kotlinx.coroutines.CoroutineScope
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import okhttp3.*
-import org.json.JSONObject
-import java.io.IOException
 
 /*import java.net.URL
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse*/
-import kotlinx.serialization.json.Json
-import okhttp3.internal.ignoreIoExceptions
-import com.auth0.jwt.interfaces.DecodedJWT
-import com.auth0.jwt.interfaces.JWTPartsParser
-
+import com.example.mycatan.dBaux.enviarLogin
+import com.example.mycatan.others.Routes
 
 
 @Composable
@@ -190,68 +172,6 @@ fun LoginPage(navController: NavHostController) {
 
 }
 
-fun enviarLogin(username: String, password: String, onErrorClick: (err: Boolean) -> Unit) {
-    println("username: $username")
-    println("password: $password")
 
-    // Inicie un subproceso en segundo plano
-
-        val mediaType = "application/x-www-form-urlencoded".toMediaTypeOrNull()
-        val body = RequestBody.create(
-            mediaType,
-            "&grant_type=password&username=$username&password=$password&scope=&client_id=client&client_secret=secret"
-        )
-        val request = Request.Builder()
-
-            .url("http://$ipBackend:8000/login")
-            .post(body)
-            .addHeader("accept", "application/json")
-            .addHeader("Content-Type", "application/x-www-form-urlencoded")
-            .build()
-
-            val client = OkHttpClient()
-
-            //val response = client.newCall(request).execute()
-            client.newCall(request).enqueue(object : Callback {
-                override fun onFailure(call: Call, e: IOException) {
-                    // manejo de errores
-                    println(call)
-                    println("ERROR al conectar con backend")
-                }
-
-                override fun onResponse(call: Call, response: Response) {
-                    val respuesta = response.body?.string().toString()
-                    //transform the string to json object
-                    val json = JSONObject(respuesta)
-                    //get the string from the response
-                    val status = json.getString("detail")
-                    if(status == "Incorrect email"){
-                        //TODO: gestionar email incorrecto
-                        println("EMAIL INCORRECTO")
-                        onErrorClick(true)
-                    }else if (status == "Incorrect password"){
-                        //TODO: gestional contraseña incorrecta
-                        println("CONTRASEÑA INCORRECTA")
-                        onErrorClick(true)
-                    }else if (status == "Logged in successfully"){
-                        onErrorClick(false)
-
-                        val accessToken = json.getString("access_token")
-                        println("TOKEN DE ACCESO $accessToken")
-                        val user = JWT.decode(accessToken)
-                        var tempId = user.getClaim("id").asInt()
-                        Globals.Id = tempId.toString()
-                        Globals.Email = user.getClaim("email").asString()
-                        Globals.Username = user.getClaim("username").asString()
-
-                        //de momento xq no esta en el backend
-                        Globals.fotosCompradas = BooleanArray(9)
-                        Globals.fotosCompradas.fill(false)
-                        //TODO: terminar esto
-                    }
-                }
-            })
-
-}
 
 

@@ -1,4 +1,4 @@
-package com.example.mycatan
+package com.example.mycatan.others
 
 sealed class Routes(val route: String) { //para navegar entre pantallas
     object Login : Routes("Login")

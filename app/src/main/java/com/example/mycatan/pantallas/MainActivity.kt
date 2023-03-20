@@ -1,4 +1,4 @@
-package com.example.mycatan
+package com.example.mycatan.pantallas
 
 import android.app.Activity
 import android.content.Context
@@ -9,7 +9,6 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Modifier
