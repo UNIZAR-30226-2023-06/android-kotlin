@@ -12,6 +12,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.*
@@ -130,7 +131,7 @@ fun TiendaPage(navController: NavHostController) {
                     tint = Amarillo)
 
                 Text(
-                    text = "12$",
+                    text = Globals.Coins,
                     style = TextStyle(
                         color = Blanco,
                         fontWeight = FontWeight.Bold
@@ -166,6 +167,8 @@ fun TiendaPage(navController: NavHostController) {
 @Composable
 fun RackItem( foto: Int ,  comprada: Boolean,   onCardClick: () -> Unit ){
 
+    var precio = "25"
+
     var painterID : Painter
     //Estoes muy cutre pero no se hacerlo mejor
     if(foto==0){
@@ -197,7 +200,9 @@ fun RackItem( foto: Int ,  comprada: Boolean,   onCardClick: () -> Unit ){
 
     Card(
         modifier = Modifier
-            .clickable { onCardClick() }
+            .clickable {
+                if (!comprada)
+                    onCardClick() }
             .width(105.dp)
             .height(105.dp),
 
@@ -240,7 +245,7 @@ fun RackItem( foto: Int ,  comprada: Boolean,   onCardClick: () -> Unit ){
                 ) {
 
                     Text(
-                        text = " 25$",
+                        text =  precio,
                         fontSize = 14.sp,
                         style = TextStyle(
                             color = Blanco,
@@ -260,12 +265,17 @@ fun RackItem( foto: Int ,  comprada: Boolean,   onCardClick: () -> Unit ){
         //el problema esque aunq se actualicen las fotosCompradas  no se actualizan los rackitems
         if (comprada)
         {
-            Icon(imageVector = Icons.Default.ShoppingCart,
+            Surface(
+                modifier = Modifier
+                    .fillMaxSize(),
+                color = Color.Black.copy(alpha = 0.6f)
+            ){}
+            Icon(imageVector = Icons.Default.Check,
                 contentDescription = null,
                 tint = Negro,
                 modifier = Modifier
-                    .width(50.dp)
-                    .height(50.dp))
+                    .width(20.dp)
+                    .height(20.dp))
 
         }
     }

@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.mycatan.R
+import com.example.mycatan.others.Globals
 import com.example.mycatan.others.Routes
 import com.example.mycatan.ui.theme.*
 
@@ -85,20 +86,35 @@ fun HomePage(navController: NavHostController) {
             contentAlignment = Alignment.TopEnd
         ) {
             Row(){
-                Column(){
 
-                    Icon(imageVector = Icons.Default.Star,
-                        contentDescription = null,
-                        tint = Amarillo)
+                Box(
 
-                    Text(
-                        text = "12$",
-                        style = TextStyle(
-                            color = Blanco,
-                            fontWeight = FontWeight.Bold
-                        )
+                ) {
+
+                    Row(modifier = Modifier
+                        .background(AzulOscuro)
+                        .padding(8.dp, 3.dp),
+
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
                     )
+                    {
+
+                        Icon(imageVector = Icons.Default.Star,
+                            contentDescription = null,
+                            tint = Amarillo)
+
+                        Text(
+                            text = Globals.Coins,
+                            style = TextStyle(
+                                color = Blanco,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+                    }
+
                 }
+
 
                 Spacer(modifier = Modifier.width(10.dp))
                 //boton tienda

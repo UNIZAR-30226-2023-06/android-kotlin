@@ -18,6 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.mycatan.others.Globals
 import com.example.mycatan.others.Routes
 import com.example.mycatan.pantallas.RackItem
 import com.example.mycatan.ui.theme.*
@@ -36,91 +37,132 @@ fun TiendaScreen(fotoId: Int, navController: NavHostController, onConfirmed: (In
                 .size(250.dp)
                 .border(width = 5.dp, color = AzulOscuro),
             contentAlignment = Alignment.Center
-            
+
         ) {
 
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
-            ){
+            ) {
 
                 RackItem(foto = fotoId, comprada = false) {}
 
                 Spacer(modifier = Modifier.height(5.dp))
+                if (Globals.Coins.toInt() >= 25) {
+                    Text(
+                        text = "¿Estas seguro? ",
+                        fontSize = 14.sp,
+                        style = TextStyle(
+                            color = AzulOscuro,
+                            fontWeight = FontWeight.Bold
 
-                Text(
-                    text = "¿Estas seguro? ",
-                    fontSize = 14.sp,
-                    style = TextStyle(
-                        color = Negro,
-                        fontWeight = FontWeight.Bold
-
+                        )
                     )
-                )
+                } else {
+                    Text(
+                        text = "Saldo Insuficiente ",
+                        fontSize = 14.sp,
+                        style = TextStyle(
+                            color = AzulOscuro,
+                            fontWeight = FontWeight.Bold
+
+                        )
+                    )
+                }
+
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                Row() {
+                if (Globals.Coins.toInt() >= 25) {
+                    Row() {
 
+                        Button(
+                            onClick = { navController.navigate(Routes.Tienda.route) },
+                            modifier = Modifier
+                                .width(100.dp)
+                                .height(50.dp),
+                            colors = ButtonDefaults.buttonColors(backgroundColor = Rojo),
+                            shape = RoundedCornerShape(50.dp),
+                            border = BorderStroke(3.dp, AzulOscuro)
+
+                        ) {
+                            Text(
+                                text = "Cancelar",
+                                style = TextStyle(
+                                    color = AzulOscuro, fontWeight = FontWeight.Bold
+                                )
+                            )
+
+                        }
+
+                        Spacer(modifier = Modifier.width(10.dp))
+
+                        Button(
+                            onClick = {
+                                onConfirmed(fotoId)
+                                navController.navigate(Routes.Tienda.route)
+                            },
+                            modifier = Modifier
+                                .width(100.dp)
+                                .height(50.dp),
+                            colors = ButtonDefaults.buttonColors(backgroundColor = Verde),
+                            shape = RoundedCornerShape(50.dp),
+                            border = BorderStroke(3.dp, AzulOscuro),
+
+                            ) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+
+                                Text(
+                                    text = "Comprar",
+                                    style = TextStyle(
+                                        color = AzulOscuro, fontWeight = FontWeight.Bold
+                                    )
+                                )
+
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Center
+                                ) {
+
+                                    Text(
+                                        text = "   25$",
+                                        style = TextStyle(
+                                            color = AzulOscuro, fontWeight = FontWeight.Bold
+                                        )
+                                    )
+                                    Icon(
+
+                                        imageVector = Icons.Default.Star,
+                                        contentDescription = null,
+                                        tint = Amarillo
+                                    )
+                                }
+                            }
+
+                        }
+                    }
+                } else {
                     Button(
-                        onClick = { navController.navigate(Routes.Tienda.route)},
+                        onClick = { navController.navigate(Routes.Tienda.route) },
                         modifier = Modifier
-                            .width(100.dp)
+                            .width(200.dp)
                             .height(50.dp),
                         colors = ButtonDefaults.buttonColors(backgroundColor = Rojo),
                         shape = RoundedCornerShape(50.dp),
                         border = BorderStroke(3.dp, AzulOscuro)
 
                     ) {
-                        Text(text = "Cancelar",
+                        Text(
+                            text = "Cancelar",
                             style = TextStyle(
-                                color = AzulOscuro,fontWeight = FontWeight.Bold)
+                                color = AzulOscuro, fontWeight = FontWeight.Bold
+                            )
                         )
 
                     }
-
-                    Spacer(modifier = Modifier.width(10.dp))
-
-                    Button(
-                        onClick = { onConfirmed(fotoId)
-                            navController.navigate(Routes.Tienda.route)},
-                        modifier = Modifier
-                            .width(100.dp)
-                            .height(50.dp),
-                        colors = ButtonDefaults.buttonColors(backgroundColor = Verde),
-                        shape = RoundedCornerShape(50.dp),
-                        border = BorderStroke(3.dp, AzulOscuro),
-
-                    ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-
-                            Text(text = "Comprar",
-                                style = TextStyle(
-                                    color = AzulOscuro,fontWeight = FontWeight.Bold)
-                            )
-
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center
-                            ) {
-
-                                Text(text = "   25$",
-                                    style = TextStyle(
-                                        color = AzulOscuro,fontWeight = FontWeight.Bold)
-                                )
-                                Icon(
-
-                                    imageVector = Icons.Default.Star,
-                                    contentDescription = null,
-                                    tint = Amarillo
-                                )
-                            }
-                        }
-
-
-                    }
                 }
+
 
             }
         }

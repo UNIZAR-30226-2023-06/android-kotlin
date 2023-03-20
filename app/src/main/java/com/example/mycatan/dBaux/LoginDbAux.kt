@@ -1,5 +1,6 @@
 package com.example.mycatan.dBaux
 
+import android.provider.Settings.Global
 import com.auth0.jwt.JWT
 import com.example.mycatan.others.Globals
 import com.example.mycatan.others.ipBackend
@@ -65,6 +66,7 @@ fun enviarLogin(username: String, password: String, onErrorClick: (err: Boolean)
                 //de momento xq no esta en el backend
                 Globals.fotosCompradas = BooleanArray(9)
                 Globals.fotosCompradas.fill(false)
+                Globals.Coins = "20"
                 //TODO: terminar esto
             }
         }
