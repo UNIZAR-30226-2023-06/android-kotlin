@@ -35,12 +35,18 @@ fun TiendaPage(navController: NavHostController) {
 
     var menuVisible by remember { mutableStateOf(false) }
     var fotoPopUp by remember { mutableStateOf(-1) }
-
+    val precios = 25
 
     //no se guarda si vas para atras
 
 
     val onConfirmed: (Int) -> Unit = { index ->
+
+        var temp = Globals.Coins.toInt()
+        temp -= precios;
+        Globals.Coins = temp.toString()
+
+        //habria que postear tambien las nuevas coins del usuario
         Globals.fotosCompradas[index] = true
     }
 
