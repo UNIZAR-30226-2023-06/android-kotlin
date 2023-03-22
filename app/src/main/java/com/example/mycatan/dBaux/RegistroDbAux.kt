@@ -29,8 +29,6 @@ fun enviarRegistro(email: String, password: String, name:String, onErrorClick: (
         .addHeader("Content-Type", "application/x-www-form-urlencoded")
         .build()
 
-    println(request)
-
     val client = OkHttpClient()
 
     //val response = client.newCall(request).execute()

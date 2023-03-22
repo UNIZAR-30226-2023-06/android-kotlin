@@ -1,4 +1,4 @@
-package com.example.mycatan.pantallas
+package com.example.mycatan
 
 import android.app.Activity
 import android.content.Context
@@ -14,6 +14,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.mycatan.pantallas.ScreenMain
 import com.example.mycatan.ui.theme.MyCatanTheme
 
 class MainActivity : ComponentActivity() {

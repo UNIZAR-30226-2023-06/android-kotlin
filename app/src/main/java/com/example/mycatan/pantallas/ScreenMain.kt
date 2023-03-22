@@ -5,7 +5,10 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.mycatan.LockScreenOrientation
 import com.example.mycatan.others.Routes
+import com.example.mycatan.pantallas.amigos.AmigosPendientePage
+import com.example.mycatan.pantallas.amigos.AmigosTodosPage
 
 @Composable
 fun ScreenMain(){
@@ -35,8 +38,11 @@ fun ScreenMain(){
         composable(Routes.CatanBoard.route) {
             CatanBoard(navController = navController)
         }
-        composable(Routes.Amigos.route) {
-            AmigosPage(navController = navController)
+        composable(Routes.AmigosTodos.route) {
+            AmigosTodosPage(navController = navController)
+        }
+        composable(Routes.AmigosPendiente.route) {
+            AmigosPendientePage(navController = navController)
         }
     }
 }

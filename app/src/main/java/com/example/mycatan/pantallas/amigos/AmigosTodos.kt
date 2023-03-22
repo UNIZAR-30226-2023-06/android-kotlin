@@ -1,10 +1,13 @@
-package com.example.mycatan.pantallas
+package com.example.mycatan.pantallas.amigos
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -14,6 +17,7 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -26,14 +30,17 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.mycatan.R
+import com.example.mycatan.others.Routes
 import com.example.mycatan.ui.theme.*
 
+
 @Composable
-fun AmigosPage(navController: NavHostController) {
+fun AmigosTodosPage(navController: NavHostController) {
     Column(modifier = Modifier
         .paint(
             painterResource(R.drawable.wave_3),
-            contentScale = ContentScale.FillBounds)
+            contentScale = ContentScale.FillBounds
+        )
         .background(color = Transp)
         .padding(40.dp, 40.dp, 40.dp, 40.dp))
     {
@@ -54,15 +61,13 @@ fun AmigosPage(navController: NavHostController) {
             verticalAlignment = Alignment.CenterVertically
 
         ){
-            var isSelectedTodos by remember { mutableStateOf(false) }
-            var isSelectedAmigos by remember { mutableStateOf(false) }
+            var isSelectedTodos by remember { mutableStateOf(true) }
             var isSelectedPendiente by remember { mutableStateOf(false) }
 
             Column(){
                 ClickableText(
                     text = AnnotatedString("Todos"),
-                    onClick = { isSelectedTodos= !isSelectedTodos;
-                                isSelectedAmigos = false
+                    onClick = {
                                 isSelectedPendiente = false
                               },
                     style = TextStyle(
@@ -77,40 +82,62 @@ fun AmigosPage(navController: NavHostController) {
                 ClickableText(
                     text = AnnotatedString("Pendiente"),
                     onClick = { isSelectedPendiente= !isSelectedPendiente;
-                                isSelectedAmigos = false
-                                isSelectedTodos = false},
+                                isSelectedTodos = false
+                                navController.navigate(Routes.AmigosPendiente.route)},
                     style = TextStyle(
                         color = if (isSelectedPendiente) AzulOscuro else Color.White,
                         textDecoration = if (isSelectedPendiente) TextDecoration.Underline else TextDecoration.None
                     )
                 )
             }
-            Spacer(modifier = Modifier.width(20.dp))
-
-            Column(){
-                ClickableText(
-                    text = AnnotatedString("Añadir amigos"),
-                    onClick = { isSelectedAmigos= !isSelectedAmigos;
-                        isSelectedPendiente = false
-                        isSelectedTodos = false},
-                    style = TextStyle(
-                        color = if (isSelectedAmigos) AzulOscuro else Color.White,
-                        textDecoration = if (isSelectedAmigos) TextDecoration.Underline else TextDecoration.None
-                    )
-                )
-            }
         }
+        Spacer(modifier = Modifier.height(5.dp))
 
         Row(){
             LazyColumn {
                 // on below line we are populating
                 // items for listview.
                 items(filteredItems) { language ->
-                    // on below line we are specifying ui for each item of list view.
-                    // we are specifying a simple text for each item of our list view.
-                    Text(language, modifier = Modifier.padding(15.dp))
-                    // on below line we are specifying
-                    // divider for each list item
+                    println("func: todos tus amigos")
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            //.clip(RoundedCornerShape(15.dp))
+                            //.background(TranspOscuro)
+                    ){
+                        Spacer(modifier = Modifier.width(10.dp))
+                        // foto del usuario
+                        Image(
+                            painter = painterResource(R.drawable.personaje1),
+                            contentDescription = "foto perfil",
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .clip(CircleShape)
+                        )
+                        // Nombre#123 de usuario
+                        Box(modifier = Modifier
+                            .fillMaxWidth(0.75f)){
+                            Text(language,
+                                modifier = Modifier.padding(15.dp),
+                                style = TextStyle(color = Blanco))
+                        }
+                        // Boton dejar de seguir
+                        Button(
+                            onClick = {},
+                            shape = RoundedCornerShape(30.dp),
+                            modifier = Modifier
+                                .fillMaxHeight(0.75f),
+                            colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
+
+                        ) {
+                            Text(text = "Dejar de seguir",
+                                style = TextStyle(color = Blanco)
+                            )
+
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(5.dp))
                     Divider()
                 }
             }
@@ -142,6 +169,7 @@ fun SearchBar(onSearch: (String) -> Unit) {
             label = { Text("Buscar") },
             modifier = Modifier
                 .fillMaxWidth()
+                .clip(RoundedCornerShape(15.dp))
                 .padding(8.dp),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Text,
@@ -153,11 +181,7 @@ fun SearchBar(onSearch: (String) -> Unit) {
                 }
             )
         )
-        IconButton(onClick = {
-            onSearch(query)
-        }) {
-            Icon(Icons.Filled.Search, "Buscar")
-        }
+
     }
 }
 
