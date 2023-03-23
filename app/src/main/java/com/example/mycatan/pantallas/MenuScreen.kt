@@ -1,5 +1,6 @@
 package com.example.mycatan.pantallas
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -11,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -18,12 +20,15 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.mycatan.dBaux.postSendRequestFriend
+import com.example.mycatan.findActivity
 import com.example.mycatan.others.Globals
 import com.example.mycatan.others.Routes
 import com.example.mycatan.ui.theme.*
 
 @Composable
 fun MenuScreen(navController: NavHostController) {
+    val context = LocalContext.current
     val amigo = remember { mutableStateOf(TextFieldValue()) }
 
     Column(
@@ -100,7 +105,7 @@ fun MenuScreen(navController: NavHostController) {
                 OutlinedTextField(
                     modifier = Modifier.width(200.dp),
                     singleLine = true,
-                    label = { Text(text = "Nombre#1234") },
+                    label = { Text(text = "1234") },
                     value = amigo.value,
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         backgroundColor = Blanco
@@ -113,7 +118,13 @@ fun MenuScreen(navController: NavHostController) {
 
                 Spacer(modifier = Modifier.width(5.dp))
                 Button(
-                    onClick = { },
+                    onClick = {
+                              if(postSendRequestFriend( amigo.value.text, Globals.Token )){
+                                  Toast.makeText(context, "OK la peticion de amistad ha sido enviada", Toast.LENGTH_SHORT).show()
+                              } else{
+                                  Toast.makeText(context, "ERROR la petición no ha sido enviada", Toast.LENGTH_SHORT).show()
+                              }
+                              },
                     shape = RoundedCornerShape(50.dp),
                     modifier = Modifier
                         .width(100.dp)
@@ -134,5 +145,6 @@ fun MenuScreen(navController: NavHostController) {
 
     }
 }
+
 
 

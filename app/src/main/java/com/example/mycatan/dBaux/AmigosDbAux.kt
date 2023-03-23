@@ -15,7 +15,7 @@ import org.json.JSONObject
 import java.io.IOException
 
 // MIRAMOS QUE USUARIOS SON NUESTROS AMIGOS
-fun getAmigosTodos() {
+fun getAmigosTodos(token: String) {
     val mediaType = "application/x-www-form-urlencoded".toMediaTypeOrNull()
     val body = RequestBody.create(
         mediaType,
@@ -25,6 +25,7 @@ fun getAmigosTodos() {
         .url("http://$ipBackend:8000/get_friends")
         .put(body)
         .addHeader("accept", "application/json")
+        .addHeader("Authorization", "Bearer $token")
         .addHeader("Content-Type", "application/x-www-form-urlencoded")
         .build()
 
@@ -58,8 +59,8 @@ fun getAmigosTodos() {
 }
 
 // MIRAMOS LAS SOLICITUDES DE AMISTAD QUE TENEMOS PENDIENTES
-fun getAmigosPendiente(): String{
-    var idSolicitud = ""
+fun getAmigosPendiente(token: String): List<String>{
+    val result = mutableListOf<String>()
     val mediaType = "application/x-www-form-urlencoded".toMediaTypeOrNull()
     val body = RequestBody.create(
         mediaType,
@@ -69,6 +70,7 @@ fun getAmigosPendiente(): String{
         .url("http://$ipBackend:8000/get_friend_requests")
         .put(body)
         .addHeader("accept", "application/json")
+        .addHeader("Authorization", "Bearer $token")
         .addHeader("Content-Type", "application/x-www-form-urlencoded")
         .build()
 
@@ -93,16 +95,19 @@ fun getAmigosPendiente(): String{
             if (jsonArray.length() == 0){
                 println("NO TIENES PETICIONES DE AMISTAD")
             } else{
-                val jsonObject = jsonArray.getJSONObject(0)
-                idSolicitud = jsonObject.getString("requester_id")
+                // AÑADIMOS A LA LISTA RESULT, EL ID DE LOS USUARIOS QUE TE SOLICITAN SEGUIR
+                for (i in 0 until jsonArray.length()) {
+                    val jsonObject = jsonArray.getJSONObject(i)
+                    result.add(jsonObject.getString("requester_id"))
+                }
             }
         }
     })
-    return idSolicitud
+    return result
 }
 
 // ENVIAR A UN USUARIO UNA PETICIÓN DE AMISTAD INDICANDO SU ID DE USUARIO
-fun postSendRequestFriend( userId: String ): Boolean{
+fun postSendRequestFriend( userId: String, token: String ): Boolean{
     var result = false
     println("userID: $userId")
     val mediaType = "application/x-www-form-urlencoded".toMediaTypeOrNull()
@@ -115,6 +120,7 @@ fun postSendRequestFriend( userId: String ): Boolean{
         .url("http://$ipBackend:8000/send_friend_request?friend_id=$userId")
         .post(body)
         .addHeader("accept", "application/json")
+        .addHeader("Authorization", "Bearer $token")
         .addHeader("Content-Type", "application/x-www-form-urlencoded")
         .build()
 
@@ -135,7 +141,11 @@ fun postSendRequestFriend( userId: String ): Boolean{
             //transform the string to json object
             val json = JSONObject(respuesta)
             //get the string from the response
-            val status = json.getString("detail")
+            val status = try {
+                json.getString("message")
+            }catch (e: JSONException) {
+                json.getString("detail")
+            }
 
 
             if(status == "User not found"){
@@ -154,7 +164,7 @@ fun postSendRequestFriend( userId: String ): Boolean{
 }
 
 // ACEPTAR UNA PETICIÓN DE AMISTAD
-fun postAcceptRequestFriend( requestId: String ){
+fun postAcceptRequestFriend( requestId: String, token: String ){
     println("userID: $requestId")
     val mediaType = "application/x-www-form-urlencoded".toMediaTypeOrNull()
     val body = RequestBody.create(
@@ -166,6 +176,7 @@ fun postAcceptRequestFriend( requestId: String ){
         .url("http://$ipBackend:8000/accept_friend_request?requester_id=$requestId")
         .post(body)
         .addHeader("accept", "application/json")
+        .addHeader("Authorization", "Bearer $token")
         .addHeader("Content-Type", "application/x-www-form-urlencoded")
         .build()
 
@@ -202,7 +213,7 @@ fun postAcceptRequestFriend( requestId: String ){
 }
 
 // RECHAZAR UNA PETICIÓN DE AMISTAD
-fun postRejectRequestFriend( requestId: String ){
+fun postRejectRequestFriend( requestId: String, token: String ){
     println("userID: $requestId")
     val mediaType = "application/x-www-form-urlencoded".toMediaTypeOrNull()
     val body = RequestBody.create(
@@ -214,6 +225,7 @@ fun postRejectRequestFriend( requestId: String ){
         .url("http://$ipBackend:8000/reject_friend_request?requester_id=$requestId")
         .post(body)
         .addHeader("accept", "application/json")
+        .addHeader("Authorization", "Bearer $token")
         .addHeader("Content-Type", "application/x-www-form-urlencoded")
         .build()
 

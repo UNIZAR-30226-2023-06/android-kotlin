@@ -10,6 +10,7 @@ val ipBackend = "192.168.1.136"
 
 
 object Globals {
+    lateinit var Token: String
     lateinit var Id: String
     lateinit var Username: String
     lateinit var Email: String

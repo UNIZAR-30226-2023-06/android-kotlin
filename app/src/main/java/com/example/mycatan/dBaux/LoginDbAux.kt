@@ -57,9 +57,9 @@ fun enviarLogin(username: String, password: String, onErrorClick: (err: Boolean)
             }else if (status == "Logged in successfully"){
                 onErrorClick(false)
 
-                val accessToken = json.getString("access_token")
-                println("TOKEN DE ACCESO $accessToken")
-                val user = JWT.decode(accessToken)
+                Globals.Token = json.getString("access_token")
+                println("TOKEN DE ACCESO $Globals.Token")
+                val user = JWT.decode(Globals.Token)
                 var tempId = user.getClaim("id").asInt()
                 Globals.Id = tempId.toString()
                 Globals.Email = user.getClaim("email").asString()
