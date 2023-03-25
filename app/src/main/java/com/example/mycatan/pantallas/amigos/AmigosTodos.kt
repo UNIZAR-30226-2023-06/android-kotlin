@@ -30,6 +30,10 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.mycatan.R
+import com.example.mycatan.dBaux.getAmigosPendiente
+import com.example.mycatan.dBaux.getAmigosTodos
+import com.example.mycatan.dBaux.getUserID
+import com.example.mycatan.others.Globals
 import com.example.mycatan.others.Routes
 import com.example.mycatan.ui.theme.*
 
@@ -44,11 +48,9 @@ fun AmigosTodosPage(navController: NavHostController) {
         .background(color = Transp)
         .padding(40.dp, 40.dp, 40.dp, 40.dp))
     {
-        val items by remember { mutableStateOf(listOf(
-            "C++", "C", "C#", "Java", "Kotlin", "Dart", "Python", "Javascript", "SpringBoot",
-            "XML", "Dart", "Node JS", "Typescript", "Dot Net", "GoLang", "MongoDb",
-        ))}
-        var filteredItems by remember { mutableStateOf(listOf<String>()) }
+        val list = getAmigosTodos(Globals.Token)
+        val items by remember { mutableStateOf(list)}
+        var filteredItems by remember { mutableStateOf(list) }
         Row(){
             SearchBar(onSearch = { query ->
                 filteredItems = items.filter { it.contains(query, ignoreCase = true) }
@@ -97,7 +99,8 @@ fun AmigosTodosPage(navController: NavHostController) {
             LazyColumn {
                 // on below line we are populating
                 // items for listview.
-                items(filteredItems) { language ->
+                items(filteredItems) { id ->
+                    val username = getUserID(id)
                     println("func: todos tus amigos")
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -118,7 +121,7 @@ fun AmigosTodosPage(navController: NavHostController) {
                         // Nombre#123 de usuario
                         Box(modifier = Modifier
                             .fillMaxWidth(0.75f)){
-                            Text(language,
+                            Text(username+id,
                                 modifier = Modifier.padding(15.dp),
                                 style = TextStyle(color = Blanco))
                         }

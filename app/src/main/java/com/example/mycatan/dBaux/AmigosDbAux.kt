@@ -13,9 +13,12 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
+import java.util.concurrent.CountDownLatch
 
 // MIRAMOS QUE USUARIOS SON NUESTROS AMIGOS
-fun getAmigosTodos(token: String) {
+fun getAmigosTodos(token: String): List<String>{
+    val result = mutableListOf<String>()
+    val latch = CountDownLatch(1)
     val mediaType = "application/x-www-form-urlencoded".toMediaTypeOrNull()
     val body = RequestBody.create(
         mediaType,
@@ -34,9 +37,8 @@ fun getAmigosTodos(token: String) {
     //val response = client.newCall(request).execute()
     client.newCall(request).enqueue(object : Callback {
         override fun onFailure(call: Call, e: IOException) {
-            // manejo de errores
-            println(call)
             println("ERROR al conectar con backend")
+            latch.countDown()
         }
 
         override fun onResponse(call: Call, response: Response) {
@@ -51,16 +53,23 @@ fun getAmigosTodos(token: String) {
             if (jsonArray.length() == 0){
                 println("NO TIENES AMIGOS")
             } else{
-                val jsonObject = jsonArray.getJSONObject(0)
-                idSolicitud = jsonObject.getString("friend_id")
+                // AÑADIMOS A LA LISTA RESULT, EL ID DE LOS USUARIOS AMIGOS
+                for (i in 0 until jsonArray.length()) {
+                    val jsonObject = jsonArray.getJSONObject(i)
+                    result.add(jsonObject.getString("friend_id"))
+                }
             }
+            latch.countDown()
         }
     })
+    latch.await()
+    return result
 }
 
 // MIRAMOS LAS SOLICITUDES DE AMISTAD QUE TENEMOS PENDIENTES
 fun getAmigosPendiente(token: String): List<String>{
     val result = mutableListOf<String>()
+    val latch = CountDownLatch(1)
     val mediaType = "application/x-www-form-urlencoded".toMediaTypeOrNull()
     val body = RequestBody.create(
         mediaType,
@@ -79,9 +88,8 @@ fun getAmigosPendiente(token: String): List<String>{
     //val response = client.newCall(request).execute()
     client.newCall(request).enqueue(object : Callback {
         override fun onFailure(call: Call, e: IOException) {
-            // manejo de errores
-            println(call)
             println("ERROR al conectar con backend")
+            latch.countDown()
         }
 
         override fun onResponse(call: Call, response: Response) {
@@ -101,14 +109,17 @@ fun getAmigosPendiente(token: String): List<String>{
                     result.add(jsonObject.getString("requester_id"))
                 }
             }
+            latch.countDown()
         }
     })
+    latch.await()
     return result
 }
 
 // ENVIAR A UN USUARIO UNA PETICIÓN DE AMISTAD INDICANDO SU ID DE USUARIO
 fun postSendRequestFriend( userId: String, token: String ): Boolean{
     var result = false
+    val latch = CountDownLatch(1)
     println("userID: $userId")
     val mediaType = "application/x-www-form-urlencoded".toMediaTypeOrNull()
     val body = RequestBody.create(
@@ -129,9 +140,8 @@ fun postSendRequestFriend( userId: String, token: String ): Boolean{
     //val response = client.newCall(request).execute()
     client.newCall(request).enqueue(object : Callback {
         override fun onFailure(call: Call, e: IOException) {
-            // manejo de errores
-            println(call)
             println("ERROR al conectar con backend")
+            latch.countDown()
         }
 
         override fun onResponse(call: Call, response: Response) {
@@ -147,7 +157,6 @@ fun postSendRequestFriend( userId: String, token: String ): Boolean{
                 json.getString("detail")
             }
 
-
             if(status == "User not found"){
                 println("NO EXISTE USUARIO CON ESE ID, ENVIO PETICION FALLIDO")
                 //Toast.makeText(LocalContext.current, "ERROR la petición no ha sido enviada", Toast.LENGTH_SHORT).show()
@@ -158,14 +167,17 @@ fun postSendRequestFriend( userId: String, token: String ): Boolean{
             } else {
                 println("PETICION YA ENVIADA O ERROR")
             }
+            latch.countDown()
         }
     })
+    latch.await()
     return result
 }
 
 // ACEPTAR UNA PETICIÓN DE AMISTAD
 fun postAcceptRequestFriend( requestId: String, token: String ): Boolean{
     var result = false
+    val latch = CountDownLatch(1)
     println("userID: $requestId")
     val mediaType = "application/x-www-form-urlencoded".toMediaTypeOrNull()
     val body = RequestBody.create(
@@ -187,6 +199,7 @@ fun postAcceptRequestFriend( requestId: String, token: String ): Boolean{
     client.newCall(request).enqueue(object : Callback {
         override fun onFailure(call: Call, e: IOException) {
             println("ERROR al conectar con backend")
+            latch.countDown()
         }
 
         override fun onResponse(call: Call, response: Response) {
@@ -207,16 +220,19 @@ fun postAcceptRequestFriend( requestId: String, token: String ): Boolean{
                 result = true
             } else if (status == "User not found"){
                 println("NO EXISTE ESTA PETICION")
-
             }
+            latch.countDown()
         }
     })
+    latch.await()
     return result
 }
 
 // RECHAZAR UNA PETICIÓN DE AMISTAD
-fun postRejectRequestFriend( requestId: String, token: String ){
+fun postRejectRequestFriend( requestId: String, token: String ): Boolean{
     println("userID: $requestId")
+    var result = false
+    val latch = CountDownLatch(1)
     val mediaType = "application/x-www-form-urlencoded".toMediaTypeOrNull()
     val body = RequestBody.create(
         mediaType,
@@ -236,9 +252,8 @@ fun postRejectRequestFriend( requestId: String, token: String ){
     //val response = client.newCall(request).execute()
     client.newCall(request).enqueue(object : Callback {
         override fun onFailure(call: Call, e: IOException) {
-            // manejo de errores
-            println(call)
             println("ERROR al conectar con backend")
+            latch.countDown()
         }
 
         override fun onResponse(call: Call, response: Response) {
@@ -254,11 +269,14 @@ fun postRejectRequestFriend( requestId: String, token: String ){
             if(status == "Not authenticated"){
                 println("NO EXISTE USUARIO CON ESE ID, ENVIO PETICION FALLIDO")
 
-            } else if ( status == "Friend request sent to user with id 5554") {
+            } else if ( status == "Friend request sent to user with id $requestId") {
                 println("ENVIO PETICION AMISTAD CORRECTO")
-
+                result = true
             }
+            latch.countDown()
         }
     })
+    latch.await()
+    return result
 }
 

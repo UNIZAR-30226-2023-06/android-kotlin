@@ -31,11 +31,9 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.mycatan.R
-import com.example.mycatan.dBaux.getAmigosPendiente
-import com.example.mycatan.dBaux.getUserID
-import com.example.mycatan.dBaux.postAcceptRequestFriend
-import com.example.mycatan.dBaux.postSendRequestFriend
+import com.example.mycatan.dBaux.*
 import com.example.mycatan.others.Globals
+import com.example.mycatan.others.Routes
 import com.example.mycatan.ui.theme.*
 
 @Composable
@@ -50,8 +48,7 @@ fun AmigosPendientePage(navController: NavHostController) {
     {
         val list = getAmigosPendiente(Globals.Token)
         val items by remember { mutableStateOf(list)}
-
-        var filteredItems by remember { mutableStateOf(listOf<String>()) }
+        var filteredItems by remember { mutableStateOf(list) } // Inicializamos con la lista para ver los items al principio
         Row(){
             SearchBar(onSearch = { query ->
                 filteredItems = items.filter { it.contains(query, ignoreCase = true) }
@@ -70,8 +67,9 @@ fun AmigosPendientePage(navController: NavHostController) {
             Column(){
                 ClickableText(
                     text = AnnotatedString("Todos"),
-                    onClick = { isSelectedTodos= !isSelectedTodos;
+                    onClick = { isSelectedTodos= true;
                                 isSelectedPendiente = false
+                                navController.navigate(Routes.AmigosTodos.route)
                               },
                     style = TextStyle(
                         color = if (isSelectedTodos) AzulOscuro else Color.White,
@@ -84,7 +82,7 @@ fun AmigosPendientePage(navController: NavHostController) {
             Column(){
                 ClickableText(
                     text = AnnotatedString("Pendiente"),
-                    onClick = { isSelectedPendiente= !isSelectedPendiente;
+                    onClick = { isSelectedPendiente= true;
                                 isSelectedTodos = false},
                     style = TextStyle(
                         color = if (isSelectedPendiente) AzulOscuro else Color.White,
@@ -135,7 +133,13 @@ fun AmigosPendientePage(navController: NavHostController) {
                         }
                         Spacer(modifier = Modifier.width(5.dp))
                         Button(
-                            onClick = {},
+                            onClick = {
+                                if(postRejectRequestFriend(id, Globals.Token)){
+                                    Toast.makeText(context, "OK peticion de amistad rechazada", Toast.LENGTH_SHORT).show()
+                                } else{
+                                    Toast.makeText(context, "ERROR peticion de amistad no se ha podido rechazar", Toast.LENGTH_SHORT).show()
+                                }
+                            },
                             shape = RoundedCornerShape(30.dp),
                             modifier = Modifier
                                 .fillMaxHeight(0.75f),
