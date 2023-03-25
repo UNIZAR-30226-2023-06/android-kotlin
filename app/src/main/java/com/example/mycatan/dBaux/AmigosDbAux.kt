@@ -164,7 +164,8 @@ fun postSendRequestFriend( userId: String, token: String ): Boolean{
 }
 
 // ACEPTAR UNA PETICIÓN DE AMISTAD
-fun postAcceptRequestFriend( requestId: String, token: String ){
+fun postAcceptRequestFriend( requestId: String, token: String ): Boolean{
+    var result = false
     println("userID: $requestId")
     val mediaType = "application/x-www-form-urlencoded".toMediaTypeOrNull()
     val body = RequestBody.create(
@@ -203,13 +204,14 @@ fun postAcceptRequestFriend( requestId: String, token: String ){
 
             if(status == "Friend request accepted from user with id $requestId"){
                 println("PETICION ACEPTADA CORRECTAMENTE")
-
+                result = true
             } else if (status == "User not found"){
                 println("NO EXISTE ESTA PETICION")
 
             }
         }
     })
+    return result
 }
 
 // RECHAZAR UNA PETICIÓN DE AMISTAD

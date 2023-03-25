@@ -1,5 +1,6 @@
 package com.example.mycatan.pantallas.amigos
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -20,6 +21,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
@@ -31,11 +33,14 @@ import androidx.navigation.NavHostController
 import com.example.mycatan.R
 import com.example.mycatan.dBaux.getAmigosPendiente
 import com.example.mycatan.dBaux.getUserID
+import com.example.mycatan.dBaux.postAcceptRequestFriend
+import com.example.mycatan.dBaux.postSendRequestFriend
 import com.example.mycatan.others.Globals
 import com.example.mycatan.ui.theme.*
 
 @Composable
 fun AmigosPendientePage(navController: NavHostController) {
+    val context = LocalContext.current
     Column(modifier = Modifier
         .paint(
             painterResource(R.drawable.wave_3),
@@ -111,7 +116,12 @@ fun AmigosPendientePage(navController: NavHostController) {
                         }
                         // Boton dejar de seguir
                         Button(
-                            onClick = {},
+                            onClick = {
+                                if(postAcceptRequestFriend(id, Globals.Token)){
+                                    Toast.makeText(context, "OK peticion de amistad aceptada", Toast.LENGTH_SHORT).show()
+                                } else{
+                                    Toast.makeText(context, "ERROR peticion de amistad no se ha podido aceptar", Toast.LENGTH_SHORT).show()
+                                } },
                             shape = RoundedCornerShape(30.dp),
                             modifier = Modifier
                                 .fillMaxHeight(0.75f),
