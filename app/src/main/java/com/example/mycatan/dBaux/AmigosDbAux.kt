@@ -161,7 +161,7 @@ fun postSendRequestFriend( userId: String, token: String ): Boolean{
                 println("NO EXISTE USUARIO CON ESE ID, ENVIO PETICION FALLIDO")
                 //Toast.makeText(LocalContext.current, "ERROR la petición no ha sido enviada", Toast.LENGTH_SHORT).show()
                 // IDEA, devolver TRUE O FALSE y mostrar el TOAST desde el otro lado.
-            } else if(status == "Friend request sent to user with id $userId"){
+            } else if(status == "Friend request sent"){
                 println("ENVIO PETICION AMISTAD CORRECTO")
                 result = true
             } else {
@@ -215,7 +215,7 @@ fun postAcceptRequestFriend( requestId: String, token: String ): Boolean{
                 json.getString("detail")
             }
 
-            if(status == "Friend request accepted from user with id $requestId"){
+            if(status == "Friend request accepted"){
                 println("PETICION ACEPTADA CORRECTAMENTE")
                 result = true
             } else if (status == "User not found"){
@@ -266,12 +266,62 @@ fun postRejectRequestFriend( requestId: String, token: String ): Boolean{
             val status = json.getString("detail")
 
 
-            if(status == "Not authenticated"){
-                println("NO EXISTE USUARIO CON ESE ID, ENVIO PETICION FALLIDO")
+            if(status == "User not found"){
+                println("NO SE HA PODIDO RECHAZAR LA PETICION")
 
-            } else if ( status == "Friend request sent to user with id $requestId") {
-                println("ENVIO PETICION AMISTAD CORRECTO")
+            } else if ( status == "Friend request rejected") {
+                println("SE HA RECHAZADO LA PETICIÓN DE AMISTAD")
                 result = true
+            }
+            latch.countDown()
+        }
+    })
+    latch.await()
+    return result
+}
+
+// ENVIAR A UN USUARIO UNA PETICIÓN DE AMISTAD INDICANDO SU ID DE USUARIO
+fun postdeleteFriend( userId: String, token: String ): Boolean{
+    var result = false
+    val latch = CountDownLatch(1)
+    println("userID: $userId")
+    val mediaType = "application/x-www-form-urlencoded".toMediaTypeOrNull()
+    val body = RequestBody.create(
+        mediaType,
+        ""
+    )
+
+    val request = Request.Builder()
+        .url("http://$ipBackend:8000/delete_friend?friend_id=$userId")
+        .post(body)
+        .addHeader("accept", "application/json")
+        .addHeader("Authorization", "Bearer $token")
+        .addHeader("Content-Type", "application/x-www-form-urlencoded")
+        .build()
+
+    val client = OkHttpClient()
+
+    //val response = client.newCall(request).execute()
+    client.newCall(request).enqueue(object : Callback {
+        override fun onFailure(call: Call, e: IOException) {
+            println("ERROR al conectar con backend")
+            latch.countDown()
+        }
+
+        override fun onResponse(call: Call, response: Response) {
+            val respuesta = response.body?.string().toString()
+
+            println(respuesta)
+            //transform the string to json object
+            val json = JSONObject(respuesta)
+            //get the string from the response
+            val status = json.getString("detail")
+
+            if(status == "Friend deleted"){
+                println("USUARIO BORRADO")
+                result = true
+            } else if(status == "User not found"){
+                println("EL USUARIO NO SE HA PODIDO BORRAR")
             }
             latch.countDown()
         }

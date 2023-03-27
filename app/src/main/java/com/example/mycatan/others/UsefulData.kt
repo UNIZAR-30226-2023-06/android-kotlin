@@ -6,7 +6,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 
 //Javi 192.168.1.39
-val ipBackend = "192.168.1.39"
+val ipBackend = "10.1.54.191"
 //loreto: "192.168.1.133"
 
 object Globals {
