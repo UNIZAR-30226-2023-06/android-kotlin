@@ -1,8 +1,12 @@
 package com.example.mycatan.pantallas
 
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -13,6 +17,7 @@ import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -20,6 +25,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.mycatan.R
 import com.example.mycatan.dBaux.postSendRequestFriend
 import com.example.mycatan.findActivity
 import com.example.mycatan.others.Globals
@@ -47,12 +53,23 @@ fun MenuScreen(navController: NavHostController) {
             horizontalAlignment = CenterHorizontally,
 
             ) {
-            Icon(
-                imageVector = Icons.Default.Person,
-                contentDescription = null,
-                tint = AzulOscuro,
-                modifier = Modifier.size(70.dp)
-            )
+            Card(
+                modifier = Modifier
+                    .width(100.dp)
+                    .height(100.dp),
+
+                shape = CircleShape,
+                backgroundColor = Blanco,
+                border = BorderStroke(5.dp, AzulOscuro),
+            ){
+                Image(
+
+                    painter = painterResource(R.drawable.personaje8),
+                    contentDescription = null,
+
+
+                )
+            }
             Spacer(modifier = Modifier.height(10.dp))
             Text(
                 text = "${Globals.Username} #${Globals.Id}",
@@ -63,7 +80,7 @@ fun MenuScreen(navController: NavHostController) {
             )
             Spacer(modifier = Modifier.height(10.dp))
             Button(
-                onClick = { navController.navigate(Routes.Registro.route) },
+                onClick = { navController.navigate(Routes.EditarPerfil.route) },
                 shape = RoundedCornerShape(50.dp),
                 modifier = Modifier
                     .width(150.dp)

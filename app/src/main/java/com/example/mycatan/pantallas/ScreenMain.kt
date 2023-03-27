@@ -44,5 +44,8 @@ fun ScreenMain(){
         composable(Routes.AmigosPendiente.route) {
             AmigosPendientePage(navController = navController)
         }
+        composable(Routes.EditarPerfil.route) {
+            EditarPerfil(navController = navController)
+        }
     }
 }

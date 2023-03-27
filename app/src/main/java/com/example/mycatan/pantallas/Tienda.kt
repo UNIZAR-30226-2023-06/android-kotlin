@@ -113,6 +113,28 @@ fun TiendaPage(navController: NavHostController) {
                                 fotoPopUp = it })
                     }
                 }
+
+                Text(text = "    Mapas",
+                    style = TextStyle
+                        (fontSize = 20.sp, color = AzulOscuro, fontWeight = FontWeight.ExtraBold))
+
+                LazyRow(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+
+                    horizontalArrangement = Arrangement.spacedBy(25.dp), //maybe otra cosa
+                    verticalAlignment = Alignment.CenterVertically,
+                    contentPadding = PaddingValues(25.dp)
+                ) {
+
+                    items(9)  {
+                        RackItem(foto = it,
+                            comprada = Globals.fotosCompradas[it],
+                            onCardClick = {
+                                menuVisible = !menuVisible
+                                fotoPopUp = it })
+                    }
+                }
             }
         }
 
