@@ -11,13 +11,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -39,87 +42,163 @@ fun EditarPerfil(navController: NavHostController) {
     //no se guarda si vas para atras
 
 
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .background(AzulClaro)
-        .padding(10.dp, 10.dp, 10.dp, 10.dp)
-    )
-    {
-
-        LazyColumn(
+        Box(
             modifier = Modifier
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.SpaceEvenly,
-            horizontalAlignment = Alignment.CenterHorizontally
+                .fillMaxSize()
+                .paint(
+                    painterResource(R.drawable.wave_3),
+                    contentScale = ContentScale.FillBounds
+                )
+                .background(color = Transp)
+                .padding(10.dp, 10.dp, 10.dp, 10.dp)
+
         )
         {
-            item(){
-                /*Text(text = "Tienda",
-                    style = TextStyle
-                        (fontSize = 40.sp, color = AzulOscuro, fontWeight = FontWeight.Bold))*/
 
+            Row(
+                modifier = Modifier
+                    .fillMaxSize(),
+                horizontalArrangement = Arrangement.SpaceAround,
+                verticalAlignment = Alignment.CenterVertically
+            )
+            {
+                Column() {
 
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
 
-                Text(text = "    Personajes",
-                    style = TextStyle
-                        (fontSize = 20.sp, color = AzulOscuro, fontWeight = FontWeight.ExtraBold))
+                        Card(
+                            modifier = Modifier
+                                .width(100.dp)
+                                .height(100.dp),
 
-                LazyRow(
-                    modifier = Modifier
-                        .fillMaxWidth(),
+                            shape = CircleShape,
+                            backgroundColor = Blanco,
+                            border = BorderStroke(5.dp, AzulOscuro),
+                        ) {
+                            Image(
+                                painter = painterResource(R.drawable.personaje8),
+                                contentDescription = null,
+                            )
+                        }
 
-                    horizontalArrangement = Arrangement.Center, //maybe otra cosa
-                    verticalAlignment = Alignment.CenterVertically,
-                    contentPadding = PaddingValues(25.dp)
-                ) {
-                    items(4)  {
-                       PerfilItem(foto = it,
-                            onCardClick = {
-                                menuVisible = !menuVisible
-                                fotoPopUp = it })
+                        Box(
+
+                            modifier = Modifier
+                                .width(45.dp)
+                                .height(45.dp)
+                                .background(
+                                    color = AzulOscuro,
+                                    shape = RoundedCornerShape(10.dp)
+                                ),
+                            contentAlignment = Alignment.Center
+
+                        ) {
+
+                            Icon(
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = null,
+                                //background(color = Amarillo),
+
+                                tint = Blanco
+                            )
+                        }
+
                     }
+
+
+
+                    Button(
+                        onClick = { },
+                        shape = RoundedCornerShape(50.dp),
+                        modifier = Modifier
+                            .width(200.dp)
+                            .height(40.dp),
+                        colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro),
+
+                        ) {
+                        Text(
+                            text = "Cambiar contraseña",
+                            style = TextStyle(color = Blanco)
+                        )
+
+                    }
+
+
                 }
 
-                Button(
-                    onClick = {  },
-                    shape = RoundedCornerShape(50.dp),
-                    modifier = Modifier
-                        .width(200.dp)
-                        .height(40.dp),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
+                Column() {
 
-                ) {
-                    Text(
-                        text = "Cambiar contraseña",
-                        style = TextStyle(color = Blanco)
-                    )
+                    Card(
+                        modifier = Modifier
+                            .width(100.dp)
+                            .height(100.dp),
+
+                        shape = CircleShape,
+                        backgroundColor = Blanco,
+                        border = BorderStroke(5.dp, AzulOscuro),
+                    ) {
+                        Image(
+                            painter = painterResource(R.drawable.personaje8),
+                            contentDescription = null,
+                        )
+                    }
 
                 }
             }
+
+
+            /*Text(text = "    Personajes",
+                style = TextStyle
+                    (fontSize = 20.sp, color = AzulOscuro, fontWeight = FontWeight.ExtraBold))
+
+            LazyRow(
+                modifier = Modifier
+                    .fillMaxWidth(),
+
+                horizontalArrangement = Arrangement.Center, //maybe otra cosa
+                verticalAlignment = Alignment.CenterVertically,
+                contentPadding = PaddingValues(25.dp)
+            ) {
+                items(4)  {
+                   PerfilItem(foto = it,
+                        onCardClick = {
+                            menuVisible = !menuVisible
+                            fotoPopUp = it })
+                }
+            }*/
+
+        }
+
+
+        // OPTIONS MENU
+        AnimatedVisibility(
+            visible = menuVisible,
+            enter = fadeIn(animationSpec = tween(1000)),
+            exit = fadeOut(animationSpec = tween(1000))
+        ) {
+            Surface(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clickable { menuVisible = !menuVisible },
+                color = Color.Black.copy(alpha = 0.6f)
+            ) {
+
+            }
+        }
+        AnimatedVisibility(
+            visible = menuVisible,
+            enter = expandHorizontally(animationSpec = tween(1000)),
+            exit = shrinkHorizontally(animationSpec = tween(1000))
+        )
+        {
+            //TiendaScreen(fotoPopUp, navController, onConfirmed)
         }
     }
 
 
-    // OPTIONS MENU
-    AnimatedVisibility(visible = menuVisible,
-        enter = fadeIn(animationSpec = tween(1000)),
-        exit = fadeOut(animationSpec = tween(1000)) ){
-        Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .clickable { menuVisible = !menuVisible },
-            color = Color.Black.copy(alpha = 0.6f)
-        ){
 
-        }
-    }
-    AnimatedVisibility(visible = menuVisible,
-        enter = expandHorizontally (animationSpec = tween(1000)),
-        exit = shrinkHorizontally(animationSpec = tween(1000)) )
-    {
-        //TiendaScreen(fotoPopUp, navController, onConfirmed)
-    }
-}
 
 @Composable
 fun PerfilItem( foto: Int , onCardClick: () -> Unit ){

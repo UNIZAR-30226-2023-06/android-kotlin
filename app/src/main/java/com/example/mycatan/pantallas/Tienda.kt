@@ -18,8 +18,10 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -52,7 +54,10 @@ fun TiendaPage(navController: NavHostController) {
 
     Box(modifier = Modifier
         .fillMaxSize()
-        .background(AzulClaro)
+        .paint(
+            painterResource(R.drawable.wave_3),
+            contentScale = ContentScale.FillBounds)
+        .background(color = Transp)
         .padding(10.dp, 10.dp, 10.dp, 10.dp)
     )
     {
