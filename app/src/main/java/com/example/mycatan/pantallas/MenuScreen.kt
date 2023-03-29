@@ -55,8 +55,8 @@ fun MenuScreen(navController: NavHostController) {
             ) {
             Card(
                 modifier = Modifier
-                    .width(100.dp)
-                    .height(100.dp),
+                    .width(90.dp)
+                    .height(90.dp),
 
                 shape = CircleShape,
                 backgroundColor = Blanco,
@@ -74,9 +74,9 @@ fun MenuScreen(navController: NavHostController) {
             Text(
                 text = "${Globals.Username} #${Globals.Id}",
                 fontSize = 20.sp,
-                color = Color.White,
+                color = AzulOscuro,
                 fontFamily = FontFamily.SansSerif,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.ExtraBold
             )
             Spacer(modifier = Modifier.height(10.dp))
             Button(
@@ -110,6 +110,24 @@ fun MenuScreen(navController: NavHostController) {
                 )
 
             }
+
+            Spacer(modifier = Modifier.height(10.dp))
+            Button(
+                onClick = { navController.navigate(Routes.AmigosTodos.route) },
+                shape = RoundedCornerShape(50.dp),
+                modifier = Modifier
+                    .width(150.dp)
+                    .height(40.dp),
+                colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
+
+            ) {
+                Text(
+                    text = "Cerrar sesión",
+                    style = TextStyle(color = Blanco)
+                )
+
+            }
+
 
             Spacer(modifier = Modifier.height(10.dp))
             Row(

@@ -10,10 +10,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,7 +20,9 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -58,15 +57,183 @@ fun EditarPerfil(navController: NavHostController) {
             Row(
                 modifier = Modifier
                     .fillMaxSize(),
-                horizontalArrangement = Arrangement.SpaceAround,
-                verticalAlignment = Alignment.CenterVertically
-            )
-            {
-                Column() {
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                Column(
+                    verticalArrangement = Arrangement.SpaceEvenly,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+
+                        Card(
+                            modifier = Modifier
+                                .width(125.dp)
+                                .height(125.dp),
+
+                            shape = CircleShape,
+                            backgroundColor = Blanco,
+                            border = BorderStroke(5.dp, AzulOscuro),
+                        ) {
+                            Image(
+                                painter = painterResource(R.drawable.personaje8),
+                                contentDescription = null,
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.width(5.dp))
+
+                        Column(
+                            verticalArrangement = Arrangement.SpaceEvenly,
+                            horizontalAlignment = Alignment.Start
+                        ) {
+
+                            Text(
+                                text = "Mi Personaje",
+                                fontSize = 25.sp,
+                                color = AzulOscuro,
+                                fontFamily = FontFamily.SansSerif,
+                                fontWeight = FontWeight.ExtraBold
+                            )
+
+                            Box(
+                                modifier = Modifier
+                                    .width(45.dp)
+                                    .height(45.dp)
+                                    .background(
+                                        color = AzulOscuro,
+                                        shape = RoundedCornerShape(10.dp)
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+
+                                Icon(
+                                    imageVector = Icons.Default.Edit,
+                                    contentDescription = null,
+                                    //background(color = Amarillo),
+
+                                    tint = Blanco
+                                )
+                            }
+
+                        }
+
+                    }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    Text(
+                        text = "${Globals.Username} #${Globals.Id}",
+                        fontSize = 35.sp,
+                        color = AzulOscuro,
+                        fontFamily = FontFamily.SansSerif,
+                        fontWeight = FontWeight.ExtraBold,
+                        textDecoration = TextDecoration.Underline
+                    )
+
+                    Spacer(modifier = Modifier.height(5.dp))
+
+                    Button(
+                        onClick = { },
+                        shape = RoundedCornerShape(50.dp),
+                        modifier = Modifier
+                            .width(200.dp)
+                            .height(40.dp),
+                        colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro),
+
+                        ) {
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Cambiar nombre",
+                                style = TextStyle(color = Blanco)
+                            )
+                            Icon(
+                                imageVector = Icons.Default.Star,
+                                contentDescription = null,
+                                tint = Amarillo
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(25.dp))
+
+                    Button(
+                        onClick = { },
+                        shape = RoundedCornerShape(50.dp),
+                        modifier = Modifier
+                            .width(200.dp)
+                            .height(40.dp),
+                        colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro),
+
+                        ) {
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Cambiar contraseña",
+                                style = TextStyle(color = Blanco)
+                            )
+                            Icon(
+                                imageVector = Icons.Default.Lock,
+                                contentDescription = null,
+                                tint = Blanco
+                            )
+                        }
+                    }
+                }
+
+                Column(
+                    verticalArrangement = Arrangement.SpaceEvenly,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+
+
+                        Column(
+                            verticalArrangement = Arrangement.SpaceEvenly,
+                            horizontalAlignment = Alignment.End
+                        ) {
+
+                            Text(
+                                text = "Mis Piezas",
+                                fontSize = 20.sp,
+                                color = AzulOscuro,
+                                fontFamily = FontFamily.SansSerif,
+                                fontWeight = FontWeight.ExtraBold
+                            )
+
+                            Box(
+                                modifier = Modifier
+                                    .width(45.dp)
+                                    .height(45.dp)
+                                    .background(
+                                        color = AzulOscuro,
+                                        shape = RoundedCornerShape(10.dp)
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+
+                                Icon(
+                                    imageVector = Icons.Default.Edit,
+                                    contentDescription = null,
+                                    //background(color = Amarillo),
+
+                                    tint = Blanco
+                                )
+                            }
+
+                        }
+
+                        Spacer(modifier = Modifier.width(5.dp))
 
                         Card(
                             modifier = Modifier
@@ -82,74 +249,101 @@ fun EditarPerfil(navController: NavHostController) {
                                 contentDescription = null,
                             )
                         }
+                    }
 
-                        Box(
+                    Spacer(modifier = Modifier.height(30.dp))
 
-                            modifier = Modifier
-                                .width(45.dp)
-                                .height(45.dp)
-                                .background(
-                                    color = AzulOscuro,
-                                    shape = RoundedCornerShape(10.dp)
-                                ),
-                            contentAlignment = Alignment.Center
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
 
+
+                        Column(
+                            verticalArrangement = Arrangement.SpaceEvenly,
+                            horizontalAlignment = Alignment.End
                         ) {
 
-                            Icon(
-                                imageVector = Icons.Default.Edit,
-                                contentDescription = null,
-                                //background(color = Amarillo),
-
-                                tint = Blanco
+                            Text(
+                                text = "Mi Tablero",
+                                fontSize = 20.sp,
+                                color = AzulOscuro,
+                                fontFamily = FontFamily.SansSerif,
+                                fontWeight = FontWeight.ExtraBold
                             )
+
+                            Box(
+                                modifier = Modifier
+                                    .width(45.dp)
+                                    .height(45.dp)
+                                    .background(
+                                        color = AzulOscuro,
+                                        shape = RoundedCornerShape(10.dp)
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+
+                                Icon(
+                                    imageVector = Icons.Default.Edit,
+                                    contentDescription = null,
+                                    //background(color = Amarillo),
+
+                                    tint = Blanco
+                                )
+                            }
+
                         }
 
-                    }
+                        Spacer(modifier = Modifier.width(5.dp))
 
+                        Card(
+                            modifier = Modifier
+                                .width(100.dp)
+                                .height(100.dp),
 
-
-                    Button(
-                        onClick = { },
-                        shape = RoundedCornerShape(50.dp),
-                        modifier = Modifier
-                            .width(200.dp)
-                            .height(40.dp),
-                        colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro),
-
+                            shape = CircleShape,
+                            backgroundColor = Blanco,
+                            border = BorderStroke(5.dp, AzulOscuro),
                         ) {
-                        Text(
-                            text = "Cambiar contraseña",
-                            style = TextStyle(color = Blanco)
-                        )
-
-                    }
-
-
-                }
-
-                Column() {
-
-                    Card(
-                        modifier = Modifier
-                            .width(100.dp)
-                            .height(100.dp),
-
-                        shape = CircleShape,
-                        backgroundColor = Blanco,
-                        border = BorderStroke(5.dp, AzulOscuro),
-                    ) {
-                        Image(
-                            painter = painterResource(R.drawable.personaje8),
-                            contentDescription = null,
-                        )
+                            Image(
+                                painter = painterResource(R.drawable.personaje8),
+                                contentDescription = null,
+                            )
+                        }
                     }
 
                 }
             }
 
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.TopEnd
+            ) {
 
-            /*Text(text = "    Personajes",
+                Row(modifier = Modifier
+                    .background(AzulOscuro)
+                    .padding(10.dp, 5.dp),
+
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                )
+                {
+
+                    Icon(imageVector = Icons.Default.Star,
+                        contentDescription = null,
+                        tint = Amarillo)
+
+                    Text(
+                        text = Globals.Coins,
+                        style = TextStyle(
+                            color = Blanco,
+                            fontWeight = FontWeight.ExtraBold
+                        )
+                    )
+                }
+
+            }
+
+                /*Text(text = "    Personajes",
                 style = TextStyle
                     (fontSize = 20.sp, color = AzulOscuro, fontWeight = FontWeight.ExtraBold))
 
