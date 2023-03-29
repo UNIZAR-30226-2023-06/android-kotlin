@@ -67,6 +67,11 @@ fun enviarLogin(username: String, password: String, onErrorClick: (err: Boolean)
 
                 //SOLICITAMOS INFO DEL USUARIO
                 getUserData(Globals.Id);
+
+                //forthemoment
+                Globals.Personaje = "8"
+                Globals.Piezas = "2"
+                Globals.Mapa = "3"
                 Globals.fotosCompradas = BooleanArray(9)
                 Globals.fotosCompradas.fill(false)
                 //TODO: terminar esto

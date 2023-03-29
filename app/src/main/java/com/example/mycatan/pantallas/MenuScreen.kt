@@ -38,7 +38,8 @@ fun MenuScreen(navController: NavHostController) {
     val amigo = remember { mutableStateOf(TextFieldValue()) }
 
     Column(
-        modifier = Modifier.width(300.dp)
+        modifier = Modifier
+            .width(300.dp)
             .fillMaxHeight()
         //.background(color=Blanco)
     ) {
@@ -53,23 +54,9 @@ fun MenuScreen(navController: NavHostController) {
             horizontalAlignment = CenterHorizontally,
 
             ) {
-            Card(
-                modifier = Modifier
-                    .width(90.dp)
-                    .height(90.dp),
 
-                shape = CircleShape,
-                backgroundColor = Blanco,
-                border = BorderStroke(5.dp, AzulOscuro),
-            ){
-                Image(
+            PerfilItem(foto = Globals.Personaje.toInt()){}
 
-                    painter = painterResource(R.drawable.personaje8),
-                    contentDescription = null,
-
-
-                )
-            }
             Spacer(modifier = Modifier.height(10.dp))
             Text(
                 text = "${Globals.Username} #${Globals.Id}",

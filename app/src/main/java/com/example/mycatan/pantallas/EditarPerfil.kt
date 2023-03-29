@@ -4,8 +4,6 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -27,15 +25,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.mycatan.R
+import com.example.mycatan.dBaux.enviarLogin
 import com.example.mycatan.others.Globals
-import com.example.mycatan.others.Routes
 import com.example.mycatan.ui.theme.*
 
 @Composable
 fun EditarPerfil(navController: NavHostController) {
 
     var menuVisible by remember { mutableStateOf(false) }
-    var fotoPopUp by remember { mutableStateOf(-1) }
+    var EditClicked by remember { mutableStateOf(-1) }
+
 
 
     //no se guarda si vas para atras
@@ -69,20 +68,7 @@ fun EditarPerfil(navController: NavHostController) {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
 
-                        Card(
-                            modifier = Modifier
-                                .width(125.dp)
-                                .height(125.dp),
-
-                            shape = CircleShape,
-                            backgroundColor = Blanco,
-                            border = BorderStroke(5.dp, AzulOscuro),
-                        ) {
-                            Image(
-                                painter = painterResource(R.drawable.personaje8),
-                                contentDescription = null,
-                            )
-                        }
+                        PerfilItem(foto = Globals.Personaje.toInt()) {}
 
                         Spacer(modifier = Modifier.width(5.dp))
 
@@ -99,13 +85,17 @@ fun EditarPerfil(navController: NavHostController) {
                                 fontWeight = FontWeight.ExtraBold
                             )
 
+                            //boton edit del personaje
                             Box(
                                 modifier = Modifier
+                                    .clickable { menuVisible = !menuVisible
+                                                EditClicked=1}
                                     .width(45.dp)
                                     .height(45.dp)
                                     .background(
                                         color = AzulOscuro,
                                         shape = RoundedCornerShape(10.dp)
+
                                     ),
                                 contentAlignment = Alignment.Center
                             ) {
@@ -210,9 +200,11 @@ fun EditarPerfil(navController: NavHostController) {
                                 fontFamily = FontFamily.SansSerif,
                                 fontWeight = FontWeight.ExtraBold
                             )
-
+                            //boton edit piezas
                             Box(
                                 modifier = Modifier
+                                    .clickable { menuVisible = !menuVisible
+                                                EditClicked=2}
                                     .width(45.dp)
                                     .height(45.dp)
                                     .background(
@@ -235,20 +227,8 @@ fun EditarPerfil(navController: NavHostController) {
 
                         Spacer(modifier = Modifier.width(5.dp))
 
-                        Card(
-                            modifier = Modifier
-                                .width(100.dp)
-                                .height(100.dp),
+                        PerfilItem(foto = Globals.Piezas.toInt()) {}
 
-                            shape = CircleShape,
-                            backgroundColor = Blanco,
-                            border = BorderStroke(5.dp, AzulOscuro),
-                        ) {
-                            Image(
-                                painter = painterResource(R.drawable.personaje8),
-                                contentDescription = null,
-                            )
-                        }
                     }
 
                     Spacer(modifier = Modifier.height(30.dp))
@@ -270,9 +250,11 @@ fun EditarPerfil(navController: NavHostController) {
                                 fontFamily = FontFamily.SansSerif,
                                 fontWeight = FontWeight.ExtraBold
                             )
-
+                            //boton edit tablero
                             Box(
                                 modifier = Modifier
+                                    .clickable { menuVisible = !menuVisible
+                                                EditClicked=3}
                                     .width(45.dp)
                                     .height(45.dp)
                                     .background(
@@ -295,20 +277,7 @@ fun EditarPerfil(navController: NavHostController) {
 
                         Spacer(modifier = Modifier.width(5.dp))
 
-                        Card(
-                            modifier = Modifier
-                                .width(100.dp)
-                                .height(100.dp),
-
-                            shape = CircleShape,
-                            backgroundColor = Blanco,
-                            border = BorderStroke(5.dp, AzulOscuro),
-                        ) {
-                            Image(
-                                painter = painterResource(R.drawable.personaje8),
-                                contentDescription = null,
-                            )
-                        }
+                        PerfilItem(foto = Globals.Mapa.toInt()) {}
                     }
 
                 }
@@ -342,27 +311,6 @@ fun EditarPerfil(navController: NavHostController) {
                 }
 
             }
-
-                /*Text(text = "    Personajes",
-                style = TextStyle
-                    (fontSize = 20.sp, color = AzulOscuro, fontWeight = FontWeight.ExtraBold))
-
-            LazyRow(
-                modifier = Modifier
-                    .fillMaxWidth(),
-
-                horizontalArrangement = Arrangement.Center, //maybe otra cosa
-                verticalAlignment = Alignment.CenterVertically,
-                contentPadding = PaddingValues(25.dp)
-            ) {
-                items(4)  {
-                   PerfilItem(foto = it,
-                        onCardClick = {
-                            menuVisible = !menuVisible
-                            fotoPopUp = it })
-                }
-            }*/
-
         }
 
 
@@ -387,11 +335,24 @@ fun EditarPerfil(navController: NavHostController) {
             exit = shrinkHorizontally(animationSpec = tween(1000))
         )
         {
-            //TiendaScreen(fotoPopUp, navController, onConfirmed)
+            if(EditClicked==1) // se clico editar de personaje
+                EditPersonaje(navController, changedPersonaje())
+            /*else if (EditClicked==2) // se clico editar de piezas
+                EditPieza
+            else if (EditClicked==3) // se clico editar de tablero
+                EditMapa*/
         }
     }
 
-
+fun changedPersonaje( newP: Int) {
+    Globals.Personaje= newP.toString()
+}
+fun changedPiezas( newP: Int) {
+    Globals.Piezas= newP.toString()
+}
+fun changedMapa( newP: Int) {
+    Globals.Mapa= newP.toString()
+}
 
 
 @Composable
@@ -431,8 +392,8 @@ fun PerfilItem( foto: Int , onCardClick: () -> Unit ){
     Card(
         modifier = Modifier
             .clickable { onCardClick() }
-            .width(100.dp)
-            .height(100.dp),
+            .width(90.dp)
+            .height(90.dp),
 
         shape = CircleShape,
         backgroundColor = Blanco,
