@@ -23,9 +23,9 @@ import com.example.mycatan.others.Routes
 import com.example.mycatan.ui.theme.*
 
 @Composable
-fun EditPersonaje(navController: NavHostController) {
+fun EditMapa(navController: NavHostController) {
 
-    var personajeClicked by remember { mutableStateOf(-1) }
+    var mapaClicked by remember { mutableStateOf(-1) }
     var colorClicado: Color
 
     Box(
@@ -58,7 +58,7 @@ fun EditPersonaje(navController: NavHostController) {
 
                     // deberá recorrer el bueno
                     items(9)  {
-                        if( personajeClicked == it ){
+                        if( mapaClicked == it ){
                             colorClicado = Color.Black.copy(alpha = 0.6f)
                         }
                         else{
@@ -69,16 +69,16 @@ fun EditPersonaje(navController: NavHostController) {
 
                         ){
                             PerfilItem(foto = it,
-                                onCardClick = {personajeClicked=it})
+                                onCardClick = {mapaClicked=it})
                         }
 
                     }
                 }
 
 
-                if (Globals.Personaje.toInt() == personajeClicked) {
+                if (Globals.Mapa.toInt() == mapaClicked) {
                     Text(
-                        text = "Ya tienes este personaje equipado ",
+                        text = "Ya tienes este mapa equipado ",
                         fontSize = 16.sp,
                         style = TextStyle(
                             color = AzulOscuro,
@@ -88,7 +88,7 @@ fun EditPersonaje(navController: NavHostController) {
                     )
                 } else {
                     Text(
-                        text = "Cambiar personaje ",
+                        text = "Cambiar mapa ",
                         fontSize = 16.sp,
                         style = TextStyle(
                             color = AzulOscuro,
@@ -101,7 +101,7 @@ fun EditPersonaje(navController: NavHostController) {
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                if (Globals.Personaje.toInt() != personajeClicked && -1 != personajeClicked ) {
+                if (Globals.Mapa.toInt() != mapaClicked && -1 != mapaClicked ) {
                     Row() {
 
                         Button(
@@ -127,7 +127,7 @@ fun EditPersonaje(navController: NavHostController) {
 
                         Button(
                             onClick = {
-                                changedPersonaje(personajeClicked)
+                                changedMapa(mapaClicked)
                                 navController.navigate(Routes.EditarPerfil.route)
                             },
                             modifier = Modifier
@@ -143,7 +143,7 @@ fun EditPersonaje(navController: NavHostController) {
                             ) {
 
                                 Text(
-                                    text = "Cambiar personaje",
+                                    text = "Cambiar mapa",
                                     style = TextStyle(
                                         color = AzulOscuro, fontWeight = FontWeight.Bold
                                     )

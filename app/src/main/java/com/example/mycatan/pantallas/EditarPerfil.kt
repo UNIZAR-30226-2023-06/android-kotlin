@@ -25,7 +25,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.mycatan.R
-import com.example.mycatan.dBaux.enviarLogin
 import com.example.mycatan.others.Globals
 import com.example.mycatan.ui.theme.*
 
@@ -336,11 +335,11 @@ fun EditarPerfil(navController: NavHostController) {
         )
         {
             if(EditClicked==1) // se clico editar de personaje
-                EditPersonaje(navController, changedPersonaje())
-            /*else if (EditClicked==2) // se clico editar de piezas
-                EditPieza
+                EditPersonaje(navController)
+            else if (EditClicked==2) // se clico editar de piezas
+                EditPieza(navController)
             else if (EditClicked==3) // se clico editar de tablero
-                EditMapa*/
+                EditMapa(navController)
         }
     }
 
