@@ -55,7 +55,7 @@ fun MenuScreen(navController: NavHostController) {
 
             ) {
 
-            PerfilItem(foto = Globals.Personaje.toInt()){}
+            PerfilItem(foto = Globals.Personaje){}
 
             Spacer(modifier = Modifier.height(10.dp))
             Text(

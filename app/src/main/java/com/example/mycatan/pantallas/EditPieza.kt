@@ -25,7 +25,7 @@ import com.example.mycatan.ui.theme.*
 @Composable
 fun EditPieza(navController: NavHostController) {
 
-    var piezaClicked by remember { mutableStateOf(-1) }
+    var piezaClicked  by remember { mutableStateOf("null") }
     var colorClicado: Color
 
     Box(
@@ -58,7 +58,7 @@ fun EditPieza(navController: NavHostController) {
 
                     // deberá recorrer el bueno
                     items(9)  {
-                        if( piezaClicked == it ){
+                        if( piezaClicked == it.toString() ){
                             colorClicado = Color.Black.copy(alpha = 0.6f)
                         }
                         else{
@@ -68,15 +68,16 @@ fun EditPieza(navController: NavHostController) {
                             .background(colorClicado)
 
                         ){
-                            PerfilItem(foto = it,
-                                onCardClick = {piezaClicked=it})
+                            PerfilItem(foto = it.toString(),
+                                onCardClick = {piezaClicked=it.toString()
+                                                println(it.toString())})
                         }
 
                     }
                 }
 
 
-                if (Globals.Piezas.toInt() == piezaClicked) {
+                if (Globals.Piezas == piezaClicked || (Globals.Piezas == "default" && piezaClicked == "0") ) {
                     Text(
                         text = "Ya tienes estas piezas equipado ",
                         fontSize = 16.sp,
@@ -101,7 +102,7 @@ fun EditPieza(navController: NavHostController) {
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                if (Globals.Piezas.toInt() != piezaClicked && -1 != piezaClicked ) {
+                if ( ((Globals.Piezas != piezaClicked && Globals.Piezas !="default" ) || (Globals.Piezas=="default"&& piezaClicked != "0" )) && "null" != piezaClicked ) {
                     Row() {
 
                         Button(

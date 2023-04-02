@@ -115,6 +115,9 @@ fun getUserData( userId: String ){
                 println("USUARIO NO  ENCONTRADO")
             } else {
                 Globals.Coins = json.getString("coins")
+                Globals.Personaje = json.getString("profile_picture")
+                Globals.Mapa = json.getString("selected_grid_skin")
+                Globals.Piezas = json.getString("selected_pieces_skin")
             }
         }
     })

@@ -67,7 +67,7 @@ fun EditarPerfil(navController: NavHostController) {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
 
-                        PerfilItem(foto = Globals.Personaje.toInt()) {}
+                        PerfilItem(foto = Globals.Personaje) {}
 
                         Spacer(modifier = Modifier.width(5.dp))
 
@@ -226,7 +226,7 @@ fun EditarPerfil(navController: NavHostController) {
 
                         Spacer(modifier = Modifier.width(5.dp))
 
-                        PerfilItem(foto = Globals.Piezas.toInt()) {}
+                        PerfilItem(foto = Globals.Piezas) {}
 
                     }
 
@@ -276,7 +276,7 @@ fun EditarPerfil(navController: NavHostController) {
 
                         Spacer(modifier = Modifier.width(5.dp))
 
-                        PerfilItem(foto = Globals.Mapa.toInt()) {}
+                        PerfilItem(foto = Globals.Mapa) {}
                     }
 
                 }
@@ -343,48 +343,53 @@ fun EditarPerfil(navController: NavHostController) {
         }
     }
 
-fun changedPersonaje( newP: Int) {
-    Globals.Personaje= newP.toString()
+fun changedPersonaje( newP: String) {
+    Globals.Personaje= newP
 }
-fun changedPiezas( newP: Int) {
-    Globals.Piezas= newP.toString()
+fun changedPiezas( newP: String) {
+    Globals.Piezas= newP
 }
-fun changedMapa( newP: Int) {
-    Globals.Mapa= newP.toString()
+fun changedMapa( newP: String) {
+    Globals.Mapa= newP
 }
 
 
 @Composable
-fun PerfilItem( foto: Int , onCardClick: () -> Unit ){
+fun PerfilItem( foto: String , onCardClick: () -> Unit ){
 
 
 
     var painterID : Painter
     //Estoes muy cutre pero no se hacerlo mejor
-    if(foto==0){
+    if(foto=="0"){
         painterID = painterResource(R.drawable.personaje1)
     }
-    else if(foto==1){
+    else if(foto=="1"){
         painterID = painterResource(R.drawable.personaje2)
     }
-    else if(foto==2){
+    else if(foto=="2"){
         painterID = painterResource(R.drawable.personaje3)
     }
-    else if(foto==3){
+    else if(foto=="3"){
         painterID = painterResource(R.drawable.personaje4)
     }
-    else if(foto==4){
+    else if(foto=="4"){
         painterID = painterResource(R.drawable.personaje5)
     }
-    else if(foto==5){
+    else if(foto=="5"){
         painterID = painterResource(R.drawable.personaje6)
     }
-    else if(foto==6){
+    else if(foto=="6"){
         painterID = painterResource(R.drawable.personaje7)
     }
-    else if(foto==7){
+    else if(foto=="7"){
         painterID = painterResource(R.drawable.personaje8)
-    }else {
+    }
+    else if (foto=="default")
+    {
+        painterID = painterResource(R.drawable.personaje1)
+    }
+    else {
         painterID = painterResource(R.drawable.personaje9)
     }
 

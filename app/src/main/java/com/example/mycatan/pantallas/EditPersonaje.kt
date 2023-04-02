@@ -25,7 +25,7 @@ import com.example.mycatan.ui.theme.*
 @Composable
 fun EditPersonaje(navController: NavHostController) {
 
-    var personajeClicked by remember { mutableStateOf(-1) }
+    var personajeClicked = "null"
     var colorClicado: Color
 
     Box(
@@ -58,7 +58,7 @@ fun EditPersonaje(navController: NavHostController) {
 
                     // deberá recorrer el bueno
                     items(9)  {
-                        if( personajeClicked == it ){
+                        if( ("default" == it.toString() && personajeClicked=="0")|| personajeClicked == it.toString() ){
                             colorClicado = Color.Black.copy(alpha = 0.6f)
                         }
                         else{
@@ -68,15 +68,20 @@ fun EditPersonaje(navController: NavHostController) {
                             .background(colorClicado)
 
                         ){
-                            PerfilItem(foto = it,
-                                onCardClick = {personajeClicked=it})
+                            PerfilItem(foto = it.toString(),
+                                onCardClick = {
+                                    if(it.toString()=="default"){
+                                        personajeClicked="0"  // maybe es 1
+                                    }else{
+                                        personajeClicked=it.toString()
+                                    } })
                         }
 
                     }
                 }
 
 
-                if (Globals.Personaje.toInt() == personajeClicked) {
+                if (Globals.Personaje == personajeClicked) {
                     Text(
                         text = "Ya tienes este personaje equipado ",
                         fontSize = 16.sp,
@@ -101,7 +106,7 @@ fun EditPersonaje(navController: NavHostController) {
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                if (Globals.Personaje.toInt() != personajeClicked && -1 != personajeClicked ) {
+                if (Globals.Personaje != personajeClicked && "null" != personajeClicked ) {
                     Row() {
 
                         Button(

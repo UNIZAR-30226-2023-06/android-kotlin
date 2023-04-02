@@ -25,7 +25,7 @@ import com.example.mycatan.ui.theme.*
 @Composable
 fun EditMapa(navController: NavHostController) {
 
-    var mapaClicked by remember { mutableStateOf(-1) }
+    var mapaClicked ="null"
     var colorClicado: Color
 
     Box(
@@ -58,7 +58,7 @@ fun EditMapa(navController: NavHostController) {
 
                     // deberá recorrer el bueno
                     items(9)  {
-                        if( mapaClicked == it ){
+                        if( ("default" == it.toString() && mapaClicked=="0") ||mapaClicked == it.toString() ){
                             colorClicado = Color.Black.copy(alpha = 0.6f)
                         }
                         else{
@@ -68,15 +68,20 @@ fun EditMapa(navController: NavHostController) {
                             .background(colorClicado)
 
                         ){
-                            PerfilItem(foto = it,
-                                onCardClick = {mapaClicked=it})
+                            PerfilItem(foto = it.toString(),
+                                onCardClick = {
+                                    if(it.toString()=="default"){
+                                        mapaClicked="0"  // maybe es 1
+                                    }else{
+                                        mapaClicked=it.toString()
+                                    } })
                         }
 
                     }
                 }
 
 
-                if (Globals.Mapa.toInt() == mapaClicked) {
+                if (Globals.Mapa == mapaClicked) {
                     Text(
                         text = "Ya tienes este mapa equipado ",
                         fontSize = 16.sp,
@@ -101,7 +106,7 @@ fun EditMapa(navController: NavHostController) {
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                if (Globals.Mapa.toInt() != mapaClicked && -1 != mapaClicked ) {
+                if (Globals.Mapa != mapaClicked && "null" != mapaClicked ) {
                     Row() {
 
                         Button(
