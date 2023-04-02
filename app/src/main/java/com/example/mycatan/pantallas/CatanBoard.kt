@@ -2,6 +2,7 @@ package com.example.mycatan.pantallas
 
 import android.graphics.Paint
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
@@ -19,13 +20,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PaintingStyle.Companion.Stroke
-import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
-import androidx.compose.ui.graphics.nativeCanvas
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
@@ -46,50 +43,68 @@ import androidx.navigation.compose.rememberNavController
 import com.example.mycatan.ui.theme.*
 import kotlin.math.*
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.rememberTransformableState
+import androidx.compose.foundation.gestures.transformable
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.*
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 
 
 @Composable
 fun CatanBoard(navController: NavHostController) {
+    // set up all transformation states
+    var scale by remember { mutableStateOf(1f) }
+    var rotation by remember { mutableStateOf(0f) }
+    var offset by remember { mutableStateOf(Offset.Zero) }
+    val state = rememberTransformableState { zoomChange, offsetChange, rotationChange ->
+        scale *= zoomChange
+        rotation += rotationChange
+        offset += offsetChange
+    }
     val tiles = listOf(
         Tile("bosque", 5, Pair(0, 0)),
         Tile("lago", 2, Pair(1, 0)),
         Tile("montaña", 9, Pair(2, 0)),
         Tile("montaña", 8, Pair(-1, 1)),
-        Tile("montaña", 3, Pair(0, 1)),
+        Tile("lago", 3, Pair(0, 1)),
         Tile("montaña", 10, Pair(1, 1)),
-        Tile("montaña", 6, Pair(2, 1)),
+        Tile("bosque", 6, Pair(2, 1)),
         Tile("montaña", 12, Pair(-2, 2)),
-        Tile("montaña", 11, Pair(-1, 2)),
+        Tile("lago", 11, Pair(-1, 2)),
         Tile("montaña", 4, Pair(0, 2)),
         Tile("montaña", 8, Pair(1, 2)),
-        Tile("montaña", 10, Pair(2, 2)),
-        Tile("montaña", 9, Pair(-2, 3)),
-        Tile("montaña", 4, Pair(-1, 3)),
+        Tile("lago", 10, Pair(2, 2)),
+        Tile("bosque", 9, Pair(-2, 3)),
+        Tile("bosque", 4, Pair(-1, 3)),
         Tile("montaña", 5, Pair(0, 3)),
         Tile("montaña", 10, Pair(1, 3)),
-        Tile("montaña", 11, Pair(-2, 4)),
-        Tile("montaña", 3, Pair(-1, 4)),
+        Tile("desierto", 11, Pair(-2, 4)),
+        Tile("bosque", 3, Pair(-1, 4)),
         Tile("montaña", 6, Pair(0, 4))
 
     )
     Box(
         modifier = Modifier
-            .fillMaxSize()
             .background(AzulClaro)
-            .padding(20.dp),
+            .padding(20.dp)
+            .graphicsLayer(
+                scaleX = scale,
+                scaleY = scale,
+                rotationZ = rotation,
+                translationX = offset.x,
+                translationY = offset.y
+            )
+            // add transformable to listen to multitouch transformation events
+            // after offset
+            .transformable(state = state)
+            .fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        Column(
-            modifier = Modifier
-                .wrapContentSize()
-                .align(Alignment.Center)
-                .padding(20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
             TileGrid(tiles)
-        }
+
     }
 
 
@@ -100,22 +115,36 @@ class Tile(val terrain: String, val number: Int, val coordinates: Pair<Int, Int>
     val vertices = listOf(
         Pair(coordinates.first, coordinates.second - 1),
         Pair(coordinates.first + 1, coordinates.second - 1),
-        Pair(coordinates.first + 1, coordinates.second),
+        Pair(coordinates.first + 1, coordinates.second + 1),
         Pair(coordinates.first, coordinates.second + 1),
-        Pair(coordinates.first - 1, coordinates.second),
+        Pair(coordinates.first - 1, coordinates.second + 1),
         Pair(coordinates.first - 1, coordinates.second - 1)
     )
 }
 
 @Composable
 fun TileGrid(tiles: List<Tile>) {
-    Canvas(modifier = Modifier.fillMaxSize()) {
+    val context = LocalContext.current
+    val isClicked = remember { mutableStateOf(false) }
+    Canvas(modifier = Modifier.fillMaxSize().pointerInput(Unit)
+    {
+        // Detectar si se hizo clic en el círculo
+        detectTapGestures(
+            onTap = {
+                    isClicked.value = !isClicked.value
+                val toast = Toast.makeText(context, "ME CLICASTE", Toast.LENGTH_SHORT)
+                toast.show()
+            }
+        )
+    }
+
+    ) {
         // Obtener el ancho y la altura del canvas
         val canvasWidth = size.width
         val canvasHeight = size.height
 
         // Calcular el ancho y la altura del tablero
-        val hexRadius = 48
+        val hexRadius = 100
         val hexHeight = hexRadius * 2
         val hexWidth = (sqrt(3f) / 2f) * hexHeight
         val boardWidth = hexWidth * 5
@@ -167,20 +196,29 @@ fun TileGrid(tiles: List<Tile>) {
             }
 
             // Dibujar círculos clicables en cada vértice
-            /*for (vertex in tile.vertices) {
-                val vertexX = boardX + (vertex.first + vertex.second / 2f) * hexWidth
-                val vertexY = boardY + vertex.second * 1.5f * hexRadius
-
+            for (vertex in getHexagonVertices(tileX, tileY, hexRadius)) {
                 drawCircle(
+                    center = vertex,
+                    radius = 6f,
                     color = Color.Black,
-                    radius = 10f,
-                    center = Offset(vertexX, vertexY)
                 )
-            }*/
+
+            }
         }
     }
 }
 
+fun getHexagonVertices(centerX: Float, centerY: Float, radius: Int): List<Offset> {
+    val vertices = mutableListOf<Offset>()
+    val angle_deg = 60f
+    for (i in 0 until 6) {
+        val angle_rad = Math.PI / 180 * (angle_deg * i + 30)
+        val x = centerX + radius * cos(angle_rad).toFloat()
+        val y = centerY + radius * sin(angle_rad).toFloat()
+        vertices.add(Offset(x, y))
+    }
+    return vertices
+}
 
 @Preview
 @Composable
