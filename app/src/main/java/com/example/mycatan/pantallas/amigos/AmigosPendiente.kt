@@ -43,6 +43,7 @@ fun AmigosPendientePage(navController: NavHostController) {
     val context = LocalContext.current
 
     Column(modifier = Modifier
+        .fillMaxSize()
         .paint(
             painterResource(R.drawable.talado),
             contentScale = ContentScale.FillBounds)
