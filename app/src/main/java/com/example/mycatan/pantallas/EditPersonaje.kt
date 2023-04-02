@@ -25,7 +25,7 @@ import com.example.mycatan.ui.theme.*
 @Composable
 fun EditPersonaje(navController: NavHostController) {
 
-    var personajeClicked = "null"
+    var personajeClicked by remember { mutableStateOf("null") }
     var colorClicado: Color
 
     Box(
@@ -58,7 +58,7 @@ fun EditPersonaje(navController: NavHostController) {
 
                     // deberá recorrer el bueno
                     items(9)  {
-                        if( ("default" == it.toString() && personajeClicked=="0")|| personajeClicked == it.toString() ){
+                        if( personajeClicked == it.toString() ){
                             colorClicado = Color.Black.copy(alpha = 0.6f)
                         }
                         else{
@@ -69,19 +69,15 @@ fun EditPersonaje(navController: NavHostController) {
 
                         ){
                             PerfilItem(foto = it.toString(),
-                                onCardClick = {
-                                    if(it.toString()=="default"){
-                                        personajeClicked="0"  // maybe es 1
-                                    }else{
-                                        personajeClicked=it.toString()
-                                    } })
+                                onCardClick = {personajeClicked=it.toString()
+                                    println(it.toString())})
                         }
 
                     }
                 }
 
 
-                if (Globals.Personaje == personajeClicked) {
+                if(Globals.Personaje == personajeClicked || (Globals.Personaje == "default" && personajeClicked == "0") ) {
                     Text(
                         text = "Ya tienes este personaje equipado ",
                         fontSize = 16.sp,
@@ -106,7 +102,7 @@ fun EditPersonaje(navController: NavHostController) {
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                if (Globals.Personaje != personajeClicked && "null" != personajeClicked ) {
+                if ( ((Globals.Personaje != personajeClicked && Globals.Personaje !="default" ) || (Globals.Personaje=="default"&& personajeClicked != "0" )) && "null" != personajeClicked ) {
                     Row() {
 
                         Button(

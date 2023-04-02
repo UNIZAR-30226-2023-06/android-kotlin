@@ -25,7 +25,7 @@ import com.example.mycatan.ui.theme.*
 @Composable
 fun EditMapa(navController: NavHostController) {
 
-    var mapaClicked ="null"
+    var mapaClicked by remember { mutableStateOf("null") }
     var colorClicado: Color
 
     Box(
@@ -58,7 +58,7 @@ fun EditMapa(navController: NavHostController) {
 
                     // deberá recorrer el bueno
                     items(9)  {
-                        if( ("default" == it.toString() && mapaClicked=="0") ||mapaClicked == it.toString() ){
+                        if( mapaClicked == it.toString() ){
                             colorClicado = Color.Black.copy(alpha = 0.6f)
                         }
                         else{
@@ -69,19 +69,15 @@ fun EditMapa(navController: NavHostController) {
 
                         ){
                             PerfilItem(foto = it.toString(),
-                                onCardClick = {
-                                    if(it.toString()=="default"){
-                                        mapaClicked="0"  // maybe es 1
-                                    }else{
-                                        mapaClicked=it.toString()
-                                    } })
+                                onCardClick = {mapaClicked=it.toString()
+                                    println(it.toString())})
                         }
 
                     }
                 }
 
 
-                if (Globals.Mapa == mapaClicked) {
+                if (Globals.Mapa == mapaClicked || (Globals.Mapa == "default" && mapaClicked == "0") ) {
                     Text(
                         text = "Ya tienes este mapa equipado ",
                         fontSize = 16.sp,
@@ -106,7 +102,7 @@ fun EditMapa(navController: NavHostController) {
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                if (Globals.Mapa != mapaClicked && "null" != mapaClicked ) {
+                if ( ((Globals.Mapa != mapaClicked && Globals.Mapa !="default" ) || (Globals.Mapa =="default"&& mapaClicked != "0" )) && "null" != mapaClicked ) {
                     Row() {
 
                         Button(

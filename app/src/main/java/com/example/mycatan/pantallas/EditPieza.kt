@@ -79,7 +79,7 @@ fun EditPieza(navController: NavHostController) {
 
                 if (Globals.Piezas == piezaClicked || (Globals.Piezas == "default" && piezaClicked == "0") ) {
                     Text(
-                        text = "Ya tienes estas piezas equipado ",
+                        text = "Ya tienes estas piezas equipadas ",
                         fontSize = 16.sp,
                         style = TextStyle(
                             color = AzulOscuro,
