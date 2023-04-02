@@ -15,9 +15,10 @@ import org.json.JSONObject
 import java.io.IOException
 import java.util.concurrent.CountDownLatch
 
+data class Persona(val id: String, val name: String, val photo: String)
 // MIRAMOS QUE USUARIOS SON NUESTROS AMIGOS
-fun getAmigosTodos(token: String): List<String>{
-    val result = mutableListOf<String>()
+fun getAmigosTodos(token: String): List<Persona>{
+    val result = mutableListOf<Persona>()
     val latch = CountDownLatch(1)
     val mediaType = "application/x-www-form-urlencoded".toMediaTypeOrNull()
     val body = RequestBody.create(
@@ -56,7 +57,13 @@ fun getAmigosTodos(token: String): List<String>{
                 // AÑADIMOS A LA LISTA RESULT, EL ID DE LOS USUARIOS AMIGOS
                 for (i in 0 until jsonArray.length()) {
                     val jsonObject = jsonArray.getJSONObject(i)
-                    result.add(jsonObject.getString("friend_id"))
+                    result.add(
+                        Persona(
+                            jsonObject.getString("friend_id"),
+                            jsonObject.getString("friend_name"),
+                            jsonObject.getString("profile_picture")
+                        )
+                    )
                 }
             }
             latch.countDown()

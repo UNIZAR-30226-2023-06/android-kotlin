@@ -13,7 +13,7 @@ import java.io.IOException
 import java.util.concurrent.CountDownLatch
 
 fun getUserID(id: String): String {
-    var name = ""
+    var photo = ""
     val latch = CountDownLatch(1)
     val request = Request.Builder()
 
@@ -47,12 +47,15 @@ fun getUserID(id: String): String {
                 println("NO EXISTE USUARIO CON ESE ID")
             }else {
                 println("ok")
-                name = json.getString("username")
+                photo = json.getString("profile_picture")
+                if (photo == "default"){
+                    photo = "1"
+                }
             }
             latch.countDown()
         }
     })
     latch.await()
-    println("$name NAME")
-    return name
+    println("$photo NAME")
+    return photo
 }

@@ -1,5 +1,6 @@
 package com.example.mycatan.pantallas
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
@@ -33,15 +35,16 @@ import com.example.mycatan.ui.theme.*
 
 @Composable
 fun RegistroPage(navController: NavHostController) {
+    val context = LocalContext.current
+
     var errorPswd by remember { mutableStateOf(false) }
     var errorNombres by remember { mutableStateOf(false) }
     var errorRegistro by remember { mutableStateOf(false) }
     var errorActualizado by remember { mutableStateOf(false) }
     Box(modifier = Modifier
         .fillMaxHeight()
-        .background(color= Transp)
         .paint(
-            painterResource(R.drawable.wave_3),
+            painterResource(R.drawable.talado),
             contentScale = ContentScale.FillBounds),
         contentAlignment = Alignment.Center
     ){
@@ -60,8 +63,8 @@ fun RegistroPage(navController: NavHostController) {
             val confirmarContrasena = remember { mutableStateOf(TextFieldValue()) }
             Spacer(modifier = Modifier.height(10.dp))
 
-            Row(horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically){
+            /*Row(horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically){*/
                 TextField(
                     singleLine = true,
                     label = { Text(text = "Correo electrónico") },
@@ -80,13 +83,13 @@ fun RegistroPage(navController: NavHostController) {
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         backgroundColor = Color.Transparent),
                     onValueChange = { nombre.value = it })
-            }
+           // }
 
 
             Spacer(modifier = Modifier.height(5.dp))
 
-            Row(horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically){
+            /*Row(horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically){*/
                 TextField(
                     singleLine = true,
                     label = { Text(text = "Contraseña") },
@@ -106,19 +109,25 @@ fun RegistroPage(navController: NavHostController) {
                     visualTransformation = PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                     onValueChange = { confirmarContrasena.value = it })
-            }
+            //}
 
 
             Spacer(modifier = Modifier.height(10.dp))
 
             if(errorNombres){
-                Text(text = "ERROR: El correo o el nombre estan vacíos no coinciden", style = TextStyle(color = Rojo))
+                val toast = Toast.makeText(context, "ERROR: El correo o el nombre estan vacíos no coinciden", Toast.LENGTH_SHORT)
+                toast.show()
+                //Text(text = "ERROR: El correo o el nombre estan vacíos no coinciden", style = TextStyle(color = Rojo))
             }
             else if(errorPswd){
-                Text(text = "ERROR: Las contraseñas no coinciden  o están vacías. Vuelva a intentarlo.", style = TextStyle(color = Rojo))
+                val toast = Toast.makeText(context, "ERROR: Las contraseñas no coinciden  o están vacías. Vuelva a intentarlo.", Toast.LENGTH_SHORT)
+                toast.show()
+                //Text(text = "ERROR: Las contraseñas no coinciden  o están vacías. Vuelva a intentarlo.", style = TextStyle(color = Rojo))
             }
             else if(errorRegistro){
-                Text(text = "ERROR: El email introducido está siendo usado o es incorrecto", style = TextStyle(color = Rojo))
+                val toast = Toast.makeText(context, "ERROR: El email introducido está siendo usado o es incorrecto", Toast.LENGTH_SHORT)
+                toast.show()
+                //Text(text = "ERROR: El email introducido está siendo usado o es incorrecto", style = TextStyle(color = Rojo))
             }
             else if(errorActualizado){
                 errorActualizado = false

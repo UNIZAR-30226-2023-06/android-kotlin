@@ -1,5 +1,11 @@
 package com.example.mycatan.pantallas
 
+import android.graphics.drawable.ColorDrawable
+import android.view.LayoutInflater
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -13,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
@@ -23,6 +30,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import com.example.mycatan.R
 import com.example.mycatan.ui.theme.*
@@ -39,11 +47,12 @@ import com.example.mycatan.others.Routes
 fun LoginPage(navController: NavHostController) {
     var errorDatosIncorrectos by remember { mutableStateOf(false) }
     var errorActualizado by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     Box(modifier = Modifier
         .fillMaxHeight()
         .paint(
-            painterResource(R.drawable.wave_3),
+            painterResource(R.drawable.talado),
             contentScale = ContentScale.FillBounds
         ),
             contentAlignment = Alignment.Center
@@ -51,8 +60,7 @@ fun LoginPage(navController: NavHostController) {
         Column(
             modifier = Modifier
                 .fillMaxHeight()
-                .fillMaxWidth()
-                .background(color = Transp),
+                .fillMaxWidth(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
 
@@ -64,7 +72,7 @@ fun LoginPage(navController: NavHostController) {
 
 
             Image(
-                painter = painterResource(R.drawable.image),
+                painter = painterResource(R.drawable.icon),
                 contentDescription = "My image",
                 modifier = Modifier.width(150.dp)
 
@@ -104,7 +112,11 @@ fun LoginPage(navController: NavHostController) {
             )
             Spacer(modifier = Modifier.height(10.dp))
             if(errorDatosIncorrectos){
-                Text(text = "ERROR: Datos incorrectos", style = TextStyle(color = Rojo, fontWeight = FontWeight.Bold))
+                errorDatosIncorrectos = false
+                val toast = Toast.makeText(context, "ERROR: Datos incorrectos", Toast.LENGTH_SHORT)
+                toast.show()
+
+                //Text(text = "ERROR: Datos incorrectos", style = TextStyle(color = Rojo, fontWeight = FontWeight.Bold))
             }
             else if(errorActualizado){
                 errorActualizado = false
