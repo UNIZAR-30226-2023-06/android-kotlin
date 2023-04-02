@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.mycatan.R
 import com.example.mycatan.others.Routes
+import com.example.mycatan.ui.theme.Azul
 import com.example.mycatan.ui.theme.AzulClaro
 import com.example.mycatan.ui.theme.AzulOscuro
 import com.example.mycatan.ui.theme.Transp
@@ -35,9 +36,8 @@ fun SplashScreen(navController: NavHostController) {
 fun Splash() {
     Column(modifier = Modifier
         .fillMaxSize()
-        .paint(painterResource(R.drawable.wave_3),
-            contentScale = ContentScale.FillBounds)
-        .background(color= Transp),
+        .paint(painterResource(R.drawable.talado),
+            contentScale = ContentScale.FillBounds),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ){
@@ -48,7 +48,7 @@ fun Splash() {
         )
         LinearProgressIndicator(
             modifier = Modifier.width(150.dp),
-            color = AzulClaro,
+            color = Azul,
             backgroundColor = AzulOscuro
         )
     }

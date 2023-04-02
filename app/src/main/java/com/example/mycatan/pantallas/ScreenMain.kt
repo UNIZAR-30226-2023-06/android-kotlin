@@ -13,7 +13,7 @@ import com.example.mycatan.pantallas.amigos.AmigosTodosPage
 @Composable
 fun ScreenMain(){
     val navController = rememberNavController()
-    LockScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
+    //LockScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
 
     NavHost(navController = navController, startDestination = Routes.Login.route) {
 
