@@ -1,5 +1,6 @@
 package com.example.mycatan.pantallas
 
+import android.content.pm.ActivityInfo
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
@@ -7,11 +8,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Card
-import androidx.compose.material.Icon
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Star
@@ -28,12 +28,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.mycatan.LockScreenOrientation
 import com.example.mycatan.R
 import com.example.mycatan.others.Globals
+import com.example.mycatan.others.Routes
 import com.example.mycatan.ui.theme.*
 
 @Composable
 fun TiendaPage(navController: NavHostController) {
+
+
 
     var menuVisible by remember { mutableStateOf(false) }
     var fotoPopUp by remember { mutableStateOf(-1) }
@@ -56,7 +60,8 @@ fun TiendaPage(navController: NavHostController) {
         .fillMaxSize()
         .paint(
             painterResource(R.drawable.talado),
-            contentScale = ContentScale.FillBounds)
+            contentScale = ContentScale.FillBounds
+        )
         .padding(10.dp, 10.dp, 10.dp, 10.dp)
     )
     {
@@ -65,7 +70,7 @@ fun TiendaPage(navController: NavHostController) {
             modifier = Modifier
                 .fillMaxSize(),
             verticalArrangement = Arrangement.SpaceEvenly,
-            horizontalAlignment = Alignment.Start
+            horizontalAlignment = Alignment.CenterHorizontally
         )
         {
             item(){
@@ -158,16 +163,41 @@ fun TiendaPage(navController: NavHostController) {
             )
             {
 
-                Icon(imageVector = Icons.Default.Star,
-                    contentDescription = null,
-                    tint = Amarillo)
-
                 Text(
                     text = Globals.Coins,
                     style = TextStyle(
                         color = Blanco,
                         fontWeight = FontWeight.Bold
                     )
+                )
+                Spacer(modifier = Modifier.width(5.dp))
+
+                Image( painter = painterResource(R.drawable.moneda),
+                    contentDescription = null,
+                    modifier = Modifier.size(25.dp)
+                )
+
+            }
+
+        }
+
+        //BackArrow
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.TopStart
+        ) {
+            Button(
+                onClick = { navController.navigate(Routes.Home.route) },
+                modifier = Modifier
+                    .width(50.dp)
+                    .height(50.dp),
+                shape = RoundedCornerShape(15.dp),
+                colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
+
+            ) {
+                Icon(imageVector =  Icons.Default.ArrowBack,
+                    contentDescription = null,
+                    tint = Blanco
                 )
             }
 
@@ -234,7 +264,8 @@ fun RackItem( foto: Int ,  comprada: Boolean,   onCardClick: () -> Unit ){
         modifier = Modifier
             .clickable {
                 if (!comprada)
-                    onCardClick() }
+                    onCardClick()
+            }
             .width(105.dp)
             .height(105.dp),
 
@@ -285,10 +316,12 @@ fun RackItem( foto: Int ,  comprada: Boolean,   onCardClick: () -> Unit ){
 
                         )
                     )
-                    Icon(
-                        imageVector = Icons.Default.Star,
+
+                    Spacer(modifier = Modifier.width(5.dp))
+
+                    Image( painter = painterResource(R.drawable.moneda),
                         contentDescription = null,
-                        tint = Amarillo
+                        modifier = Modifier.size(15.dp)
                     )
                 }
             }

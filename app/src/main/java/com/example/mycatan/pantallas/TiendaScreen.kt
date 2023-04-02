@@ -33,7 +33,7 @@ fun TiendaScreen(fotoId: Int, navController: NavHostController, onConfirmed: (In
         Box(
             Modifier
                 .align(Alignment.Center)
-                .background(AzulClaro)
+                .background(GrisAzuladoClaro)
                 .size(250.dp)
                 .border(width = 5.dp, color = AzulOscuro),
             contentAlignment = Alignment.Center

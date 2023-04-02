@@ -18,6 +18,6 @@ val Negro= Color(0xFF000000)
 val Transp= Color(0xBC02020C)
 val Verde= Color(0x9511FF00)
 val TranspOscuro= Color(0xC9032D49)
-
+val GrisAzuladoClaro= Color(0xFF6C99B8)
 
 

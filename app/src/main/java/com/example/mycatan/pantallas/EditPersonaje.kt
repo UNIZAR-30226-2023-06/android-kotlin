@@ -35,7 +35,7 @@ fun EditPersonaje(navController: NavHostController) {
         Box(
             Modifier
                 .align(Alignment.Center)
-                .background(AzulClaro)
+                .background(GrisAzuladoClaro)
                 .width(350.dp)
                 .height(250.dp)
                 .border(width = 5.dp, color = AzulOscuro),

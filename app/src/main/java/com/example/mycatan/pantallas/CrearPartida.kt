@@ -30,7 +30,7 @@ fun CrearPartidaPage(navController: NavHostController) {
     var numeroJugadores by remember { mutableStateOf(4) }
     Row(modifier = Modifier
         .paint(
-            painterResource(R.drawable.wave_3),
+            painterResource(R.drawable.talado),
             contentScale = ContentScale.FillBounds)){
         // MENU LATERAL
         Column (
@@ -196,7 +196,27 @@ fun CrearPartidaPage(navController: NavHostController) {
 
 
         }
+    }
 
+    //BackArrow
+    Box(
+        modifier = Modifier.fillMaxSize().padding(10.dp,10.dp,10.dp,10.dp),
+        contentAlignment = Alignment.BottomStart
+    ) {
+        Button(
+            onClick = { navController.navigate(Routes.Home.route) },
+            modifier = Modifier
+                .width(50.dp)
+                .height(50.dp),
+            shape = RoundedCornerShape(15.dp),
+            colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
+
+        ) {
+            Icon(imageVector =  Icons.Default.ArrowBack,
+                contentDescription = null,
+                tint = Blanco
+            )
+        }
 
     }
 

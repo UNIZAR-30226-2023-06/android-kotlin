@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.mycatan.R
 import com.example.mycatan.others.Globals
+import com.example.mycatan.others.Routes
 import com.example.mycatan.ui.theme.*
 
 @Composable
@@ -43,10 +44,9 @@ fun EditarPerfil(navController: NavHostController) {
             modifier = Modifier
                 .fillMaxSize()
                 .paint(
-                    painterResource(R.drawable.wave_3),
+                    painterResource(R.drawable.talado),
                     contentScale = ContentScale.FillBounds
                 )
-                .background(color = Transp)
                 .padding(10.dp, 10.dp, 10.dp, 10.dp)
 
         )
@@ -87,8 +87,10 @@ fun EditarPerfil(navController: NavHostController) {
                             //boton edit del personaje
                             Box(
                                 modifier = Modifier
-                                    .clickable { menuVisible = !menuVisible
-                                                EditClicked=1}
+                                    .clickable {
+                                        menuVisible = !menuVisible
+                                        EditClicked = 1
+                                    }
                                     .width(45.dp)
                                     .height(45.dp)
                                     .background(
@@ -142,10 +144,12 @@ fun EditarPerfil(navController: NavHostController) {
                                 text = "Cambiar nombre",
                                 style = TextStyle(color = Blanco)
                             )
-                            Icon(
-                                imageVector = Icons.Default.Star,
+
+                            Spacer(modifier = Modifier.width(5.dp))
+
+                            Image( painter = painterResource(R.drawable.moneda),
                                 contentDescription = null,
-                                tint = Amarillo
+                                modifier = Modifier.size(15.dp)
                             )
                         }
                     }
@@ -202,8 +206,10 @@ fun EditarPerfil(navController: NavHostController) {
                             //boton edit piezas
                             Box(
                                 modifier = Modifier
-                                    .clickable { menuVisible = !menuVisible
-                                                EditClicked=2}
+                                    .clickable {
+                                        menuVisible = !menuVisible
+                                        EditClicked = 2
+                                    }
                                     .width(45.dp)
                                     .height(45.dp)
                                     .background(
@@ -252,8 +258,10 @@ fun EditarPerfil(navController: NavHostController) {
                             //boton edit tablero
                             Box(
                                 modifier = Modifier
-                                    .clickable { menuVisible = !menuVisible
-                                                EditClicked=3}
+                                    .clickable {
+                                        menuVisible = !menuVisible
+                                        EditClicked = 3
+                                    }
                                     .width(45.dp)
                                     .height(45.dp)
                                     .background(
@@ -282,6 +290,7 @@ fun EditarPerfil(navController: NavHostController) {
                 }
             }
 
+            //Saldo
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.TopEnd
@@ -296,9 +305,6 @@ fun EditarPerfil(navController: NavHostController) {
                 )
                 {
 
-                    Icon(imageVector = Icons.Default.Star,
-                        contentDescription = null,
-                        tint = Amarillo)
 
                     Text(
                         text = Globals.Coins,
@@ -307,6 +313,34 @@ fun EditarPerfil(navController: NavHostController) {
                             fontWeight = FontWeight.ExtraBold
                         )
                     )
+                    Spacer(modifier = Modifier.width(5.dp))
+
+                    Image( painter = painterResource(R.drawable.moneda),
+                        contentDescription = null,
+                        modifier = Modifier.size(25.dp)
+                    )
+                }
+
+            }
+
+            //BackArrow
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.TopStart
+            ) {
+                Button(
+                    onClick = { navController.navigate(Routes.Home.route) },
+                    modifier = Modifier
+                        .width(50.dp)
+                        .height(50.dp),
+                    shape = RoundedCornerShape(15.dp),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
+
+                ) {
+                    Icon(imageVector =  Icons.Default.ArrowBack,
+                        contentDescription = null,
+                        tint = Blanco
+                        )
                 }
 
             }
