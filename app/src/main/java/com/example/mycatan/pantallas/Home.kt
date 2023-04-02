@@ -1,5 +1,6 @@
 package com.example.mycatan.pantallas
 
+import android.content.pm.ActivityInfo
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -25,20 +26,22 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.mycatan.LockScreenOrientation
 import com.example.mycatan.R
 import com.example.mycatan.others.Globals
 import com.example.mycatan.others.Routes
 import com.example.mycatan.ui.theme.*
 
+
 @Composable
 fun HomePage(navController: NavHostController) {
+    LockScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
     var menuVisible by remember { mutableStateOf(false) }
 
     Box(modifier = Modifier
         .paint(
-            painterResource(R.drawable.wave_3),
+            painterResource(R.drawable.talado),
             contentScale = ContentScale.FillBounds)
-        .background(color = Transp)
         .padding(10.dp, 10.dp, 10.dp, 10.dp))
     {
 
@@ -65,21 +68,6 @@ fun HomePage(navController: NavHostController) {
 
         }
 
-        //marca de agua
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.BottomEnd
-        ) {
-            /*Text(
-                text = "CATAN INC.", style =
-                TextStyle(fontSize = 20.sp, color = GrisAzulado, fontWeight = FontWeight.Bold)
-            )*/
-            Image(
-                painter = painterResource(R.drawable.image),
-                contentDescription = "My image",
-                modifier = Modifier.width(100.dp)
-            )
-        }
 
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -92,25 +80,27 @@ fun HomePage(navController: NavHostController) {
                 ) {
 
                     Row(modifier = Modifier
-                        .background(AzulOscuro)
-                        .padding(8.dp, 3.dp),
+                        .padding(8.dp, 3.dp)
+                        .width(50.dp)
+                        .height(50.dp),
 
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     )
                     {
-
-                        Icon(imageVector = Icons.Default.Star,
-                            contentDescription = null,
-                            tint = Amarillo)
-
                         Text(
                             text = Globals.Coins,
                             style = TextStyle(
-                                color = Blanco,
+                                color = AzulOscuro,
                                 fontWeight = FontWeight.Bold
                             )
                         )
+                        Spacer(modifier = Modifier.width(5.dp))
+
+                        Image( painter = painterResource(R.drawable.moneda),
+                            contentDescription = null,
+                            )
+
                     }
 
                 }
@@ -151,7 +141,6 @@ fun HomePage(navController: NavHostController) {
 
             ) {
 
-
             Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp),) {
                 Button(
                     onClick = { navController.navigate(Routes.Home.route) },
@@ -160,13 +149,13 @@ fun HomePage(navController: NavHostController) {
                         .height(60.dp),
 
                     shape = RoundedCornerShape(15.dp),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Amarillo)
+                    colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
 
                 ) {
                     Text(
                         text = "BUSCAR PARTIDA",
                         style = TextStyle(
-                            color = AzulOscuro,
+                            color = Blanco,
                             fontWeight = FontWeight.Bold
                         )
                     )
@@ -183,19 +172,45 @@ fun HomePage(navController: NavHostController) {
                         .height(60.dp),
 
                     shape = RoundedCornerShape(15.dp),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Amarillo)
+                    colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
 
                 ) {
                     Text(
-                        text = "CREAR PARTIDA CON AMIGOS",
+                        text = "UNIRSE CON CÓDIGO",
                         style = TextStyle(
-                            color = AzulOscuro,
+                            color = Blanco,
                             fontWeight = FontWeight.Bold
                         )
                     )
 
                 }
             }
+
+            Spacer(modifier = Modifier.height(20.dp))
+            Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp),) {
+                Button(
+                    onClick = { navController.navigate(Routes.CrearPartida.route) },
+                    modifier = Modifier
+                        .width(280.dp)
+                        .height(60.dp),
+
+                    shape = RoundedCornerShape(15.dp),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
+
+                ) {
+                    Text(
+                        text = "CREAR PARTIDA CON AMIGOS",
+                        style = TextStyle(
+                            color = Blanco,
+                            fontWeight = FontWeight.Bold
+                        )
+                    )
+
+                }
+            }
+
+
+
 
 
         }

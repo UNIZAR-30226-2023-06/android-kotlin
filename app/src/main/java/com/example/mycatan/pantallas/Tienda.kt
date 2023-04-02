@@ -55,9 +55,8 @@ fun TiendaPage(navController: NavHostController) {
     Box(modifier = Modifier
         .fillMaxSize()
         .paint(
-            painterResource(R.drawable.wave_3),
+            painterResource(R.drawable.talado),
             contentScale = ContentScale.FillBounds)
-        .background(color = Transp)
         .padding(10.dp, 10.dp, 10.dp, 10.dp)
     )
     {

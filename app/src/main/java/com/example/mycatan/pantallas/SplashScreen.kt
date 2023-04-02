@@ -1,5 +1,6 @@
 package com.example.mycatan.pantallas
 
+import android.content.pm.ActivityInfo
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -13,6 +14,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.mycatan.LockScreenOrientation
 import com.example.mycatan.R
 import com.example.mycatan.others.Routes
 import com.example.mycatan.ui.theme.Azul
@@ -34,6 +36,7 @@ fun SplashScreen(navController: NavHostController) {
 
 @Composable
 fun Splash() {
+    LockScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
     Column(modifier = Modifier
         .fillMaxSize()
         .paint(painterResource(R.drawable.talado),
