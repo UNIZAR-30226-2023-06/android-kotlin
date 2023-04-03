@@ -52,7 +52,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 
-
+var clickedVertex: Offset? = null
 @Composable
 fun CatanBoard(navController: NavHostController) {
     // set up all transformation states
@@ -128,14 +128,59 @@ fun TileGrid(tiles: List<Tile>) {
     val isClicked = remember { mutableStateOf(false) }
     Canvas(modifier = Modifier.fillMaxSize().pointerInput(Unit)
     {
+        // Obtener el ancho y la altura del canvas
+        val canvasWidth = size.width
+        val canvasHeight = size.height
+
+        // Calcular el ancho y la altura del tablero
+        val hexRadius = 100
+        val hexHeight = hexRadius * 2
+        val hexWidth = (sqrt(3f) / 2f) * hexHeight
+        val boardWidth = hexWidth * 5
+        val boardHeight = hexRadius * 6
+
+        // Calcular el centro del canvas
+        val centerX = canvasWidth / 2f
+        val centerY = canvasHeight / 2f
+
+        // Calcular la posición del tablero en el canvas
+        val boardX = centerX - boardWidth / 2f
+        val boardY = centerY - boardHeight / 2f
         // Detectar si se hizo clic en el círculo
-        detectTapGestures(
-            onTap = {
-                    isClicked.value = !isClicked.value
-                val toast = Toast.makeText(context, "ME CLICASTE", Toast.LENGTH_SHORT)
-                toast.show()
+        // Detectar si se hizo clic en un círculo clicable
+        detectTapGestures { tap ->
+            val x = tap.x
+            val y = tap.y
+
+            for (tile in tiles) {
+                val tileX = boardX + (tile.coordinates.first + tile.coordinates.second / 2f) * hexWidth
+                val tileY = boardY + tile.coordinates.second * 1.5f * hexRadius
+
+                for (vertex in getHexagonVertices(tileX, tileY, hexRadius)) {
+                    println("VERTEX: $vertex")
+                    println("X:  $y")
+                    println("Y: $x")
+
+                    if (x >= vertex.x - 6f && x <= vertex.x + 6f &&
+                        y >= vertex.y - 6f && y <= vertex.y + 6f) {
+                        clickedVertex = vertex
+                        break
+                    }
+
+
+                }
+
+                if (clickedVertex != null) {
+                    // hacer lo que necesites hacer cuando se hace clic en un vértice
+                    // ...
+                    val toast = Toast.makeText(context, "$clickedVertex", Toast.LENGTH_SHORT)
+                    toast.show()
+                    break
+                }
             }
-        )
+
+            clickedVertex = null
+        }
     }
 
     ) {
@@ -197,11 +242,17 @@ fun TileGrid(tiles: List<Tile>) {
 
             // Dibujar círculos clicables en cada vértice
             for (vertex in getHexagonVertices(tileX, tileY, hexRadius)) {
+                val color = if (vertex == clickedVertex) {
+                    Color.Blue
+                } else {
+                    Color.Black
+                }
                 drawCircle(
                     center = vertex,
                     radius = 6f,
-                    color = Color.Black,
+                    color = color,
                 )
+
 
             }
         }
