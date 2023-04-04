@@ -34,6 +34,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.mycatan.R
+import com.example.mycatan.dBaux.getNumAmigosPendiente
 import com.example.mycatan.dBaux.postSendRequestFriend
 import com.example.mycatan.others.Globals
 import com.example.mycatan.others.Routes
@@ -46,7 +47,7 @@ import kotlinx.coroutines.launch
 fun HomePage(navController: NavHostController) {
     val buscarPartida =  remember { mutableStateOf(false) }
     val unirsePartida =  remember { mutableStateOf(false) }
-
+    val pendiente by remember { mutableStateOf(getNumAmigosPendiente(Globals.Token)) }
     Scaffold(
         bottomBar = {
             BottomAppBar {
@@ -69,12 +70,22 @@ fun HomePage(navController: NavHostController) {
                             imageVector = Icons.Default.Person,
                             contentDescription = null,
                             tint = Blanco,
+                            modifier = Modifier.padding(5.dp)
                         )
+                       if (pendiente.toInt() > 0) {
+                            Badge(
+                                backgroundColor = Color.Red,
+                                contentColor = Color.White
+                            ) {
+                                Text(text = pendiente)
+                            }
+                       }
                            },
                     selected = false,
                     onClick = {
                         navController.navigate(Routes.AmigosTodos.route)
                     }
+
                 )
                 BottomNavigationItem(
                     icon = {

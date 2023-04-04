@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.mycatan.R
+import com.example.mycatan.dBaux.getNumAmigosPendiente
 import com.example.mycatan.others.Globals
 import com.example.mycatan.others.Routes
 import com.example.mycatan.ui.theme.*
@@ -32,7 +33,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun EditarPerfil(navController: NavHostController) {
-
+    val pendiente by remember { mutableStateOf(getNumAmigosPendiente(Globals.Token)) }
     var menuVisible by remember { mutableStateOf(false) }
     var EditClicked by remember { mutableStateOf(-1) }
 
@@ -58,12 +59,22 @@ fun EditarPerfil(navController: NavHostController) {
                             imageVector = Icons.Default.Person,
                             contentDescription = null,
                             tint = Blanco,
+                            modifier = Modifier.padding(5.dp)
                         )
+                        if (pendiente.toInt() > 0) {
+                            Badge(
+                                backgroundColor = Color.Red,
+                                contentColor = Color.White
+                            ) {
+                                Text(text = pendiente)
+                            }
+                        }
                     },
                     selected = false,
                     onClick = {
                         navController.navigate(Routes.AmigosTodos.route)
                     }
+
                 )
                 BottomNavigationItem(
                     icon = {

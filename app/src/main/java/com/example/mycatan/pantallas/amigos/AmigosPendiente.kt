@@ -42,6 +42,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun AmigosPendientePage(navController: NavHostController) {
     val context = LocalContext.current
+    val pendiente by remember { mutableStateOf(getNumAmigosPendiente(Globals.Token)) }
 
     Scaffold(
         bottomBar = {
@@ -123,29 +124,37 @@ fun AmigosPendientePage(navController: NavHostController) {
                 var isSelectedTodos by remember { mutableStateOf(true) }
                 var isSelectedPendiente by remember { mutableStateOf(false) }
 
-                Column(){
-                    ClickableText(
-                        text = AnnotatedString("Todos"),
-                        onClick = { isSelectedTodos= true;
-                            isSelectedPendiente = false
-                            navController.navigate(Routes.AmigosTodos.route)
-                        },
-                        style = TextStyle(
-                            color = if (isSelectedTodos) Azul else AzulOscuro,
-                        )
+
+                ClickableText(
+                    text = AnnotatedString("Todos"),
+                    onClick = { isSelectedTodos= true;
+                        isSelectedPendiente = false
+                        navController.navigate(Routes.AmigosTodos.route)
+                    },
+                    style = TextStyle(
+                        color = if (isSelectedTodos) Azul else AzulOscuro,
                     )
-                }
+                )
+
                 Spacer(modifier = Modifier.width(20.dp))
 
-                Column(){
-                    ClickableText(
-                        text = AnnotatedString("Pendiente"),
-                        onClick = { isSelectedTodos = false},
-                        style = TextStyle(
-                            color = if (isSelectedPendiente) Azul else AzulOscuro,
-                        )
+
+                ClickableText(
+                    text = AnnotatedString("Pendiente"),
+                    onClick = { isSelectedTodos = false},
+                    style = TextStyle(
+                        color = if (isSelectedPendiente) Azul else AzulOscuro,
                     )
+                )
+                if (pendiente.toInt() > 0) {
+                    Badge(
+                        backgroundColor = Color.Red,
+                        contentColor = Color.White
+                    ) {
+                        Text(text = pendiente)
+                    }
                 }
+
             }
             Spacer(modifier = Modifier.height(5.dp))
 
@@ -153,7 +162,7 @@ fun AmigosPendientePage(navController: NavHostController) {
                     // on below line we are populating
                     // items for listview.
                     items(filteredItems) { id ->
-                        val username = getUserID(id)
+                        val username = getUserName(id)
                         // on below line we are specifying
                         Row(
                             verticalAlignment = Alignment.CenterVertically,

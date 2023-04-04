@@ -123,6 +123,52 @@ fun getAmigosPendiente(token: String): List<String>{
     return result
 }
 
+// MIRAMOS LAS SOLICITUDES DE AMISTAD QUE TENEMOS PENDIENTES
+fun getNumAmigosPendiente(token: String): String{
+    var result = ""
+    val latch = CountDownLatch(1)
+    val mediaType = "application/x-www-form-urlencoded".toMediaTypeOrNull()
+    val body = RequestBody.create(
+        mediaType,
+        ""
+    )
+    val request = Request.Builder()
+        .url("http://$ipBackend:8000/get_friend_requests")
+        .put(body)
+        .addHeader("accept", "application/json")
+        .addHeader("Authorization", "Bearer $token")
+        .addHeader("Content-Type", "application/x-www-form-urlencoded")
+        .build()
+
+    val client = OkHttpClient()
+
+    //val response = client.newCall(request).execute()
+    client.newCall(request).enqueue(object : Callback {
+        override fun onFailure(call: Call, e: IOException) {
+            println("ERROR al conectar con backend")
+            latch.countDown()
+        }
+
+        override fun onResponse(call: Call, response: Response) {
+            val respuesta = response.body?.string().toString()
+            //transform the string to json object
+            val json = JSONObject(respuesta)
+            //get the string from the response
+            val status = json.getString("number_of_requests")
+
+            if (status.toInt() == 0){
+                println("NO TIENES PETICIONES DE AMISTAD")
+                result = "0"
+            } else{
+                result = status
+            }
+            latch.countDown()
+        }
+    })
+    latch.await()
+    return result
+}
+
 // ENVIAR A UN USUARIO UNA PETICIÓN DE AMISTAD INDICANDO SU ID DE USUARIO
 fun postSendRequestFriend( userId: String, token: String ): Boolean{
     var result = false

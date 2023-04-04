@@ -52,6 +52,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun AmigosTodosPage(navController: NavHostController) {
+    val pendiente by remember { mutableStateOf(getNumAmigosPendiente(Globals.Token)) }
     val context = LocalContext.current
     val showDialog =  remember { mutableStateOf(false) }
     Scaffold(
@@ -176,6 +177,14 @@ fun AmigosTodosPage(navController: NavHostController) {
                         color = if (isSelectedPendiente) Azul else AzulOscuro,
                     )
                 )
+                if (pendiente.toInt() > 0) {
+                    Badge(
+                        backgroundColor = Color.Red,
+                        contentColor = Color.White
+                    ) {
+                        Text(text = pendiente)
+                    }
+                }
 
             }
             Spacer(modifier = Modifier.height(5.dp))
