@@ -11,10 +11,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,6 +30,7 @@ import com.example.mycatan.R
 import com.example.mycatan.others.Globals
 import com.example.mycatan.others.Routes
 import com.example.mycatan.ui.theme.*
+import kotlinx.coroutines.launch
 
 @Composable
 fun TiendaPage(navController: NavHostController) {
@@ -56,153 +54,151 @@ fun TiendaPage(navController: NavHostController) {
         Globals.fotosCompradas[index] = true
     }
 
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .paint(
-            painterResource(R.drawable.talado),
-            contentScale = ContentScale.FillBounds
-        )
-        .padding(10.dp, 10.dp, 10.dp, 10.dp)
-    )
-    {
-
-        LazyColumn(
+    val scaffoldState = rememberScaffoldState()
+    val scope = rememberCoroutineScope()
+    Scaffold(
+        scaffoldState = scaffoldState,
+        topBar = {
+            TopAppBar(
+                title = { Text(text = "Tienda") },
+                navigationIcon = {
+                    IconButton(
+                        onClick = {
+                            scope.launch {
+                                scaffoldState.drawerState.apply {
+                                    if (isClosed) open() else close()
+                                }
+                            }
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Menu,
+                            contentDescription = "Open or close drawer"
+                        )
+                    }
+                }
+            )
+        },
+        drawerContent = {
+            MenuScreen(navController)
+        },
+    ) {
+        Box(
             modifier = Modifier
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.SpaceEvenly,
-            horizontalAlignment = Alignment.CenterHorizontally
+                .fillMaxSize()
+                .paint(
+                    painterResource(R.drawable.talado),
+                    contentScale = ContentScale.FillBounds
+                )
+                .padding(10.dp, 10.dp, 10.dp, 10.dp)
         )
         {
-            item(){
-                /*Text(text = "Tienda",
-                    style = TextStyle
-                        (fontSize = 40.sp, color = AzulOscuro, fontWeight = FontWeight.Bold))*/
 
-
-
-                Text(text = "    Personajes",
-                    style = TextStyle
-                        (fontSize = 20.sp, color = AzulOscuro, fontWeight = FontWeight.ExtraBold))
-
-                LazyRow(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-
-                    horizontalArrangement = Arrangement.spacedBy(25.dp), //maybe otra cosa
-                    verticalAlignment = Alignment.CenterVertically,
-                    contentPadding = PaddingValues(25.dp)
-                ) {
-                    items(9)  {
-                        RackItem(foto = it,
-                            comprada = Globals.fotosCompradas[it],
-                            onCardClick = {
-                                menuVisible = !menuVisible
-                                fotoPopUp = it })
-                    }
-                }
-
-                Text(text = "    Packs de fichas",
-                    style = TextStyle
-                        (fontSize = 20.sp, color = AzulOscuro, fontWeight = FontWeight.ExtraBold))
-
-                LazyRow(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-
-                    horizontalArrangement = Arrangement.spacedBy(25.dp), //maybe otra cosa
-                    verticalAlignment = Alignment.CenterVertically,
-                    contentPadding = PaddingValues(25.dp)
-                ) {
-
-                    items(9)  {
-                        RackItem(foto = it,
-                            comprada = Globals.fotosCompradas[it],
-                            onCardClick = {
-                                menuVisible = !menuVisible
-                                fotoPopUp = it })
-                    }
-                }
-
-                Text(text = "    Mapas",
-                    style = TextStyle
-                        (fontSize = 20.sp, color = AzulOscuro, fontWeight = FontWeight.ExtraBold))
-
-                LazyRow(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-
-                    horizontalArrangement = Arrangement.spacedBy(25.dp), //maybe otra cosa
-                    verticalAlignment = Alignment.CenterVertically,
-                    contentPadding = PaddingValues(25.dp)
-                ) {
-
-                    items(9)  {
-                        RackItem(foto = it,
-                            comprada = Globals.fotosCompradas[it],
-                            onCardClick = {
-                                menuVisible = !menuVisible
-                                fotoPopUp = it })
-                    }
-                }
-            }
-        }
-
-        //SALDO
-
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.TopEnd
-        ) {
-
-            Row(modifier = Modifier
-                .background(AzulOscuro)
-                .padding(10.dp, 5.dp),
-
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.SpaceEvenly,
+                horizontalAlignment = Alignment.CenterHorizontally
             )
             {
+                item() {
+                    /*Text(text = "Tienda",
+                        style = TextStyle
+                            (fontSize = 40.sp, color = AzulOscuro, fontWeight = FontWeight.Bold))*/
 
-                Text(
-                    text = Globals.Coins,
-                    style = TextStyle(
-                        color = Blanco,
-                        fontWeight = FontWeight.Bold
+
+
+                    Text(
+                        text = "Personajes",
+                        style = TextStyle
+                            (
+                            fontSize = 20.sp,
+                            color = AzulOscuro,
+                            fontWeight = FontWeight.ExtraBold
+                        )
                     )
-                )
-                Spacer(modifier = Modifier.width(5.dp))
 
-                Image( painter = painterResource(R.drawable.moneda),
-                    contentDescription = null,
-                    modifier = Modifier.size(25.dp)
-                )
+                    LazyRow(
+                        modifier = Modifier
+                            .fillMaxWidth(),
 
-            }
+                        horizontalArrangement = Arrangement.spacedBy(25.dp), //maybe otra cosa
+                        verticalAlignment = Alignment.CenterVertically,
+                        contentPadding = PaddingValues(25.dp)
+                    ) {
+                        items(9) {
+                            RackItem(foto = it,
+                                comprada = Globals.fotosCompradas[it],
+                                onCardClick = {
+                                    menuVisible = !menuVisible
+                                    fotoPopUp = it
+                                })
+                        }
+                    }
 
-        }
+                    Text(
+                        text = "Packs de fichas",
+                        style = TextStyle
+                            (
+                            fontSize = 20.sp,
+                            color = AzulOscuro,
+                            fontWeight = FontWeight.ExtraBold
+                        )
+                    )
 
-        //BackArrow
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.TopStart
-        ) {
-            Button(
-                onClick = { navController.navigate(Routes.Home.route) },
-                modifier = Modifier
-                    .width(50.dp)
-                    .height(50.dp),
-                shape = RoundedCornerShape(15.dp),
-                colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
+                    LazyRow(
+                        modifier = Modifier
+                            .fillMaxWidth(),
 
-            ) {
-                Icon(imageVector =  Icons.Default.ArrowBack,
-                    contentDescription = null,
-                    tint = Blanco
-                )
+                        horizontalArrangement = Arrangement.spacedBy(25.dp), //maybe otra cosa
+                        verticalAlignment = Alignment.CenterVertically,
+                        contentPadding = PaddingValues(25.dp)
+                    ) {
+
+                        items(9) {
+                            RackItem(foto = it,
+                                comprada = Globals.fotosCompradas[it],
+                                onCardClick = {
+                                    menuVisible = !menuVisible
+                                    fotoPopUp = it
+                                })
+                        }
+                    }
+
+                    Text(
+                        text = "Mapas",
+                        style = TextStyle
+                            (
+                            fontSize = 20.sp,
+                            color = AzulOscuro,
+                            fontWeight = FontWeight.ExtraBold
+                        )
+                    )
+
+                    LazyRow(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+
+                        horizontalArrangement = Arrangement.spacedBy(25.dp), //maybe otra cosa
+                        verticalAlignment = Alignment.CenterVertically,
+                        contentPadding = PaddingValues(25.dp)
+                    ) {
+
+                        items(9) {
+                            RackItem(foto = it,
+                                comprada = Globals.fotosCompradas[it],
+                                onCardClick = {
+                                    menuVisible = !menuVisible
+                                    fotoPopUp = it
+                                })
+                        }
+                    }
+                }
             }
 
         }
     }
+
 
 
     // OPTIONS MENU

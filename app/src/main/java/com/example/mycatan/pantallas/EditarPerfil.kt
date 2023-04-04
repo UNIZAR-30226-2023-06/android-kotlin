@@ -28,6 +28,7 @@ import com.example.mycatan.R
 import com.example.mycatan.others.Globals
 import com.example.mycatan.others.Routes
 import com.example.mycatan.ui.theme.*
+import kotlinx.coroutines.launch
 
 @Composable
 fun EditarPerfil(navController: NavHostController) {
@@ -38,8 +39,35 @@ fun EditarPerfil(navController: NavHostController) {
 
 
     //no se guarda si vas para atras
-
-
+    val scaffoldState = rememberScaffoldState()
+    val scope = rememberCoroutineScope()
+    Scaffold(
+        scaffoldState = scaffoldState,
+        topBar = {
+            TopAppBar(
+                title = { Text(text = "Perfil") },
+                navigationIcon = {
+                    IconButton(
+                        onClick = {
+                            scope.launch {
+                                scaffoldState.drawerState.apply {
+                                    if (isClosed) open() else close()
+                                }
+                            }
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Menu,
+                            contentDescription = "Open or close drawer"
+                        )
+                    }
+                }
+            )
+        },
+        drawerContent = {
+            MenuScreen(navController)
+        },
+    ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -52,66 +80,47 @@ fun EditarPerfil(navController: NavHostController) {
         )
         {
 
-            Row(
+            Column(
                 modifier = Modifier
                     .fillMaxSize(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceEvenly
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Column(
-                    verticalArrangement = Arrangement.SpaceEvenly,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
+
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
 
-                        PerfilItem(foto = Globals.Personaje) {}
+                        PerfilItem2(foto = Globals.Personaje) {}
 
                         Spacer(modifier = Modifier.width(5.dp))
 
-                        Column(
-                            verticalArrangement = Arrangement.SpaceEvenly,
-                            horizontalAlignment = Alignment.Start
+
+                        //boton edit del personaje
+                        Box(
+                            modifier = Modifier
+                                .clickable {
+                                    menuVisible = !menuVisible
+                                    EditClicked = 1
+                                }
+                                .width(45.dp)
+                                .height(45.dp)
+                                .background(
+                                    color = AzulOscuro,
+                                    shape = RoundedCornerShape(10.dp)
+
+                                ),
+                            contentAlignment = Alignment.Center
                         ) {
 
-                            Text(
-                                text = "Mi Personaje",
-                                fontSize = 25.sp,
-                                color = AzulOscuro,
-                                fontFamily = FontFamily.SansSerif,
-                                fontWeight = FontWeight.ExtraBold
+                            Icon(
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = null,
+                                //background(color = Amarillo),
+
+                                tint = Blanco
                             )
-
-                            //boton edit del personaje
-                            Box(
-                                modifier = Modifier
-                                    .clickable {
-                                        menuVisible = !menuVisible
-                                        EditClicked = 1
-                                    }
-                                    .width(45.dp)
-                                    .height(45.dp)
-                                    .background(
-                                        color = AzulOscuro,
-                                        shape = RoundedCornerShape(10.dp)
-
-                                    ),
-                                contentAlignment = Alignment.Center
-                            ) {
-
-                                Icon(
-                                    imageVector = Icons.Default.Edit,
-                                    contentDescription = null,
-                                    //background(color = Amarillo),
-
-                                    tint = Blanco
-                                )
-                            }
-
                         }
-
                     }
 
                     Spacer(modifier = Modifier.height(10.dp))
@@ -122,7 +131,6 @@ fun EditarPerfil(navController: NavHostController) {
                         color = AzulOscuro,
                         fontFamily = FontFamily.SansSerif,
                         fontWeight = FontWeight.ExtraBold,
-                        textDecoration = TextDecoration.Underline
                     )
 
                     Spacer(modifier = Modifier.height(5.dp))
@@ -147,14 +155,15 @@ fun EditarPerfil(navController: NavHostController) {
 
                             Spacer(modifier = Modifier.width(5.dp))
 
-                            Image( painter = painterResource(R.drawable.moneda),
+                            Image(
+                                painter = painterResource(R.drawable.moneda),
                                 contentDescription = null,
                                 modifier = Modifier.size(15.dp)
                             )
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(25.dp))
+                    Spacer(modifier = Modifier.height(5.dp))
 
                     Button(
                         onClick = { },
@@ -180,10 +189,10 @@ fun EditarPerfil(navController: NavHostController) {
                             )
                         }
                     }
-                }
+
 
                 Column(
-                    verticalArrangement = Arrangement.SpaceEvenly,
+                    verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Row(
@@ -289,62 +298,13 @@ fun EditarPerfil(navController: NavHostController) {
 
                 }
             }
-
-            //Saldo
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.TopEnd
-            ) {
-
-                Row(modifier = Modifier
-                    .background(AzulOscuro)
-                    .padding(10.dp, 5.dp),
-
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                )
-                {
-
-
-                    Text(
-                        text = Globals.Coins,
-                        style = TextStyle(
-                            color = Blanco,
-                            fontWeight = FontWeight.ExtraBold
-                        )
-                    )
-                    Spacer(modifier = Modifier.width(5.dp))
-
-                    Image( painter = painterResource(R.drawable.moneda),
-                        contentDescription = null,
-                        modifier = Modifier.size(25.dp)
-                    )
-                }
-
-            }
-
-            //BackArrow
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.TopStart
-            ) {
-                Button(
-                    onClick = { navController.navigate(Routes.Home.route) },
-                    modifier = Modifier
-                        .width(50.dp)
-                        .height(50.dp),
-                    shape = RoundedCornerShape(15.dp),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
-
-                ) {
-                    Icon(imageVector =  Icons.Default.ArrowBack,
-                        contentDescription = null,
-                        tint = Blanco
-                        )
-                }
-
-            }
         }
+
+    }
+
+
+
+
 
 
         // OPTIONS MENU
@@ -389,6 +349,60 @@ fun changedMapa( newP: String) {
 
 
 @Composable
+fun PerfilItem2( foto: String , onCardClick: () -> Unit ){
+
+
+
+    var painterID : Painter
+    //Estoes muy cutre pero no se hacerlo mejor
+    if(foto=="0"){
+        painterID = painterResource(R.drawable.personaje1)
+    }
+    else if(foto=="1"){
+        painterID = painterResource(R.drawable.personaje2)
+    }
+    else if(foto=="2"){
+        painterID = painterResource(R.drawable.personaje3)
+    }
+    else if(foto=="3"){
+        painterID = painterResource(R.drawable.personaje4)
+    }
+    else if(foto=="4"){
+        painterID = painterResource(R.drawable.personaje5)
+    }
+    else if(foto=="5"){
+        painterID = painterResource(R.drawable.personaje6)
+    }
+    else if(foto=="6"){
+        painterID = painterResource(R.drawable.personaje7)
+    }
+    else if(foto=="7"){
+        painterID = painterResource(R.drawable.personaje8)
+    }
+    else if (foto=="default")
+    {
+        painterID = painterResource(R.drawable.personaje1)
+    }
+    else {
+        painterID = painterResource(R.drawable.personaje9)
+    }
+
+    Card(
+        modifier = Modifier
+            .clickable { onCardClick() }
+            .fillMaxWidth(0.50f),
+
+        shape = CircleShape,
+        backgroundColor = Blanco,
+    ){
+        Image(
+            painter = painterID,
+            contentDescription = null,
+            )
+    }
+}
+
+@Composable
 fun PerfilItem( foto: String , onCardClick: () -> Unit ){
 
 
@@ -430,16 +444,14 @@ fun PerfilItem( foto: String , onCardClick: () -> Unit ){
     Card(
         modifier = Modifier
             .clickable { onCardClick() }
-            .width(90.dp)
-            .height(90.dp),
+            .size(90.dp),
 
         shape = CircleShape,
         backgroundColor = Blanco,
-        border = BorderStroke(5.dp, AzulOscuro),
     ){
         Image(
             painter = painterID,
             contentDescription = null,
-            )
+        )
     }
 }

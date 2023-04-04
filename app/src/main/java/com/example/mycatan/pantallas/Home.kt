@@ -1,6 +1,5 @@
 package com.example.mycatan.pantallas
 
-import android.content.pm.ActivityInfo
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -10,6 +9,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Star
@@ -21,125 +21,65 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.mycatan.LockScreenOrientation
 import com.example.mycatan.R
 import com.example.mycatan.others.Globals
 import com.example.mycatan.others.Routes
 import com.example.mycatan.ui.theme.*
+import kotlinx.coroutines.launch
 
-
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun HomePage(navController: NavHostController) {
-    LockScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
-    var menuVisible by remember { mutableStateOf(false) }
-
-    Box(modifier = Modifier
-        .paint(
-            painterResource(R.drawable.talado),
-            contentScale = ContentScale.FillBounds)
-        .padding(10.dp, 10.dp, 10.dp, 10.dp))
-    {
-
-        //boton perfil
-        Button(
-            onClick = { menuVisible =! menuVisible },
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .width(50.dp)
-                .height(50.dp),
-                //maybe padding o algo para que no  quede tan a a la  esquina
-
-            shape = RoundedCornerShape(15.dp),
-            colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
-
-        ) {
-            //imagen|icono
-            Icon(imageVector = Icons.Default.Person,
-                contentDescription = null,
-                tint = Blanco,
-                modifier = Modifier.width(50.dp)
-                    .height(50.dp)
-            )
-
-        }
-
-
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.TopEnd
-        ) {
-            Row(){
-
-                Box(
-
-                ) {
-
-                    Row(modifier = Modifier
-                        .padding(8.dp, 3.dp)
-                        .width(50.dp)
-                        .height(50.dp),
-
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    )
-                    {
-                        Text(
-                            text = Globals.Coins,
-                            style = TextStyle(
-                                color = AzulOscuro,
-                                fontWeight = FontWeight.Bold
-                            )
+    val scaffoldState = rememberScaffoldState()
+    val scope = rememberCoroutineScope()
+    Scaffold(
+        scaffoldState = scaffoldState,
+        topBar = {
+            TopAppBar(
+                title = { Text(text = "Inicio") },
+                navigationIcon = {
+                    IconButton(
+                        onClick = {
+                            scope.launch {
+                                scaffoldState.drawerState.apply {
+                                    if (isClosed) open() else close()
+                                }
+                            }
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Menu,
+                            contentDescription = "Open or close drawer"
                         )
-                        Spacer(modifier = Modifier.width(5.dp))
-
-                        Image( painter = painterResource(R.drawable.moneda),
-                            contentDescription = null,
-                            )
-
                     }
-
                 }
-
-
-                Spacer(modifier = Modifier.width(10.dp))
-                //boton tienda
-                Button(
-                    onClick = { navController.navigate(Routes.Tienda.route) },
-                    modifier = Modifier
-                        .width(50.dp)
-                        .height(50.dp),
-                    //maybe padding o algo para que no  quede tan a a la  esquina
-
-                    shape = RoundedCornerShape(15.dp),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
-
-                ) {
-                    //imagen|icono
-                    Icon(imageVector = Icons.Default.ShoppingCart,
-                        contentDescription = null,
-                        tint = Blanco,
-                        modifier = Modifier.width(50.dp)
-                            .height(50.dp))
-
-                }
-            }
-
-        }
+            )
+        },
+        drawerContent = {
+            MenuScreen(navController)
+        },
+    ) {
 
         Column(
             modifier = Modifier
-                .fillMaxSize(),
-                //.fillMaxWidth()
-                //.background(color = AzulClaro),
+                .fillMaxSize()
+                .paint(
+                    painterResource(R.drawable.talado),
+                    contentScale = ContentScale.FillBounds
+                ),
+            //.fillMaxWidth()
+            //.background(color = AzulClaro),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
 
             ) {
+
 
             Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp),) {
                 Button(
@@ -210,32 +150,9 @@ fun HomePage(navController: NavHostController) {
             }
 
 
-
-
-
         }
 
     }
-
-    // OPTIONS MENU
-    AnimatedVisibility(visible = menuVisible,
-        enter = fadeIn(animationSpec = tween(1000)),
-        exit = fadeOut(animationSpec = tween(1000)) ){
-        Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .clickable { menuVisible = !menuVisible },
-            color = Color.Black.copy(alpha = 0.6f)
-        ){
-
-        }
-    }
-    AnimatedVisibility(visible = menuVisible,
-        enter = expandHorizontally (animationSpec = tween(1000)),
-        exit = shrinkHorizontally(animationSpec = tween(1000)) ) {
-        MenuScreen(navController)
-    }
-
 
 }
 

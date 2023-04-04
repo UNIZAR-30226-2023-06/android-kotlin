@@ -2,12 +2,14 @@ package com.example.mycatan.pantallas
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
@@ -25,122 +27,150 @@ import com.example.mycatan.R
 import com.example.mycatan.others.Routes
 import com.example.mycatan.ui.theme.*
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun CrearPartidaPage(navController: NavHostController) {
     var numeroJugadores by remember { mutableStateOf(4) }
-    Row(modifier = Modifier
+
+    BottomSheetScaffold(
+        sheetContent = {
+            // Sheet content
+           LazyColumn(modifier = Modifier.fillMaxWidth()){
+               item{
+                   Row (
+                       modifier = Modifier.fillMaxWidth()
+                           .background(AzulOscuro)
+                           .padding(10.dp)
+                   ){
+                       Icon(
+                           imageVector = Icons.Default.Settings,
+                           contentDescription = null,
+                           tint = Blanco,
+                           modifier = Modifier
+                               .size(50.dp)
+                               .padding(10.dp)
+                       )
+
+                       Text(text = "Configuración",
+                           modifier = Modifier.align(CenterVertically),
+                           color = Blanco,
+                       )
+                   }
+
+               }
+               item{
+                   Row (
+                       modifier = Modifier.fillMaxWidth()
+                           .padding(10.dp)
+                   ){
+                       Text(
+                           text = "Tiempo de turno",
+                           fontSize = 14.sp,
+                           color = AzulOscuro,
+                           fontFamily = FontFamily.SansSerif,
+                           fontWeight = FontWeight.Bold
+                       )
+
+                       Box(modifier = Modifier.fillMaxWidth(),
+                               contentAlignment = Alignment.BottomEnd){
+                           incrementador("turno", onFlechaClick = {})
+
+                       }
+                   }
+               }
+               item{
+                   Row(
+                       modifier = Modifier.fillMaxWidth()
+                           .padding(10.dp))
+
+                       {
+                       Text(text = "Ladrón",
+                           fontSize = 14.sp,
+                           color = AzulOscuro,
+                           fontFamily = FontFamily.SansSerif,
+                           fontWeight = FontWeight.Bold
+                       )
+                       var ladron = remember { mutableStateOf(true) }
+                       Box(modifier = Modifier.fillMaxWidth(),
+                           contentAlignment = Alignment.BottomEnd){
+                           Switch(
+                               checked = (ladron.value),
+                               onCheckedChange = { ladron.value = it},
+                               modifier = Modifier,
+                               colors = SwitchDefaults.colors(
+                                   checkedThumbColor = Color.LightGray,
+                                   uncheckedThumbColor = Color.Gray,
+                                   checkedTrackColor = AzulClaro,
+                                   uncheckedTrackColor = Color.White,
+                               )
+                           )
+                       }
+
+                   }
+               }
+
+               item{
+                   Row(
+                       modifier = Modifier.fillMaxWidth()
+                           .padding(10.dp))
+                   {
+                       Text(text = "Puntos de victoria",
+                           fontSize = 14.sp,
+                           color = AzulOscuro,
+                           fontFamily = FontFamily.SansSerif,
+                           fontWeight = FontWeight.Bold
+                       )
+                       Box(modifier = Modifier.fillMaxWidth(),
+                           contentAlignment = Alignment.BottomEnd){
+                           incrementador("victoria", onFlechaClick = {})
+
+                       }
+                   }
+               }
+               item{
+                   Row(
+                       modifier = Modifier.fillMaxWidth()
+                           .padding(10.dp))
+                   {
+                       Text(text = "Numero de jugadores",
+                           fontSize = 14.sp,
+                           color = AzulOscuro,
+                           fontFamily = FontFamily.SansSerif,
+                           fontWeight = FontWeight.Bold
+                       )
+                       Box(modifier = Modifier.fillMaxWidth(),
+                           contentAlignment = Alignment.BottomEnd){
+                           incrementador("jugadores", onFlechaClick = {numeroJugadores = it})
+
+                       }
+                   }
+               }
+           }
+        },
+        sheetPeekHeight = 128.dp,
+        // Defaults to true
+        sheetGesturesEnabled = true
+    ) {
+        // Screen content
+//BackArrow
+
+    Box(modifier = Modifier
+        .fillMaxSize()
         .paint(
             painterResource(R.drawable.talado),
-            contentScale = ContentScale.FillBounds)){
-        // MENU LATERAL
-        Column (
+            contentScale = ContentScale.FillBounds
+        )
+        .padding(10.dp, 10.dp, 10.dp, 10.dp)
+    )
+    {
+        Column(
             modifier = Modifier
-                .fillMaxHeight()
-                .fillMaxWidth(0.40f)
-                .background(color = AzulMedio)
-                .padding(10.dp, 10.dp, 10.dp, 10.dp),
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
 
-            )
-        {
 
-            Text(text = "CONFIGURACIÓN",
-                fontSize = 20.sp,
-                color = Color.White,
-                fontFamily = FontFamily.SansSerif,
-                fontWeight = FontWeight.Bold
-            )
-
-            Spacer(modifier = Modifier.height(5.dp))
-
-            Divider(color = Color.White, thickness = 1.dp)
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            Column(modifier = Modifier
-                .padding(5.dp, 5.dp, 5.dp, 5.dp),
-                verticalArrangement = Arrangement.spacedBy(20.dp),
-                horizontalAlignment = Alignment.Start
-            ){
-
-                Row(
-                   horizontalArrangement = Arrangement.SpaceEvenly,
-                   verticalAlignment = Alignment.CenterVertically)
-                {
-                    Text(
-                        text = "Tiempo de turno",
-                        fontSize = 14.sp,
-                        color = Color.White,
-                        fontFamily = FontFamily.SansSerif,
-                        fontWeight = FontWeight.Bold
-                    )
-
-                    Spacer(modifier = Modifier.width(40.dp))
-                    incrementador("turno", onFlechaClick = {})
-                }
-
-                Row(
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalAlignment = Alignment.CenterVertically)
-                {
-                    Text(text = "Ladrón",
-                        fontSize = 14.sp,
-                        color = Color.White,
-                        fontFamily = FontFamily.SansSerif,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(modifier = Modifier.width(100.dp))
-                    var ladron = remember { mutableStateOf(true) }
-                    Switch(
-                        checked = (ladron.value),
-                        onCheckedChange = { ladron.value = it},
-                        modifier = Modifier.padding(end = 15.dp),
-                        colors = SwitchDefaults.colors(
-                            checkedThumbColor = Color.LightGray,
-                            uncheckedThumbColor = Color.Gray,
-                            checkedTrackColor = AzulClaro,
-                            uncheckedTrackColor = Color.White,
-                        )
-                    )
-                }
-                Row(
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalAlignment = Alignment.CenterVertically)
-                {
-                    Text(text = "Puntos de victoria",
-                        fontSize = 14.sp,
-                        color = Color.White,
-                        fontFamily = FontFamily.SansSerif,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(modifier = Modifier.width(32.dp))
-                    incrementador("victoria", onFlechaClick = {})
-                }
-                Row(
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalAlignment = Alignment.CenterVertically)
-                {
-                    Text(text = "Numero de jugadores",
-                        fontSize = 14.sp,
-                        color = Color.White,
-                        fontFamily = FontFamily.SansSerif,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(modifier = Modifier.width(18.dp))
-                    incrementador("jugadores", onFlechaClick = {numeroJugadores = it})
-                }
-            }
-        }
-
-        Column (
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight()
-                .background(color = Transp)
-                .padding(10.dp, 10.dp, 10.dp, 10.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-
-            ) {
             Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp),) {
                 Button(
                     onClick = { },
@@ -164,16 +194,15 @@ fun CrearPartidaPage(navController: NavHostController) {
                 }
             }
             botones()
-            if( numeroJugadores == 4){
+            if (numeroJugadores == 4) {
                 botones()
                 botones()
-            } else if (numeroJugadores == 3){
+            } else if (numeroJugadores == 3) {
                 botones()
             }
 
             Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.BottomEnd
+                modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp)
             ) {
                 Button(
                     onClick = {
@@ -182,43 +211,47 @@ fun CrearPartidaPage(navController: NavHostController) {
                     shape = RoundedCornerShape(50.dp),
                     modifier = Modifier
                         .width(280.dp)
-                        .height(50.dp),
+                        .height(60.dp)
+                        .padding(10.dp, 10.dp, 10.dp, 10.dp),
                     colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
 
                 ) {
-                    Text(text = "Comenzar",
+                    Text(
+                        text = "Comenzar",
                         style = TextStyle(color = Blanco)
                     )
 
                 }
             }
 
-
-
         }
-    }
 
-    //BackArrow
-    Box(
-        modifier = Modifier.fillMaxSize().padding(10.dp,10.dp,10.dp,10.dp),
-        contentAlignment = Alignment.BottomStart
-    ) {
-        Button(
-            onClick = { navController.navigate(Routes.Home.route) },
-            modifier = Modifier
-                .width(50.dp)
-                .height(50.dp),
-            shape = RoundedCornerShape(15.dp),
-            colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
-
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.TopStart
         ) {
-            Icon(imageVector =  Icons.Default.ArrowBack,
-                contentDescription = null,
-                tint = Blanco
-            )
+            Button(
+                onClick = { navController.navigate(Routes.Home.route) },
+                modifier = Modifier
+                    .width(50.dp)
+                    .height(50.dp),
+                shape = RoundedCornerShape(15.dp),
+                colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
+
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = null,
+                    tint = Blanco
+                )
+            }
+
         }
+    }
+
 
     }
+
 
 }
 @Composable

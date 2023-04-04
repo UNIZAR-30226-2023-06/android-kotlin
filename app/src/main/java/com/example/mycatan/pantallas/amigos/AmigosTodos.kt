@@ -45,61 +45,90 @@ import kotlinx.coroutines.launch
 fun AmigosTodosPage(navController: NavHostController) {
     val context = LocalContext.current
 
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .paint(
-            painterResource(R.drawable.talado),
-            contentScale = ContentScale.FillBounds
-        )
-        .padding(30.dp, 30.dp, 30.dp, 30.dp))
-    {
-        val list = getAmigosTodos(Globals.Token)
-        val listFilter = mutableListOf<String>()
-        for (i in list.indices) {
-            val valor = list[i].name + list[i].id
-            listFilter.add(valor)
-        }
-        val items by remember { mutableStateOf(listFilter)}
-        var filteredItems by remember { mutableStateOf(listFilter) }
-
-        Row(){
-            SearchBar(onSearch = { query ->
-                filteredItems = items.filter { it.contains(query, ignoreCase = true) } as MutableList<String>
-            })
-        }
-        Spacer(modifier = Modifier.height(15.dp))
-        Row(modifier = Modifier
-            .fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-
-        ){
-            var isSelectedTodos by remember { mutableStateOf(true) }
-            var isSelectedPendiente by remember { mutableStateOf(false) }
-
-            ClickableText(
-                text = AnnotatedString("Todos"),
-                onClick = {
-                    isSelectedPendiente = false
-                },
-                style = TextStyle(
-                    color = if (isSelectedTodos) Azul else AzulOscuro,
-                )
+    val scaffoldState = rememberScaffoldState()
+    val scope = rememberCoroutineScope()
+    Scaffold(
+        scaffoldState = scaffoldState,
+        topBar = {
+            TopAppBar(
+                title = { Text(text = "Amigos") },
+                navigationIcon = {
+                    IconButton(
+                        onClick = {
+                            scope.launch {
+                                scaffoldState.drawerState.apply {
+                                    if (isClosed) open() else close()
+                                }
+                            }
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Menu,
+                            contentDescription = "Open or close drawer"
+                        )
+                    }
+                }
             )
-            Spacer(modifier = Modifier.width(20.dp))
-
-            ClickableText(
-                text = AnnotatedString("Pendiente"),
-                onClick = { isSelectedPendiente= !isSelectedPendiente;
-                    isSelectedTodos = false
-                    navController.navigate(Routes.AmigosPendiente.route)},
-                style = TextStyle(
-                    color = if (isSelectedPendiente) Azul else AzulOscuro,
-                )
+        },
+        drawerContent = {
+            MenuScreen(navController)
+        },
+    ) {
+        Column(modifier = Modifier
+            .fillMaxSize()
+            .paint(
+                painterResource(R.drawable.talado),
+                contentScale = ContentScale.FillBounds
             )
+            .padding(30.dp, 30.dp, 30.dp, 30.dp))
+        {
+            val list = getAmigosTodos(Globals.Token)
+            val listFilter = mutableListOf<String>()
+            for (i in list.indices) {
+                val valor = list[i].name + list[i].id
+                listFilter.add(valor)
+            }
+            val items by remember { mutableStateOf(listFilter)}
+            var filteredItems by remember { mutableStateOf(listFilter) }
 
-        }
-        Spacer(modifier = Modifier.height(5.dp))
+            Row(){
+                SearchBar(onSearch = { query ->
+                    filteredItems = items.filter { it.contains(query, ignoreCase = true) } as MutableList<String>
+                })
+            }
+            Spacer(modifier = Modifier.height(15.dp))
+            Row(modifier = Modifier
+                .fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+
+            ){
+                var isSelectedTodos by remember { mutableStateOf(true) }
+                var isSelectedPendiente by remember { mutableStateOf(false) }
+
+                ClickableText(
+                    text = AnnotatedString("Todos"),
+                    onClick = {
+                        isSelectedPendiente = false
+                    },
+                    style = TextStyle(
+                        color = if (isSelectedTodos) Azul else AzulOscuro,
+                    )
+                )
+                Spacer(modifier = Modifier.width(20.dp))
+
+                ClickableText(
+                    text = AnnotatedString("Pendiente"),
+                    onClick = { isSelectedPendiente= !isSelectedPendiente;
+                        isSelectedTodos = false
+                        navController.navigate(Routes.AmigosPendiente.route)},
+                    style = TextStyle(
+                        color = if (isSelectedPendiente) Azul else AzulOscuro,
+                    )
+                )
+
+            }
+            Spacer(modifier = Modifier.height(5.dp))
 
             LazyColumn {
                 // on below line we are populating
@@ -159,7 +188,9 @@ fun AmigosTodosPage(navController: NavHostController) {
             }
 
 
+        }
     }
+
 
 }
 

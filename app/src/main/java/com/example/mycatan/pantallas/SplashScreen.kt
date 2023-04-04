@@ -36,7 +36,6 @@ fun SplashScreen(navController: NavHostController) {
 
 @Composable
 fun Splash() {
-    LockScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
     Column(modifier = Modifier
         .fillMaxSize()
         .paint(painterResource(R.drawable.talado),

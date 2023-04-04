@@ -42,125 +42,152 @@ import kotlinx.coroutines.launch
 fun AmigosPendientePage(navController: NavHostController) {
     val context = LocalContext.current
 
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .paint(
-            painterResource(R.drawable.talado),
-            contentScale = ContentScale.FillBounds)
-        .padding(40.dp, 40.dp, 40.dp, 40.dp))
-    {
-        val list = getAmigosPendiente(Globals.Token)
-        val items by remember { mutableStateOf(list)}
-        var filteredItems by remember { mutableStateOf(list) } // Inicializamos con la lista para ver los items al principio
-        Row(){
-            SearchBar(onSearch = { query ->
-                filteredItems = items.filter { it.contains(query, ignoreCase = true) }
-            })
-        }
-        Spacer(modifier = Modifier.height(5.dp))
-        Row(modifier = Modifier
-            .fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-
-        ){
-            var isSelectedTodos by remember { mutableStateOf(true) }
-            var isSelectedPendiente by remember { mutableStateOf(false) }
-
-            Column(){
-                ClickableText(
-                    text = AnnotatedString("Todos"),
-                    onClick = { isSelectedTodos= true;
-                        isSelectedPendiente = false
-                        navController.navigate(Routes.AmigosTodos.route)
-                    },
-                    style = TextStyle(
-                        color = if (isSelectedTodos) Color.White else AzulOscuro,
-                    )
-                )
-            }
-            Spacer(modifier = Modifier.width(20.dp))
-
-            Column(){
-                ClickableText(
-                    text = AnnotatedString("Pendiente"),
-                    onClick = { isSelectedPendiente= true;
-                        isSelectedTodos = false},
-                    style = TextStyle(
-                        color = if (isSelectedPendiente) Color.White else AzulOscuro,
-                    )
-                )
-            }
-        }
-
-        Row(){
-            LazyColumn {
-                // on below line we are populating
-                // items for listview.
-                items(filteredItems) { id ->
-                    val username = getUserID(id)
-                    // on below line we are specifying
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    ){
-                        Spacer(modifier = Modifier.width(10.dp))
-
-                        Box(modifier = Modifier
-                            .fillMaxWidth(0.70f)){
-                            Text("$username te ha enviado una solicitud de amistad" ,
-                                modifier = Modifier.padding(15.dp),
-                                style = TextStyle(color = Blanco))
-                        }
-                        // Boton dejar de seguir
-                        Button(
-                            onClick = {
-                                if(postAcceptRequestFriend(id, Globals.Token)){
-                                    Toast.makeText(context, "OK peticion de amistad aceptada", Toast.LENGTH_SHORT).show()
-                                } else{
-                                    Toast.makeText(context, "ERROR peticion de amistad no se ha podido aceptar", Toast.LENGTH_SHORT).show()
-                                } },
-                            shape = RoundedCornerShape(30.dp),
-                            modifier = Modifier
-                                .fillMaxHeight(0.75f),
-                            colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
-
-                        ) {
-                            Text(text = "Aceptar",
-                                style = TextStyle(color = Blanco)
-                            )
-
-                        }
-                        Spacer(modifier = Modifier.width(5.dp))
-                        Button(
-                            onClick = {
-                                if(postRejectRequestFriend(id, Globals.Token)){
-                                    Toast.makeText(context, "OK peticion de amistad rechazada", Toast.LENGTH_SHORT).show()
-                                } else{
-                                    Toast.makeText(context, "ERROR peticion de amistad no se ha podido rechazar", Toast.LENGTH_SHORT).show()
+    val scaffoldState = rememberScaffoldState()
+    val scope = rememberCoroutineScope()
+    Scaffold(
+        scaffoldState = scaffoldState,
+        topBar = {
+            TopAppBar(
+                title = { Text(text = "Amigos") },
+                navigationIcon = {
+                    IconButton(
+                        onClick = {
+                            scope.launch {
+                                scaffoldState.drawerState.apply {
+                                    if (isClosed) open() else close()
                                 }
-                            },
-                            shape = RoundedCornerShape(30.dp),
+                            }
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Menu,
+                            contentDescription = "Open or close drawer"
+                        )
+                    }
+                }
+            )
+        },
+        drawerContent = {
+            MenuScreen(navController)
+        },
+    ) {
+        Column(modifier = Modifier
+            .fillMaxSize()
+            .paint(
+                painterResource(R.drawable.talado),
+                contentScale = ContentScale.FillBounds)
+            .padding(40.dp, 40.dp, 40.dp, 40.dp))
+        {
+            val list = getAmigosPendiente(Globals.Token)
+            val items by remember { mutableStateOf(list)}
+            var filteredItems by remember { mutableStateOf(list) } // Inicializamos con la lista para ver los items al principio
+            Row(){
+                SearchBar(onSearch = { query ->
+                    filteredItems = items.filter { it.contains(query, ignoreCase = true) }
+                })
+            }
+            Spacer(modifier = Modifier.height(5.dp))
+            Row(modifier = Modifier
+                .fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+
+            ){
+                var isSelectedTodos by remember { mutableStateOf(true) }
+                var isSelectedPendiente by remember { mutableStateOf(false) }
+
+                Column(){
+                    ClickableText(
+                        text = AnnotatedString("Todos"),
+                        onClick = { isSelectedTodos= true;
+                            isSelectedPendiente = false
+                            navController.navigate(Routes.AmigosTodos.route)
+                        },
+                        style = TextStyle(
+                            color = if (isSelectedTodos) Color.White else AzulOscuro,
+                        )
+                    )
+                }
+                Spacer(modifier = Modifier.width(20.dp))
+
+                Column(){
+                    ClickableText(
+                        text = AnnotatedString("Pendiente"),
+                        onClick = { isSelectedPendiente= true;
+                            isSelectedTodos = false},
+                        style = TextStyle(
+                            color = if (isSelectedPendiente) Color.White else AzulOscuro,
+                        )
+                    )
+                }
+            }
+
+            Row(){
+                LazyColumn {
+                    // on below line we are populating
+                    // items for listview.
+                    items(filteredItems) { id ->
+                        val username = getUserID(id)
+                        // on below line we are specifying
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
-                                .fillMaxHeight(0.75f),
-                            colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
+                                .fillMaxWidth()
+                        ){
+                            Spacer(modifier = Modifier.width(10.dp))
 
-                        ) {
-                            Text(text = "Rechazar",
-                                style = TextStyle(color = Blanco)
-                            )
+                            Box(modifier = Modifier
+                                .fillMaxWidth(0.70f)){
+                                Text("$username te ha enviado una solicitud de amistad" ,
+                                    modifier = Modifier.padding(15.dp),
+                                    style = TextStyle(color = Blanco))
+                            }
+                            // Boton dejar de seguir
+                            Button(
+                                onClick = {
+                                    if(postAcceptRequestFriend(id, Globals.Token)){
+                                        Toast.makeText(context, "OK peticion de amistad aceptada", Toast.LENGTH_SHORT).show()
+                                    } else{
+                                        Toast.makeText(context, "ERROR peticion de amistad no se ha podido aceptar", Toast.LENGTH_SHORT).show()
+                                    } },
+                                shape = RoundedCornerShape(30.dp),
+                                modifier = Modifier
+                                    .fillMaxHeight(0.75f),
+                                colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
 
+                            ) {
+                                Text(text = "Aceptar",
+                                    style = TextStyle(color = Blanco)
+                                )
+
+                            }
+                            Spacer(modifier = Modifier.width(5.dp))
+                            Button(
+                                onClick = {
+                                    if(postRejectRequestFriend(id, Globals.Token)){
+                                        Toast.makeText(context, "OK peticion de amistad rechazada", Toast.LENGTH_SHORT).show()
+                                    } else{
+                                        Toast.makeText(context, "ERROR peticion de amistad no se ha podido rechazar", Toast.LENGTH_SHORT).show()
+                                    }
+                                },
+                                shape = RoundedCornerShape(30.dp),
+                                modifier = Modifier
+                                    .fillMaxHeight(0.75f),
+                                colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
+
+                            ) {
+                                Text(text = "Rechazar",
+                                    style = TextStyle(color = Blanco)
+                                )
+
+                            }
                         }
                     }
                 }
             }
+
         }
-
     }
-
-
-
 
 }
 
