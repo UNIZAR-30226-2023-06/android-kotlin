@@ -169,7 +169,7 @@ fun AmigosTodosPage(navController: NavHostController) {
 
                 ClickableText(
                     text = AnnotatedString("Pendiente"),
-                    onClick = { isSelectedPendiente= !isSelectedPendiente;
+                    onClick = { isSelectedPendiente= true
                         isSelectedTodos = false
                         navController.navigate(Routes.AmigosPendiente.route)},
                     style = TextStyle(
@@ -228,7 +228,10 @@ fun AmigosTodosPage(navController: NavHostController) {
                             }
                         }
 
+
+
                     }
+                    Spacer(modifier = Modifier.height(10.dp))
                 }
             }
 

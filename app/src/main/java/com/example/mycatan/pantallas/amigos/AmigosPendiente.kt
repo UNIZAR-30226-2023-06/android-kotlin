@@ -131,7 +131,7 @@ fun AmigosPendientePage(navController: NavHostController) {
                             navController.navigate(Routes.AmigosTodos.route)
                         },
                         style = TextStyle(
-                            color = if (isSelectedTodos) Color.White else AzulOscuro,
+                            color = if (isSelectedTodos) Azul else AzulOscuro,
                         )
                     )
                 }
@@ -140,17 +140,16 @@ fun AmigosPendientePage(navController: NavHostController) {
                 Column(){
                     ClickableText(
                         text = AnnotatedString("Pendiente"),
-                        onClick = { isSelectedPendiente= true;
-                            isSelectedTodos = false},
+                        onClick = { isSelectedTodos = false},
                         style = TextStyle(
-                            color = if (isSelectedPendiente) Color.White else AzulOscuro,
+                            color = if (isSelectedPendiente) Azul else AzulOscuro,
                         )
                     )
                 }
             }
+            Spacer(modifier = Modifier.height(5.dp))
 
-            Row(){
-                LazyColumn {
+                LazyColumn(modifier = Modifier.fillMaxWidth()) {
                     // on below line we are populating
                     // items for listview.
                     items(filteredItems) { id ->
@@ -160,58 +159,64 @@ fun AmigosPendientePage(navController: NavHostController) {
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
                                 .fillMaxWidth()
+                                .clip(RoundedCornerShape(15.dp))
+                                .background(TranspOscuro)
                         ){
-                            Spacer(modifier = Modifier.width(10.dp))
-
                             Box(modifier = Modifier
-                                .fillMaxWidth(0.70f)){
-                                Text("$username te ha enviado una solicitud de amistad" ,
-                                    modifier = Modifier.padding(15.dp),
+                                .padding(10.dp)){
+                                Text("$username" ,
                                     style = TextStyle(color = Blanco))
                             }
-                            // Boton dejar de seguir
-                            Button(
-                                onClick = {
-                                    if(postAcceptRequestFriend(id, Globals.Token)){
-                                        Toast.makeText(context, "OK peticion de amistad aceptada", Toast.LENGTH_SHORT).show()
-                                    } else{
-                                        Toast.makeText(context, "ERROR peticion de amistad no se ha podido aceptar", Toast.LENGTH_SHORT).show()
-                                    } },
-                                shape = RoundedCornerShape(30.dp),
-                                modifier = Modifier
-                                    .fillMaxHeight(0.75f),
-                                colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
+                            Row(modifier = Modifier.fillMaxWidth()
+                                .padding(10.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.End
+                                ){
+                                // Boton dejar de seguir
+                                Button(
+                                    onClick = {
+                                        if(postAcceptRequestFriend(id, Globals.Token)){
+                                            Toast.makeText(context, "OK peticion de amistad aceptada", Toast.LENGTH_SHORT).show()
+                                        } else{
+                                            Toast.makeText(context, "ERROR peticion de amistad no se ha podido aceptar", Toast.LENGTH_SHORT).show()
+                                        } },
+                                    shape = RoundedCornerShape(30.dp),
+                                    modifier = Modifier
+                                        .fillMaxHeight(),
+                                    colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
 
-                            ) {
-                                Text(text = "Aceptar",
-                                    style = TextStyle(color = Blanco)
-                                )
+                                ) {
+                                    Text(text = "Aceptar",
+                                        style = TextStyle(color = Blanco)
+                                    )
 
-                            }
-                            Spacer(modifier = Modifier.width(5.dp))
-                            Button(
-                                onClick = {
-                                    if(postRejectRequestFriend(id, Globals.Token)){
-                                        Toast.makeText(context, "OK peticion de amistad rechazada", Toast.LENGTH_SHORT).show()
-                                    } else{
-                                        Toast.makeText(context, "ERROR peticion de amistad no se ha podido rechazar", Toast.LENGTH_SHORT).show()
-                                    }
-                                },
-                                shape = RoundedCornerShape(30.dp),
-                                modifier = Modifier
-                                    .fillMaxHeight(0.75f),
-                                colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
+                                }
+                                Spacer(modifier = Modifier.width(5.dp))
 
-                            ) {
-                                Text(text = "Rechazar",
-                                    style = TextStyle(color = Blanco)
-                                )
+                                Button(
+                                    onClick = {
+                                        if(postRejectRequestFriend(id, Globals.Token)){
+                                            Toast.makeText(context, "OK peticion de amistad rechazada", Toast.LENGTH_SHORT).show()
+                                        } else{
+                                            Toast.makeText(context, "ERROR peticion de amistad no se ha podido rechazar", Toast.LENGTH_SHORT).show()
+                                        }
+                                    },
+                                    shape = RoundedCornerShape(30.dp),
+                                    modifier = Modifier
+                                        .fillMaxHeight(),
+                                    colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
 
+                                ) {
+                                    Text(text = "Rechazar",
+                                        style = TextStyle(color = Blanco)
+                                    )
+
+                                }
                             }
                         }
                     }
                 }
-            }
+
 
         }
     }
