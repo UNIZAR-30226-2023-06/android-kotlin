@@ -54,33 +54,59 @@ fun TiendaPage(navController: NavHostController) {
         Globals.fotosCompradas[index] = true
     }
 
-    val scaffoldState = rememberScaffoldState()
-    val scope = rememberCoroutineScope()
     Scaffold(
-        scaffoldState = scaffoldState,
-        topBar = {
-            TopAppBar(
-                title = { Text(text = "Tienda") },
-                navigationIcon = {
-                    IconButton(
-                        onClick = {
-                            scope.launch {
-                                scaffoldState.drawerState.apply {
-                                    if (isClosed) open() else close()
-                                }
-                            }
-                        }
-                    ) {
+        bottomBar = {
+            BottomAppBar {
+                BottomNavigationItem(
+                    icon = {
                         Icon(
-                            imageVector = Icons.Default.Menu,
-                            contentDescription = "Open or close drawer"
+                            imageVector = Icons.Default.Home,
+                            contentDescription = null,
+                            tint = Blanco,
                         )
+                    },
+                    selected = false,
+                    onClick = {
+                        navController.navigate(Routes.Home.route)
                     }
-                }
-            )
-        },
-        drawerContent = {
-            MenuScreen(navController)
+                )
+                BottomNavigationItem(
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = null,
+                            tint = Blanco,
+                        )
+                    },
+                    selected = false,
+                    onClick = {
+                        navController.navigate(Routes.AmigosTodos.route)
+                    }
+                )
+                BottomNavigationItem(
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.ShoppingCart,
+                            contentDescription = null,
+                            tint = Blanco,
+                        )
+                    },
+                    selected = true,
+                    onClick = {
+                        navController.navigate(Routes.Tienda.route)
+                    }
+                )
+                BottomNavigationItem(
+                    icon = {
+                        FotoPerfil(navController, foto = Globals.Personaje) {}
+                    },
+
+                    selected = false,
+                    onClick = {
+                        navController.navigate(Routes.EditarPerfil.route)
+                    }
+                )
+            }
         },
     ) {
         Box(
@@ -194,6 +220,39 @@ fun TiendaPage(navController: NavHostController) {
                         }
                     }
                 }
+            }
+
+            //SALDO
+
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.TopEnd
+            ) {
+
+                Row(modifier = Modifier
+                    .padding(10.dp, 5.dp),
+
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                )
+                {
+
+                    Text(
+                        text = Globals.Coins,
+                        style = TextStyle(
+                            color = AzulOscuro,
+                            fontWeight = FontWeight.Bold
+                        )
+                    )
+                    Spacer(modifier = Modifier.width(5.dp))
+
+                    Image( painter = painterResource(R.drawable.moneda),
+                        contentDescription = null,
+                        modifier = Modifier.size(25.dp)
+                    )
+
+                }
+
             }
 
         }

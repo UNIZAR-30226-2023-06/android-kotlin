@@ -60,7 +60,7 @@ fun MenuScreen(navController: NavHostController) {
                 ) {
                     Spacer(modifier = Modifier.height(15.dp))
 
-                    FotoPerfil(foto = Globals.Personaje) {}
+                    //FotoPerfil(foto = Globals.Personaje) {}
 
                     Spacer(modifier = Modifier.height(10.dp))
                     Text(
@@ -154,11 +154,7 @@ fun MenuScreen(navController: NavHostController) {
                 colors = ButtonDefaults.buttonColors(backgroundColor = Azul)
 
             ) {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    tint = Blanco,
-                    contentDescription = "Enviar peticion de amistad"
-                )
+                Text(text = "Enviar")
             }
 
         }
@@ -207,60 +203,7 @@ fun RowMenu(navController: NavHostController,  text: String, imageVector: ImageV
     }
 }
 
-@Composable
-fun FotoPerfil( foto: String , onCardClick: () -> Unit ){
 
-
-
-    var painterID : Painter
-    //Estoes muy cutre pero no se hacerlo mejor
-    if(foto=="0"){
-        painterID = painterResource(R.drawable.personaje1)
-    }
-    else if(foto=="1"){
-        painterID = painterResource(R.drawable.personaje2)
-    }
-    else if(foto=="2"){
-        painterID = painterResource(R.drawable.personaje3)
-    }
-    else if(foto=="3"){
-        painterID = painterResource(R.drawable.personaje4)
-    }
-    else if(foto=="4"){
-        painterID = painterResource(R.drawable.personaje5)
-    }
-    else if(foto=="5"){
-        painterID = painterResource(R.drawable.personaje6)
-    }
-    else if(foto=="6"){
-        painterID = painterResource(R.drawable.personaje7)
-    }
-    else if(foto=="7"){
-        painterID = painterResource(R.drawable.personaje8)
-    }
-    else if (foto=="default")
-    {
-        painterID = painterResource(R.drawable.personaje1)
-    }
-    else {
-        painterID = painterResource(R.drawable.personaje9)
-    }
-
-    Card(
-        modifier = Modifier
-            .clickable { onCardClick() }
-            .width(90.dp)
-            .height(90.dp),
-
-        shape = CircleShape,
-        backgroundColor = Blanco,
-    ){
-        Image(
-            painter = painterID,
-            contentDescription = null,
-        )
-    }
-}
 
 
 

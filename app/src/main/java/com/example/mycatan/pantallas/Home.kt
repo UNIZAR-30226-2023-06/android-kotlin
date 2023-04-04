@@ -6,18 +6,17 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -36,33 +35,60 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun HomePage(navController: NavHostController) {
-    val scaffoldState = rememberScaffoldState()
-    val scope = rememberCoroutineScope()
+
     Scaffold(
-        scaffoldState = scaffoldState,
-        topBar = {
-            TopAppBar(
-                title = { Text(text = "Inicio") },
-                navigationIcon = {
-                    IconButton(
-                        onClick = {
-                            scope.launch {
-                                scaffoldState.drawerState.apply {
-                                    if (isClosed) open() else close()
-                                }
-                            }
-                        }
-                    ) {
+        bottomBar = {
+            BottomAppBar {
+                BottomNavigationItem(
+                    icon = {
                         Icon(
-                            imageVector = Icons.Default.Menu,
-                            contentDescription = "Open or close drawer"
+                            imageVector = Icons.Default.Home,
+                            contentDescription = null,
+                            tint = Blanco,
                         )
+                           },
+                    selected = true,
+                    onClick = {
+                        navController.navigate(Routes.Home.route)
                     }
-                }
-            )
-        },
-        drawerContent = {
-            MenuScreen(navController)
+                )
+                BottomNavigationItem(
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = null,
+                            tint = Blanco,
+                        )
+                           },
+                    selected = false,
+                    onClick = {
+                        navController.navigate(Routes.AmigosTodos.route)
+                    }
+                )
+                BottomNavigationItem(
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.ShoppingCart,
+                            contentDescription = null,
+                            tint = Blanco,
+                        )
+                           },
+                    selected = false,
+                    onClick = {
+                        navController.navigate(Routes.Tienda.route)
+                    }
+                )
+                BottomNavigationItem(
+                    icon = {
+                        FotoPerfil(navController, foto = Globals.Personaje) {}
+                           },
+
+                    selected = false,
+                    onClick = {
+                        navController.navigate(Routes.EditarPerfil.route)
+                    }
+                )
+            }
         },
     ) {
 
@@ -161,4 +187,61 @@ fun HomePage(navController: NavHostController) {
 fun DefaultPreview5() {
     val navController = rememberNavController()
     HomePage(navController = navController)
+}
+
+@Composable
+fun FotoPerfil( navController: NavHostController, foto: String , onCardClick: () -> Unit ){
+
+
+
+    var painterID : Painter
+    //Estoes muy cutre pero no se hacerlo mejor
+    if(foto=="0"){
+        painterID = painterResource(R.drawable.personaje1)
+    }
+    else if(foto=="1"){
+        painterID = painterResource(R.drawable.personaje2)
+    }
+    else if(foto=="2"){
+        painterID = painterResource(R.drawable.personaje3)
+    }
+    else if(foto=="3"){
+        painterID = painterResource(R.drawable.personaje4)
+    }
+    else if(foto=="4"){
+        painterID = painterResource(R.drawable.personaje5)
+    }
+    else if(foto=="5"){
+        painterID = painterResource(R.drawable.personaje6)
+    }
+    else if(foto=="6"){
+        painterID = painterResource(R.drawable.personaje7)
+    }
+    else if(foto=="7"){
+        painterID = painterResource(R.drawable.personaje8)
+    }
+    else if (foto=="default")
+    {
+        painterID = painterResource(R.drawable.personaje1)
+    }
+    else {
+        painterID = painterResource(R.drawable.personaje9)
+    }
+
+    Card(
+        modifier = Modifier
+            .clickable {navController.navigate(Routes.EditarPerfil.route)
+            }
+            .padding(10.dp)
+            .fillMaxHeight(),
+
+        shape = CircleShape,
+        backgroundColor = Blanco,
+    ){
+        Image(
+            painter = painterID,
+            contentDescription = null,
+
+            )
+    }
 }

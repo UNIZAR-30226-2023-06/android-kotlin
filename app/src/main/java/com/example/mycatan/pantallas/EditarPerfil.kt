@@ -36,36 +36,59 @@ fun EditarPerfil(navController: NavHostController) {
     var menuVisible by remember { mutableStateOf(false) }
     var EditClicked by remember { mutableStateOf(-1) }
 
-
-
-    //no se guarda si vas para atras
-    val scaffoldState = rememberScaffoldState()
-    val scope = rememberCoroutineScope()
     Scaffold(
-        scaffoldState = scaffoldState,
-        topBar = {
-            TopAppBar(
-                title = { Text(text = "Perfil") },
-                navigationIcon = {
-                    IconButton(
-                        onClick = {
-                            scope.launch {
-                                scaffoldState.drawerState.apply {
-                                    if (isClosed) open() else close()
-                                }
-                            }
-                        }
-                    ) {
+        bottomBar = {
+            BottomAppBar {
+                BottomNavigationItem(
+                    icon = {
                         Icon(
-                            imageVector = Icons.Default.Menu,
-                            contentDescription = "Open or close drawer"
+                            imageVector = Icons.Default.Home,
+                            contentDescription = null,
+                            tint = Blanco,
                         )
+                    },
+                    selected = true,
+                    onClick = {
+                        navController.navigate(Routes.Home.route)
                     }
-                }
-            )
-        },
-        drawerContent = {
-            MenuScreen(navController)
+                )
+                BottomNavigationItem(
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = null,
+                            tint = Blanco,
+                        )
+                    },
+                    selected = false,
+                    onClick = {
+                        navController.navigate(Routes.AmigosTodos.route)
+                    }
+                )
+                BottomNavigationItem(
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.ShoppingCart,
+                            contentDescription = null,
+                            tint = Blanco,
+                        )
+                    },
+                    selected = false,
+                    onClick = {
+                        navController.navigate(Routes.Tienda.route)
+                    }
+                )
+                BottomNavigationItem(
+                    icon = {
+                        FotoPerfil(navController,foto = Globals.Personaje) {}
+                    },
+
+                    selected = false,
+                    onClick = {
+                        navController.navigate(Routes.EditarPerfil.route)
+                    }
+                )
+            }
         },
     ) {
         Box(
