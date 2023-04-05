@@ -1,8 +1,6 @@
 package com.example.mycatan.pantallas
 
-import android.content.pm.ActivityInfo
 import androidx.compose.animation.*
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -19,25 +17,28 @@ import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
-import com.example.mycatan.LockScreenOrientation
 import com.example.mycatan.R
 import com.example.mycatan.dBaux.getNumAmigosPendiente
 import com.example.mycatan.others.Globals
 import com.example.mycatan.others.Routes
 import com.example.mycatan.ui.theme.*
-import kotlinx.coroutines.launch
 
 @Composable
 fun TiendaPage(navController: NavHostController) {
 
     val pendiente by remember { mutableStateOf(getNumAmigosPendiente(Globals.Token)) }
-    var menuVisible by remember { mutableStateOf(false) }
+    var menuVisible = remember { mutableStateOf(false) }
     var fotoPopUp by remember { mutableStateOf(-1) }
     val precios = 25
 
@@ -130,6 +131,12 @@ fun TiendaPage(navController: NavHostController) {
         )
         {
 
+
+            if(menuVisible.value) // se clico editar de personaje
+                TiendaPOP(fotoPopUp, setShowDialog = {
+                    menuVisible.value = it }, onConfirmed, precios)
+
+
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize(),
@@ -166,8 +173,8 @@ fun TiendaPage(navController: NavHostController) {
                             RackItem(foto = it,
                                 comprada = Globals.fotosCompradas[it],
                                 onCardClick = {
-                                    menuVisible = !menuVisible
                                     fotoPopUp = it
+                                    menuVisible.value = true
                                 })
                         }
                     }
@@ -195,8 +202,8 @@ fun TiendaPage(navController: NavHostController) {
                             RackItem(foto = it,
                                 comprada = Globals.fotosCompradas[it],
                                 onCardClick = {
-                                    menuVisible = !menuVisible
                                     fotoPopUp = it
+                                    menuVisible.value = true
                                 })
                         }
                     }
@@ -224,8 +231,8 @@ fun TiendaPage(navController: NavHostController) {
                             RackItem(foto = it,
                                 comprada = Globals.fotosCompradas[it],
                                 onCardClick = {
-                                    menuVisible = !menuVisible
                                     fotoPopUp = it
+                                    menuVisible.value = true
                                 })
                         }
                     }
@@ -267,29 +274,179 @@ fun TiendaPage(navController: NavHostController) {
 
         }
     }
+}
 
+@Composable
+fun TiendaPOP(
+    fotoId: Int,
+    setShowDialog: (Boolean) -> Unit,
+    onConfirmed: (Int) -> Unit,
+    precios: Int
+) {
 
-
-    // OPTIONS MENU
-    AnimatedVisibility(visible = menuVisible,
-        enter = fadeIn(animationSpec = tween(1000)),
-        exit = fadeOut(animationSpec = tween(1000)) ){
+    Dialog(onDismissRequest = { setShowDialog(false) }) {
         Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .clickable { menuVisible = !menuVisible },
-            color = Color.Black.copy(alpha = 0.6f)
-        ){
+            shape = RoundedCornerShape(16.dp),
+            color = AzulOscuro
+        ) {
+            Box(
+                contentAlignment = Alignment.Center
+            ) {
+                Column(modifier = Modifier.padding(20.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally) {
 
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Elemento seleccionado",
+                            color = Blanco,
+                            style = TextStyle(
+                                fontSize = 24.sp,
+                                fontFamily = FontFamily.Default,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "",
+                            tint = colorResource(android.R.color.darker_gray),
+                            modifier = Modifier
+                                .width(30.dp)
+                                .height(30.dp)
+                                .clickable { setShowDialog(false) }
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    RackItem(foto = fotoId, comprada = false) {}
+
+                    Spacer(modifier = Modifier.height(5.dp))
+                    if (Globals.Coins.toInt() >= 25) {
+                        Text(
+                            text = "¿Estas seguro? ",
+                            fontSize = 14.sp,
+                            style = TextStyle(
+                                color = Blanco,
+                                fontWeight = FontWeight.Bold
+
+                            )
+                        )
+                    } else {
+                        Text(
+                            text = "Saldo Insuficiente ",
+                            fontSize = 14.sp,
+                            style = TextStyle(
+                                color = Blanco,
+                                fontWeight = FontWeight.Bold
+
+                            )
+                        )
+                    }
+
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    if (Globals.Coins.toInt() >= precios) {
+                        Row() {
+
+                            Button(
+                                onClick = { setShowDialog(false) },
+                                modifier = Modifier
+                                    .width(100.dp)
+                                    .height(50.dp),
+                                colors = ButtonDefaults.buttonColors(backgroundColor = Rojo),
+                                shape = RoundedCornerShape(50.dp),
+                                border = BorderStroke(3.dp, AzulOscuro)
+
+                            ) {
+                                Text(
+                                    text = "Cancelar",
+                                    style = TextStyle(
+                                        color = AzulOscuro, fontWeight = FontWeight.Bold
+                                    )
+                                )
+
+                            }
+
+                            Spacer(modifier = Modifier.width(10.dp))
+
+                            Button(
+                                onClick = {
+                                    onConfirmed(fotoId)
+                                    setShowDialog(false)
+                                },
+                                modifier = Modifier
+                                    .width(200.dp)
+                                    .height(50.dp),
+                                colors = ButtonDefaults.buttonColors(backgroundColor = Verde),
+                                shape = RoundedCornerShape(50.dp),
+                                border = BorderStroke(3.dp, AzulOscuro),
+
+                                ) {
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+
+                                    Text(
+                                        text = "Comprar",
+                                        style = TextStyle(
+                                            color = AzulOscuro, fontWeight = FontWeight.Bold
+                                        )
+                                    )
+
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.Center
+                                    ) {
+
+                                        Text(
+                                            text = "   ${precios}",
+                                            style = TextStyle(
+                                                color = AzulOscuro, fontWeight = FontWeight.Bold
+                                            )
+                                        )
+                                        Icon(
+
+                                            imageVector = Icons.Default.Star,
+                                            contentDescription = null,
+                                            tint = Amarillo
+                                        )
+                                    }
+                                }
+
+                            }
+                        }
+                    } else {
+                        Button(
+                            onClick = { setShowDialog(false) },
+                            modifier = Modifier
+                                .width(300.dp)
+                                .height(50.dp),
+                            colors = ButtonDefaults.buttonColors(backgroundColor = Rojo),
+                            shape = RoundedCornerShape(50.dp),
+                            border = BorderStroke(3.dp, AzulOscuro)
+
+                        ) {
+                            Text(
+                                text = "Cancelar",
+                                style = TextStyle(
+                                    color = AzulOscuro, fontWeight = FontWeight.Bold
+                                )
+                            )
+
+                        }
+                    }
+                }
+            }
         }
     }
-    AnimatedVisibility(visible = menuVisible,
-        enter = expandHorizontally (animationSpec = tween(1000)),
-        exit = shrinkHorizontally(animationSpec = tween(1000)) )
-    {
-        TiendaScreen(fotoPopUp, navController, onConfirmed)
-    }
 }
+
 
 @Composable
 fun RackItem( foto: Int ,  comprada: Boolean,   onCardClick: () -> Unit ){
