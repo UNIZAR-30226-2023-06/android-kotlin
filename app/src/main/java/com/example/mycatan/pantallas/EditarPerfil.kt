@@ -31,7 +31,9 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
 import com.example.mycatan.R
+import com.example.mycatan.dBaux.changeUsername
 import com.example.mycatan.dBaux.getNumAmigosPendiente
+import com.example.mycatan.dBaux.postSendRequestFriend
 import com.example.mycatan.others.Globals
 import com.example.mycatan.others.Routes
 import com.example.mycatan.ui.theme.*
@@ -44,6 +46,7 @@ fun EditarPerfil(navController: NavHostController) {
     val editacionPiezas =  remember { mutableStateOf(false) }
     val editacionMapa =  remember { mutableStateOf(false) }
     val cambiarContrasena =  remember { mutableStateOf(false) }
+    val cambiarNombre =  remember { mutableStateOf(false) }
 
     Scaffold(
         bottomBar = {
@@ -138,6 +141,10 @@ fun EditarPerfil(navController: NavHostController) {
                 CambiarContrasena(setShowDialog = {
                     cambiarContrasena.value = it
                 })
+            if(cambiarNombre.value)// se clico editar de tablero
+                CambiarNombre(setShowDialog = {
+                    cambiarNombre.value = it
+                })
 
             Column(
                 modifier = Modifier
@@ -195,7 +202,7 @@ fun EditarPerfil(navController: NavHostController) {
                     Spacer(modifier = Modifier.height(5.dp))
 
                     Button(
-                        onClick = { },
+                        onClick = {cambiarNombre.value=true},
                         shape = RoundedCornerShape(50.dp),
                         modifier = Modifier
                             .width(200.dp)
@@ -374,6 +381,102 @@ fun changedMapa( newP: String) {
 }
 
 @Composable
+fun CambiarNombre(setShowDialog: (Boolean) -> Unit) {
+    val context = LocalContext.current
+    val newName = remember { mutableStateOf(TextFieldValue()) }
+    var edited by remember { mutableStateOf(false) }
+    var colorBoton = Azul
+
+    Dialog(onDismissRequest = { setShowDialog(false) }) {
+        Surface(
+            shape = RoundedCornerShape(16.dp),
+            color = AzulOscuro
+        ) {
+            Box(
+                contentAlignment = Alignment.Center
+            ) {
+                Column(modifier = Modifier.padding(20.dp)) {
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Introduzca su nuevo nombre",
+                            color = Blanco,
+                            style = TextStyle(
+                                fontSize = 20.sp,
+                                fontFamily = FontFamily.Default,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "",
+                            tint = colorResource(android.R.color.darker_gray),
+                            modifier = Modifier
+                                .width(30.dp)
+                                .height(30.dp)
+                                .clickable { setShowDialog(false) }
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    TextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        label = { Text(text = Globals.Username, color= Blanco) },
+                        value = newName.value,
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            backgroundColor = Color.Transparent,
+                            focusedBorderColor = Blanco,
+                            unfocusedBorderColor = Blanco,
+                            disabledBorderColor = Blanco,
+                            textColor = Blanco,
+                            cursorColor = Blanco
+                        ),
+                        onValueChange = {
+                            newName.value = it
+                            edited=true}
+                    )
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    if(!edited){
+                        colorBoton = Azul
+                    } else{
+                        colorBoton = GrisAzuladoClaro
+                    }
+
+                    Button(
+                        onClick = {
+                            //conectar con backend
+                            if(changeUsername(newName.value.text)){
+                                Toast.makeText(context, "Username cambiado correctamente", Toast.LENGTH_SHORT).show()
+                            } else{
+                                Toast.makeText(context, "ERROR el nombre no se ha cambiado", Toast.LENGTH_SHORT).show()
+                            }
+                            setShowDialog(false)
+                                  },
+                        shape = RoundedCornerShape(50.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp),
+                        colors = ButtonDefaults.buttonColors(backgroundColor = colorBoton)
+
+                    ) {
+                        Text(text = "Unirse")
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+@Composable
 fun CambiarContrasena(setShowDialog: (Boolean) -> Unit ) {
 
     val context = LocalContext.current
@@ -436,7 +539,7 @@ fun CambiarContrasena(setShowDialog: (Boolean) -> Unit ) {
                         onValueChange = { password.value = it
                                           edited=true})
 
-                    Spacer(modifier = Modifier.width(5.dp))
+                    Spacer(modifier = Modifier.width(20.dp))
                     TextField(
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
