@@ -163,6 +163,8 @@ fun changeGridSkin(newSkin: String): Boolean {
             if(status == "User not found"){
                 println("USER NOT FOUND")
             } else if(status == "Grid skin not found"){
+                println("GRID SKIN NOT FOUND")
+            } else if(status == "Not authenticated"){
                 println("USER NOT AUTHENTICATED")
             } else if (status == "User does not own this skin"){
                 println("User does not own this skin")
@@ -170,6 +172,122 @@ fun changeGridSkin(newSkin: String): Boolean {
                 println("Grid skin changed successfully")
                 result= true
                 Globals.Mapa=newSkin
+            } else {
+                println("ERROR")
+            }
+            latch.countDown()
+        }
+    })
+    latch.await()
+    return result
+}
+
+fun changeProfilePicture(newSkin: String): Boolean {
+    var skin = "skin$newSkin"
+    var result= false
+    val latch = CountDownLatch(1)
+    val mediaType = "application/x-www-form-urlencoded".toMediaTypeOrNull()
+    val body = RequestBody.create(
+        mediaType,
+        ""
+    )
+
+    val request = Request.Builder()
+        .url("http://$ipBackend:8000/change-profile-picture?new_profile_picture=$skin")
+        .post(body)
+        .addHeader("accept", "application/json")
+        .addHeader("Authorization", "Bearer ${Globals.Token}")
+        .addHeader("Content-Type", "application/x-www-form-urlencoded")
+        .build()
+
+    val client = OkHttpClient()
+
+    client.newCall(request).enqueue(object : Callback {
+        override fun onFailure(call: Call, e: IOException) {
+            println("ERROR al conectar con backend")
+            latch.countDown()
+        }
+
+        override fun onResponse(call: Call, response: Response) {
+            val respuesta = response.body?.string().toString()
+
+            println(respuesta)
+            //transform the string to json object
+            val json = JSONObject(respuesta)
+            //get the string from the response
+            val status = json.getString("detail")
+            //println("STATUS: $status")
+
+            if(status == "User not found"){
+                println("USER NOT FOUND")
+            } else if(status == "Profile picture not found"){
+                println("PROFILE PICTURE NOT FOUND")
+            } else if(status == "Not authenticated"){
+                println("USER NOT AUTHENTICATED")
+            } else if (status == "User does not own this profile picture"){
+                println("User does not own this skin")
+            } else if (status=="Profile picture changed successfully"){
+                println("Profile picture skin changed successfully")
+                result= true
+                Globals.Personaje=newSkin
+            } else {
+                println("ERROR")
+            }
+            latch.countDown()
+        }
+    })
+    latch.await()
+    return result
+}
+
+fun changePiecesSkin(newSkin: String): Boolean {
+    var skin = "skin$newSkin"
+    var result= false
+    val latch = CountDownLatch(1)
+    val mediaType = "application/x-www-form-urlencoded".toMediaTypeOrNull()
+    val body = RequestBody.create(
+        mediaType,
+        ""
+    )
+
+    val request = Request.Builder()
+        .url("http://$ipBackend:8000/change-pieces-skin?new_pieces_skin=$skin")
+        .post(body)
+        .addHeader("accept", "application/json")
+        .addHeader("Authorization", "Bearer ${Globals.Token}")
+        .addHeader("Content-Type", "application/x-www-form-urlencoded")
+        .build()
+
+    val client = OkHttpClient()
+
+    client.newCall(request).enqueue(object : Callback {
+        override fun onFailure(call: Call, e: IOException) {
+            println("ERROR al conectar con backend")
+            latch.countDown()
+        }
+
+        override fun onResponse(call: Call, response: Response) {
+            val respuesta = response.body?.string().toString()
+
+            println(respuesta)
+            //transform the string to json object
+            val json = JSONObject(respuesta)
+            //get the string from the response
+            val status = json.getString("detail")
+            //println("STATUS: $status")
+
+            if(status == "User not found"){
+                println("USER NOT FOUND")
+            } else if(status == "Pieces skin not found"){
+                println("PIECES SKIN NOT FOUND")
+            } else if(status == "Not authenticated"){
+                println("USER NOT AUTHENTICATED")
+            } else if (status == "User does not own this skin"){
+                println("User does not own this skin")
+            } else if (status=="Pieces skin changed successfully"){
+                println("Pieces skin changed successfully")
+                result= true
+                Globals.Piezas=newSkin
             } else {
                 println("ERROR")
             }

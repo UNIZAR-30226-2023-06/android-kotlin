@@ -296,7 +296,7 @@ fun EditarPerfil(navController: NavHostController) {
                             ) {
 
                                 Text(
-                                    text = "Tablero",
+                                    text = "Mapa",
                                     fontSize = 20.sp,
                                     color = AzulOscuro,
                                     fontFamily = FontFamily.SansSerif,
@@ -604,6 +604,7 @@ fun CambiarContrasena(setShowDialog: (Boolean) -> Unit ) {
 @Composable
 fun EditacionPersonaje( setShowDialog: (Boolean) -> Unit ) {
 
+    val context = LocalContext.current
     var personajeClicked by remember { mutableStateOf("null") }
     var colorClicado: Color
 
@@ -728,7 +729,12 @@ fun EditacionPersonaje( setShowDialog: (Boolean) -> Unit ) {
 
                             Button(
                                 onClick = {
-                                    changedPersonaje(personajeClicked)
+                                    if(changeProfilePicture(personajeClicked)){
+                                        Toast.makeText(context, "Personaje cambiado correctamente", Toast.LENGTH_SHORT).show()
+                                        changedPersonaje(personajeClicked)
+                                    } else{
+                                        Toast.makeText(context, "ERROR el personaje no se ha cambiado", Toast.LENGTH_SHORT).show()
+                                    }
                                     setShowDialog(false)
                                 },
                                 modifier = Modifier
@@ -756,7 +762,7 @@ fun EditacionPersonaje( setShowDialog: (Boolean) -> Unit ) {
                         }
                     } else {
                         Button(
-                            onClick = { setShowDialog(true) },
+                            onClick = {setShowDialog(true) },
                             modifier = Modifier
                                 .width(300.dp)
                                 .height(50.dp),
@@ -786,6 +792,7 @@ fun EditacionPersonaje( setShowDialog: (Boolean) -> Unit ) {
 @Composable
 fun EditacionPiezas( setShowDialog: (Boolean) -> Unit ) {
 
+    val context = LocalContext.current
     var piezaClicked by remember { mutableStateOf("null") }
     var colorClicado: Color
 
@@ -910,7 +917,12 @@ fun EditacionPiezas( setShowDialog: (Boolean) -> Unit ) {
 
                             Button(
                                 onClick = {
-                                    changedPiezas(piezaClicked)
+                                    if(changePiecesSkin(piezaClicked)){
+                                        Toast.makeText(context, "Piezas cambiadas correctamente", Toast.LENGTH_SHORT).show()
+                                        changedPiezas(piezaClicked)
+                                    } else{
+                                        Toast.makeText(context, "ERROR las piezas no se han cambiado", Toast.LENGTH_SHORT).show()
+                                    }
                                     setShowDialog(false)
                                 },
                                 modifier = Modifier
