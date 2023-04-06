@@ -66,7 +66,8 @@ fun enviarLogin(username: String, password: String, onErrorClick: (err: Boolean)
                 Globals.Username = user.getClaim("username").asString()
 
                 //SOLICITAMOS INFO DEL USUARIO
-                addCoins(50)
+                //addCoins(50)
+                //subCoins(100)
                 getUserData(Globals.Id);
 
                 //forthemoment
@@ -116,9 +117,23 @@ fun getUserData( userId: String ){
                 println("USUARIO NO  ENCONTRADO")
             } else {
                 Globals.Coins = json.getString("coins")
-                Globals.Personaje = json.getString("profile_picture")
-                Globals.Mapa = json.getString("selected_grid_skin")
-                Globals.Piezas = json.getString("selected_pieces_skin")
+                var temp = json.getString("profile_picture")
+                if (temp == "default")
+                    Globals.Personaje =temp
+                else
+                    Globals.Personaje =temp.substring(4)
+
+                temp = json.getString("selected_grid_skin")
+                if (temp == "default")
+                    Globals.Mapa =temp
+                else
+                    Globals.Mapa = temp.substring(4)
+
+                temp = json.getString("selected_pieces_skin")
+                if (temp == "default")
+                    Globals.Piezas =temp
+                else
+                    Globals.Piezas = temp.substring(4)
             }
         }
     })

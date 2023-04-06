@@ -33,6 +33,7 @@ import com.example.mycatan.R
 import com.example.mycatan.dBaux.buyMapa
 import com.example.mycatan.dBaux.changeGridSkin
 import com.example.mycatan.dBaux.getNumAmigosPendiente
+import com.example.mycatan.dBaux.subCoins
 import com.example.mycatan.others.Globals
 import com.example.mycatan.others.Routes
 import com.example.mycatan.ui.theme.*
@@ -49,11 +50,7 @@ fun TiendaPage(navController: NavHostController) {
 
 
     val onConfirmed: (Int) -> Unit = { index ->
-
-        var temp = Globals.Coins.toInt()
-        temp -= precios;
-        Globals.Coins = temp.toString()
-
+        subCoins(precios)
         //habria que postear tambien las nuevas coins del usuario
         Globals.fotosCompradas[index] = true
     }
@@ -385,7 +382,9 @@ fun TiendaPOP(
                             Button(
                                 onClick = {
                                     if(buyMapa(fotoId.toString())){
+
                                         Toast.makeText(context, "Mapa comprado correctamente", Toast.LENGTH_SHORT).show()
+
                                         onConfirmed(fotoId)
                                     } else{
                                         Toast.makeText(context, "ERROR el mapa no se ha comprado", Toast.LENGTH_SHORT).show()

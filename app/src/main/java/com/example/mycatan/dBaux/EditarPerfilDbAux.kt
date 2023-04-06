@@ -122,7 +122,7 @@ fun changePassword(newPsswd: String): Boolean {
     return result
 }
 
-//funca mas o menos solo que no se gusrda del toddo bien creo que se pone default o algo asi
+
 //profile pic y pieces son iguales
 fun changeGridSkin(newSkin: String): Boolean {
     var skin = "skin$newSkin"
