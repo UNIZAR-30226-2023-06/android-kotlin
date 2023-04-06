@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
 import com.example.mycatan.R
+import com.example.mycatan.dBaux.changePassword
 import com.example.mycatan.dBaux.changeUsername
 import com.example.mycatan.dBaux.getNumAmigosPendiente
 import com.example.mycatan.dBaux.postSendRequestFriend
@@ -579,6 +580,11 @@ fun CambiarContrasena(setShowDialog: (Boolean) -> Unit ) {
                             }
                             else{
                                 //contectar backend
+                                if(changePassword(password.value.text)){
+                                    Toast.makeText(context, "Contraseña cambiada correctamente", Toast.LENGTH_SHORT).show()
+                                } else{
+                                    Toast.makeText(context, "ERROR la contraseña no se ha cambiado", Toast.LENGTH_SHORT).show()
+                                }
                                 setShowDialog(false)
                             }
                         },

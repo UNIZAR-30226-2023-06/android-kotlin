@@ -17,7 +17,6 @@ import java.io.IOException
 import java.util.concurrent.CountDownLatch
 
 
-// MIRAMOS QUE USUARIOS SON NUESTROS AMIGOS
 fun changeUsername(newName: String): Boolean {
     var result= false
     val latch = CountDownLatch(1)
@@ -61,6 +60,58 @@ fun changeUsername(newName: String): Boolean {
                 println("Username changed successfully")
                 result= true
                 Globals.Username=newName
+            } else {
+                println("ERROR")
+            }
+            latch.countDown()
+        }
+    })
+    latch.await()
+    return result
+}
+
+fun changePassword(newPsswd: String): Boolean {
+    var result= false
+    val latch = CountDownLatch(1)
+    val mediaType = "application/x-www-form-urlencoded".toMediaTypeOrNull()
+    val body = RequestBody.create(
+        mediaType,
+        ""
+    )
+
+    val request = Request.Builder()
+        .url("http://$ipBackend:8000/change-password?new_password=$newPsswd")
+        .post(body)
+        .addHeader("accept", "application/json")
+        .addHeader("Authorization", "Bearer ${Globals.Token}")
+        .addHeader("Content-Type", "application/x-www-form-urlencoded")
+        .build()
+
+    val client = OkHttpClient()
+
+    client.newCall(request).enqueue(object : Callback {
+        override fun onFailure(call: Call, e: IOException) {
+            println("ERROR al conectar con backend")
+            latch.countDown()
+        }
+
+        override fun onResponse(call: Call, response: Response) {
+            val respuesta = response.body?.string().toString()
+
+            println(respuesta)
+            //transform the string to json object
+            val json = JSONObject(respuesta)
+            //get the string from the response
+            val status = json.getString("detail")
+            //println("STATUS: $status")
+
+            if(status == "User not found"){
+                println("USER NOT FOUND")
+            } else if(status == "Not authenticated"){
+                println("USER NOT AUTHENTICATED")
+            } else if (status=="Password changed successfully"){
+                println("Password changed successfully")
+                result= true
             } else {
                 println("ERROR")
             }
