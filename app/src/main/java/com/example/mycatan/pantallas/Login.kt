@@ -111,18 +111,6 @@ fun LoginPage(navController: NavHostController) {
                 )
             )
             Spacer(modifier = Modifier.height(10.dp))
-            if(errorDatosIncorrectos){
-                errorDatosIncorrectos = false
-                val toast = Toast.makeText(context, "ERROR: Datos incorrectos", Toast.LENGTH_SHORT)
-                toast.show()
-
-                //Text(text = "ERROR: Datos incorrectos", style = TextStyle(color = Rojo, fontWeight = FontWeight.Bold))
-            }
-            else if(errorActualizado){
-                errorActualizado = false
-                navController.navigate(Routes.Splash.route)
-            }
-            Spacer(modifier = Modifier.height(5.dp))
 
             Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp), ) {
                 Button(
@@ -131,14 +119,15 @@ fun LoginPage(navController: NavHostController) {
                         if (username.value.text.isEmpty() || password.value.text.isEmpty()){
                             errorDatosIncorrectos = true
                         }
-                        enviarLogin( username.value.text ,
-                            password.value.text,
-                            onErrorClick = {  errorDatosIncorrectos=it
-                                            errorActualizado = true},
-
-                        )
-
-
+                        else{
+                            if (enviarLogin( username.value.text , password.value.text)){
+                                navController.navigate(Routes.Splash.route)
+                            }
+                            else{
+                                val toast = Toast.makeText(context, "ERROR: Datos incorrectos", Toast.LENGTH_SHORT)
+                                toast.show()
+                            }
+                        }
                     },
                     shape = RoundedCornerShape(50.dp),
                     modifier = Modifier

@@ -10,8 +10,12 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
+import java.util.concurrent.CountDownLatch
 
-fun enviarLogin(username: String, password: String, onErrorClick: (err: Boolean) -> Unit) {
+fun enviarLogin(username: String, password: String):Boolean {
+
+    var result = false
+    val latch = CountDownLatch(1) //esto que es
     println("username: $username")
     println("password: $password")
 
@@ -36,8 +40,9 @@ fun enviarLogin(username: String, password: String, onErrorClick: (err: Boolean)
     client.newCall(request).enqueue(object : Callback {
         override fun onFailure(call: Call, e: IOException) {
             // manejo de errores
-            println(call)
+
             println("ERROR al conectar con backend")
+            latch.countDown()
         }
 
         override fun onResponse(call: Call, response: Response) {
@@ -49,16 +54,15 @@ fun enviarLogin(username: String, password: String, onErrorClick: (err: Boolean)
             if(status == "Incorrect email"){
                 //TODO: gestionar email incorrecto
                 println("EMAIL INCORRECTO")
-                onErrorClick(true)
             }else if (status == "Incorrect password"){
                 //TODO: gestional contraseña incorrecta
                 println("CONTRASEÑA INCORRECTA")
-                onErrorClick(true)
             }else if (status == "Logged in successfully"){
-                onErrorClick(false)
+
+                result=true
 
                 Globals.Token = json.getString("access_token")
-                println("TOKEN DE ACCESO $Globals.Token")
+                println("TOKEN DE ACCESO ${Globals.Token}")
                 val user = JWT.decode(Globals.Token)
                 var tempId = user.getClaim("id").asInt()
                 Globals.Id = tempId.toString()
@@ -71,15 +75,15 @@ fun enviarLogin(username: String, password: String, onErrorClick: (err: Boolean)
                 getUserData(Globals.Id);
 
                 //forthemoment
-                Globals.Personaje = "8"
-                Globals.Piezas = "2"
-                Globals.Mapa = "3"
                 Globals.fotosCompradas = BooleanArray(9)
                 Globals.fotosCompradas.fill(false)
                 //TODO: terminar esto
             }
+            latch.countDown()
         }
     })
+    latch.await()
+    return result
 }
 
 fun getUserData( userId: String ){
@@ -117,6 +121,7 @@ fun getUserData( userId: String ){
                 println("USUARIO NO  ENCONTRADO")
             } else {
                 Globals.Coins = json.getString("coins")
+
                 var temp = json.getString("profile_picture")
                 if (temp == "default")
                     Globals.Personaje =temp
