@@ -30,10 +30,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
 import com.example.mycatan.R
-import com.example.mycatan.dBaux.buyMapa
-import com.example.mycatan.dBaux.changeGridSkin
-import com.example.mycatan.dBaux.getNumAmigosPendiente
-import com.example.mycatan.dBaux.subCoins
+import com.example.mycatan.dBaux.*
 import com.example.mycatan.others.Globals
 import com.example.mycatan.others.Routes
 import com.example.mycatan.ui.theme.*
@@ -381,7 +378,7 @@ fun TiendaPOP(
 
                             Button(
                                 onClick = {
-                                    if(buyMapa(fotoId.toString())){
+                                    if(buyPersonaje(fotoId.toString())){
 
                                         Toast.makeText(context, "Mapa comprado correctamente", Toast.LENGTH_SHORT).show()
 

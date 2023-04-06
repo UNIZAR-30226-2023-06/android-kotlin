@@ -17,7 +17,7 @@ import java.io.IOException
 import java.util.concurrent.CountDownLatch
 
 //no funca
-fun buyMapa(skinName: String): Boolean {
+fun buyPersonaje(skinName: String): Boolean {
     var skin = "skin$skinName"
     println("SKIN: $skin")
     var result= false
@@ -29,7 +29,7 @@ fun buyMapa(skinName: String): Boolean {
     )
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/buy-board-skin?board_skin_name=$skin")
+        .url("http://$ipBackend:8000/buy-profile-picture?profile_picture_name=$skin")
         .post(body)
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer ${Globals.Token}")
@@ -58,12 +58,130 @@ fun buyMapa(skinName: String): Boolean {
                 println("USER NOT FOUND")
             } else if(status == "Not authenticated"){
                 println("USER NOT AUTHENTICATED")
-            } else if(status == "User already has this board skin"){
+            } else if(status == "User already has this profile picture"){
                 println("USER ALREADY HAS THIS BOARD SKIN")
             } else if(status == "Not enough money"){
                 println("NOT ENOUGH MONEY")
-            } else if (status=="Board skin bought successfully"){
+            } else if (status=="Profile picture bought successfully"){
                 println("Board skin bought successfully")
+                result= true
+            } else {
+                println("ERROR")
+            }
+            latch.countDown()
+        }
+    })
+    latch.await()
+    return result
+}
+
+//no funca
+fun buyPiezas(skinName: String): Boolean {
+    var skin = "skin$skinName"
+    println("SKIN: $skin")
+    var result= false
+    val latch = CountDownLatch(1)
+    val mediaType = "application/x-www-form-urlencoded".toMediaTypeOrNull()
+    val body = RequestBody.create(
+        mediaType,
+        ""
+    )
+
+    val request = Request.Builder()
+        .url("http://$ipBackend:8000/buy-profile-picture?profile_picture_name=$skin")
+        .post(body)
+        .addHeader("accept", "application/json")
+        .addHeader("Authorization", "Bearer ${Globals.Token}")
+        .addHeader("Content-Type", "application/x-www-form-urlencoded")
+        .build()
+
+    val client = OkHttpClient()
+
+    client.newCall(request).enqueue(object : Callback {
+        override fun onFailure(call: Call, e: IOException) {
+            println("ERROR al conectar con backend")
+            latch.countDown()
+        }
+
+        override fun onResponse(call: Call, response: Response) {
+            val respuesta = response.body?.string().toString()
+            //la respuesta es not found por algun motivo
+            println(respuesta)
+            //transform the string to json object
+            val json = JSONObject(respuesta)
+            //get the string from the response
+            val status = json.getString("detail")
+            println("STATUS: $status")
+
+            if(status == "User not found"){
+                println("USER NOT FOUND")
+            } else if(status == "Not authenticated"){
+                println("USER NOT AUTHENTICATED")
+            } else if(status == "User already has this profile picture"){
+                println("USER ALREADY HAS THIS BOARD SKIN")
+            } else if(status == "Not enough money"){
+                println("NOT ENOUGH MONEY")
+            } else if (status=="Profile picture bought successfully"){
+                println("Board skin bought successfully")
+                result= true
+            } else {
+                println("ERROR")
+            }
+            latch.countDown()
+        }
+    })
+    latch.await()
+    return result
+}
+
+//no funca
+fun buyMapa(skinName: String): Boolean {
+    var skin = "skin$skinName"
+    println("SKIN: $skin")
+    var result= false
+    val latch = CountDownLatch(1)
+    val mediaType = "application/x-www-form-urlencoded".toMediaTypeOrNull()
+    val body = RequestBody.create(
+        mediaType,
+        ""
+    )
+
+    val request = Request.Builder()
+        .url("http://$ipBackend:8000/buy-piece-skin?piece_skin_name=$skin")
+        .post(body)
+        .addHeader("accept", "application/json")
+        .addHeader("Authorization", "Bearer ${Globals.Token}")
+        .addHeader("Content-Type", "application/x-www-form-urlencoded")
+        .build()
+
+    val client = OkHttpClient()
+
+    client.newCall(request).enqueue(object : Callback {
+        override fun onFailure(call: Call, e: IOException) {
+            println("ERROR al conectar con backend")
+            latch.countDown()
+        }
+
+        override fun onResponse(call: Call, response: Response) {
+            val respuesta = response.body?.string().toString()
+            //la respuesta es not found por algun motivo
+            println(respuesta)
+            //transform the string to json object
+            val json = JSONObject(respuesta)
+            //get the string from the response
+            val status = json.getString("detail")
+            println("STATUS: $status")
+
+            if(status == "User not found"){
+                println("USER NOT FOUND")
+            } else if(status == "Not authenticated"){
+                println("USER NOT AUTHENTICATED")
+            } else if(status == "User already has this piece skin"){
+                println("USER ALREADY HAS THIS PIECE SKIN")
+            } else if(status == "Not enough money"){
+                println("NOT ENOUGH MONEY")
+            } else if (status=="Piece skin bought successfully"){
+                println("Piece skin bought successfully")
                 result= true
             } else {
                 println("ERROR")
