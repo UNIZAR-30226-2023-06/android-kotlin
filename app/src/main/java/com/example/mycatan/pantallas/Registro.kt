@@ -99,6 +99,7 @@ fun RegistroPage(navController: NavHostController) {
                     visualTransformation = PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                     onValueChange = { password.value = it })
+
                 Spacer(modifier = Modifier.width(5.dp))
                 TextField(
                     singleLine = true,

@@ -1,10 +1,12 @@
 package com.example.mycatan.pantallas
 
+import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -15,11 +17,15 @@ import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -37,6 +43,7 @@ fun EditarPerfil(navController: NavHostController) {
     val editacionPersonaje =  remember { mutableStateOf(false) }
     val editacionPiezas =  remember { mutableStateOf(false) }
     val editacionMapa =  remember { mutableStateOf(false) }
+    val cambiarContrasena =  remember { mutableStateOf(false) }
 
     Scaffold(
         bottomBar = {
@@ -110,7 +117,7 @@ fun EditarPerfil(navController: NavHostController) {
                     painterResource(R.drawable.talado),
                     contentScale = ContentScale.FillBounds
                 )
-                .padding(10.dp, 10.dp, 10.dp, 10.dp)
+                .padding(10.dp, 40.dp, 10.dp, 10.dp)
 
         )
         {
@@ -127,7 +134,10 @@ fun EditarPerfil(navController: NavHostController) {
                 EditacionMapa(setShowDialog = {
                     editacionMapa.value = it
                 })
-
+            if(cambiarContrasena.value)// se clico editar de tablero
+                CambiarContrasena(setShowDialog = {
+                    cambiarContrasena.value = it
+                })
 
             Column(
                 modifier = Modifier
@@ -142,7 +152,7 @@ fun EditarPerfil(navController: NavHostController) {
 
                         PerfilItem2(foto = Globals.Personaje) {}
 
-                        Spacer(modifier = Modifier.width(5.dp))
+                        Spacer(modifier = Modifier.width(10.dp))
 
 
                         //boton edit del personaje
@@ -172,7 +182,7 @@ fun EditarPerfil(navController: NavHostController) {
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(10.dp))
+                    Spacer(modifier = Modifier.height(25.dp))
 
                     Text(
                         text = "${Globals.Username} #${Globals.Id}",
@@ -212,10 +222,119 @@ fun EditarPerfil(navController: NavHostController) {
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(5.dp))
+                    Spacer(modifier = Modifier.height(40.dp))
+
+
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceAround,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+
+                        Row(
+                            horizontalArrangement = Arrangement.Start,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+
+                            PerfilItem(foto = Globals.Piezas) {}
+
+                            Spacer(modifier = Modifier.width(5.dp))
+
+                            Column(horizontalAlignment = Alignment.Start)
+                            {
+
+                                Text(
+                                    text = "Piezas",
+                                    fontSize = 20.sp,
+                                    color = AzulOscuro,
+                                    fontFamily = FontFamily.SansSerif,
+                                    fontWeight = FontWeight.ExtraBold
+                                )
+                                //boton edit piezas
+                                Box(
+                                    modifier = Modifier
+                                        .clickable {
+                                            menuVisible = !menuVisible
+                                            editacionPiezas.value = true
+                                        }
+                                        .width(45.dp)
+                                        .height(45.dp)
+                                        .background(
+                                            color = AzulOscuro,
+                                            shape = RoundedCornerShape(10.dp)
+                                        ),
+                                    contentAlignment = Alignment.Center
+                                ) {
+
+                                    Icon(
+                                        imageVector = Icons.Default.Edit,
+                                        contentDescription = null,
+                                        //background(color = Amarillo),
+
+                                        tint = Blanco
+                                    )
+                                }
+
+                            }
+
+                        }
+                        
+                        Spacer(modifier = Modifier.width(30.dp))
+
+                        Row(
+                            horizontalArrangement = Arrangement.End,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+
+
+                            Column(
+                                horizontalAlignment = Alignment.End
+                            ) {
+
+                                Text(
+                                    text = "Tablero",
+                                    fontSize = 20.sp,
+                                    color = AzulOscuro,
+                                    fontFamily = FontFamily.SansSerif,
+                                    fontWeight = FontWeight.ExtraBold
+                                )
+                                //boton edit tablero
+                                Box(
+                                    modifier = Modifier
+                                        .clickable {
+                                            menuVisible = !menuVisible
+                                            editacionMapa.value = true
+                                        }
+                                        .width(45.dp)
+                                        .height(45.dp)
+                                        .background(
+                                            color = AzulOscuro,
+                                            shape = RoundedCornerShape(10.dp)
+                                        ),
+                                    contentAlignment = Alignment.Center
+                                ) {
+
+                                    Icon(
+                                        imageVector = Icons.Default.Edit,
+                                        contentDescription = null,
+                                        //background(color = Amarillo),
+
+                                        tint = Blanco
+                                    )
+                                }
+
+                            }
+
+                            Spacer(modifier = Modifier.width(5.dp))
+
+                            PerfilItem(foto = Globals.Mapa) {}
+                        }
+
+                    }
+
+                    Spacer(modifier = Modifier.height(30.dp))
 
                     Button(
-                        onClick = { },
+                        onClick = { cambiarContrasena.value = true },
                         shape = RoundedCornerShape(50.dp),
                         modifier = Modifier
                             .width(200.dp)
@@ -238,114 +357,6 @@ fun EditarPerfil(navController: NavHostController) {
                             )
                         }
                     }
-
-
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-
-
-                        Column(
-                            verticalArrangement = Arrangement.SpaceEvenly,
-                            horizontalAlignment = Alignment.End
-                        ) {
-
-                            Text(
-                                text = "Mis Piezas",
-                                fontSize = 20.sp,
-                                color = AzulOscuro,
-                                fontFamily = FontFamily.SansSerif,
-                                fontWeight = FontWeight.ExtraBold
-                            )
-                            //boton edit piezas
-                            Box(
-                                modifier = Modifier
-                                    .clickable {
-                                        menuVisible = !menuVisible
-                                        editacionPiezas.value = true
-                                    }
-                                    .width(45.dp)
-                                    .height(45.dp)
-                                    .background(
-                                        color = AzulOscuro,
-                                        shape = RoundedCornerShape(10.dp)
-                                    ),
-                                contentAlignment = Alignment.Center
-                            ) {
-
-                                Icon(
-                                    imageVector = Icons.Default.Edit,
-                                    contentDescription = null,
-                                    //background(color = Amarillo),
-
-                                    tint = Blanco
-                                )
-                            }
-
-                        }
-
-                        Spacer(modifier = Modifier.width(5.dp))
-
-                        PerfilItem(foto = Globals.Piezas) {}
-
-                    }
-
-                    Spacer(modifier = Modifier.height(30.dp))
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-
-
-                        Column(
-                            verticalArrangement = Arrangement.SpaceEvenly,
-                            horizontalAlignment = Alignment.End
-                        ) {
-
-                            Text(
-                                text = "Mi Tablero",
-                                fontSize = 20.sp,
-                                color = AzulOscuro,
-                                fontFamily = FontFamily.SansSerif,
-                                fontWeight = FontWeight.ExtraBold
-                            )
-                            //boton edit tablero
-                            Box(
-                                modifier = Modifier
-                                    .clickable {
-                                        menuVisible = !menuVisible
-                                        editacionMapa.value = true
-                                    }
-                                    .width(45.dp)
-                                    .height(45.dp)
-                                    .background(
-                                        color = AzulOscuro,
-                                        shape = RoundedCornerShape(10.dp)
-                                    ),
-                                contentAlignment = Alignment.Center
-                            ) {
-
-                                Icon(
-                                    imageVector = Icons.Default.Edit,
-                                    contentDescription = null,
-                                    //background(color = Amarillo),
-
-                                    tint = Blanco
-                                )
-                            }
-
-                        }
-
-                        Spacer(modifier = Modifier.width(5.dp))
-
-                        PerfilItem(foto = Globals.Mapa) {}
-                    }
-
-                }
             }
         }
 
@@ -361,6 +372,128 @@ fun changedPiezas( newP: String) {
 fun changedMapa( newP: String) {
     Globals.Mapa= newP
 }
+
+@Composable
+fun CambiarContrasena(setShowDialog: (Boolean) -> Unit ) {
+
+    val context = LocalContext.current
+    var edited by remember { mutableStateOf(false) }
+    val password = remember { mutableStateOf(TextFieldValue()) }
+    val confirmarContrasena = remember { mutableStateOf(TextFieldValue()) }
+    var colorBoton = Azul
+    Dialog(onDismissRequest = { setShowDialog(false) }) {
+        Surface(
+            shape = RoundedCornerShape(16.dp),
+            color = AzulOscuro
+        ) {
+            Box(
+                contentAlignment = Alignment.Center
+            ) {
+                Column(modifier = Modifier.padding(20.dp)) {
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Cambiar contraseña",
+                            color = Blanco,
+                            style = TextStyle(
+                                fontSize = 24.sp,
+                                fontFamily = FontFamily.Default,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "",
+                            tint = colorResource(android.R.color.darker_gray),
+                            modifier = Modifier
+                                .width(30.dp)
+                                .height(30.dp)
+                                .clickable { setShowDialog(false) }
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    TextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        label = { Text(text = "Contraseña", color= Blanco) },
+                        value = password.value,
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            backgroundColor = Color.Transparent,
+                            focusedBorderColor = Blanco,
+                            unfocusedBorderColor = Blanco,
+                            disabledBorderColor = Blanco,
+                            textColor = Blanco,
+                            cursorColor = Blanco
+                        ),
+                        visualTransformation = PasswordVisualTransformation(),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                        onValueChange = { password.value = it
+                                          edited=true})
+
+                    Spacer(modifier = Modifier.width(5.dp))
+                    TextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        label = { Text(text = "Confirmar contraseña", color= Blanco) },
+                        value = confirmarContrasena.value,
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            backgroundColor = Color.Transparent,
+                            focusedBorderColor = Blanco,
+                            unfocusedBorderColor = Blanco,
+                            disabledBorderColor = Blanco,
+                            textColor = Blanco,
+                            cursorColor = Blanco
+                        ),
+                        visualTransformation = PasswordVisualTransformation(),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                        onValueChange = { confirmarContrasena.value = it
+                                          edited=true})
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    if(!edited){
+                        colorBoton = Azul
+                    } else{
+                        colorBoton = GrisAzuladoClaro
+                    }
+
+                    Button(
+                        onClick = {
+                            if ( password.value != confirmarContrasena.value
+                                || password.value.text.isEmpty()
+                                || confirmarContrasena.value.text.isEmpty()) {
+
+                                val toast = Toast.makeText(context, "ERROR: Las contraseñas no coinciden  o están vacías. Vuelva a intentarlo.", Toast.LENGTH_SHORT)
+                                toast.show()
+                                colorBoton = Azul
+                                edited = false
+                            }
+                            else{
+                                //contectar backend
+                                setShowDialog(false)
+                            }
+                        },
+                        shape = RoundedCornerShape(50.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp),
+                        colors = ButtonDefaults.buttonColors(backgroundColor = colorBoton)
+
+                    ) {
+                        Text(text = "Unirse")
+                    }
+                }
+            }
+        }
+    }
+}
+
 
 @Composable
 fun EditacionPersonaje( setShowDialog: (Boolean) -> Unit ) {
@@ -951,7 +1084,7 @@ fun PerfilItem2( foto: String , onCardClick: () -> Unit ){
     Card(
         modifier = Modifier
             .clickable { onCardClick() }
-            .fillMaxWidth(0.50f),
+            .fillMaxWidth(0.42f),
 
         shape = CircleShape,
         backgroundColor = Blanco,

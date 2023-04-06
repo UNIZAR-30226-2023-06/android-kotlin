@@ -422,7 +422,9 @@ fun UnirsePartida(value: String, setShowDialog: (Boolean) -> Unit, setValue: (St
                             backgroundColor = Color.Transparent,
                             focusedBorderColor = Blanco,
                             unfocusedBorderColor = Blanco,
-                            disabledBorderColor = Blanco
+                            disabledBorderColor = Blanco,
+                            textColor = Blanco,
+                            cursorColor = Blanco
                         ),
                         onValueChange = {
                             if (it.text.length <= 76)
