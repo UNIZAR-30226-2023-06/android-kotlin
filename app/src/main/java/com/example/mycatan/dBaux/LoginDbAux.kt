@@ -66,6 +66,7 @@ fun enviarLogin(username: String, password: String, onErrorClick: (err: Boolean)
                 Globals.Username = user.getClaim("username").asString()
 
                 //SOLICITAMOS INFO DEL USUARIO
+                addCoins(50)
                 getUserData(Globals.Id);
 
                 //forthemoment

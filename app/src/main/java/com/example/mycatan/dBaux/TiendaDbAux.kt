@@ -16,8 +16,9 @@ import org.json.JSONObject
 import java.io.IOException
 import java.util.concurrent.CountDownLatch
 
-
-fun changeUsername(newName: String): Boolean {
+//no funca
+fun buyMapa(skinName: String): Boolean {
+    var skin = "skin$skinName"
     var result= false
     val latch = CountDownLatch(1)
     val mediaType = "application/x-www-form-urlencoded".toMediaTypeOrNull()
@@ -27,7 +28,7 @@ fun changeUsername(newName: String): Boolean {
     )
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/change-username?new_username=$newName")
+        .url("http://$ipBackend:8000/buy-board-skin?board_skin_name=$skin")
         .post(body)
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer ${Globals.Token}")
@@ -50,67 +51,18 @@ fun changeUsername(newName: String): Boolean {
             val json = JSONObject(respuesta)
             //get the string from the response
             val status = json.getString("detail")
-            //println("STATUS: $status")
+            println("STATUS: $status")
 
             if(status == "User not found"){
                 println("USER NOT FOUND")
             } else if(status == "Not authenticated"){
                 println("USER NOT AUTHENTICATED")
-            } else if (status=="Username changed successfully"){
-                println("Username changed successfully")
-                result= true
-                Globals.Username=newName
-            } else {
-                println("ERROR")
-            }
-            latch.countDown()
-        }
-    })
-    latch.await()
-    return result
-}
-
-fun changePassword(newPsswd: String): Boolean {
-    var result= false
-    val latch = CountDownLatch(1)
-    val mediaType = "application/x-www-form-urlencoded".toMediaTypeOrNull()
-    val body = RequestBody.create(
-        mediaType,
-        ""
-    )
-
-    val request = Request.Builder()
-        .url("http://$ipBackend:8000/change-password?new_password=$newPsswd")
-        .post(body)
-        .addHeader("accept", "application/json")
-        .addHeader("Authorization", "Bearer ${Globals.Token}")
-        .addHeader("Content-Type", "application/x-www-form-urlencoded")
-        .build()
-
-    val client = OkHttpClient()
-
-    client.newCall(request).enqueue(object : Callback {
-        override fun onFailure(call: Call, e: IOException) {
-            println("ERROR al conectar con backend")
-            latch.countDown()
-        }
-
-        override fun onResponse(call: Call, response: Response) {
-            val respuesta = response.body?.string().toString()
-
-            println(respuesta)
-            //transform the string to json object
-            val json = JSONObject(respuesta)
-            //get the string from the response
-            val status = json.getString("detail")
-            //println("STATUS: $status")
-
-            if(status == "User not found"){
-                println("USER NOT FOUND")
-            } else if(status == "Not authenticated"){
-                println("USER NOT AUTHENTICATED")
-            } else if (status=="Password changed successfully"){
-                println("Password changed successfully")
+            } else if(status == "User already has this board skin"){
+                println("USER ALREADY HAS THIS BOARD SKIN")
+            } else if(status == "Not enough money"){
+                println("NOT ENOUGH MONEY")
+            } else if (status=="Board skin bought successfully"){
+                println("Board skin bought successfully")
                 result= true
             } else {
                 println("ERROR")
@@ -122,10 +74,8 @@ fun changePassword(newPsswd: String): Boolean {
     return result
 }
 
-//funca mas o menos solo que no se gusrda del toddo bien creo que se pone default o algo asi
-//profile pic y pieces son iguales
-fun changeGridSkin(newSkin: String): Boolean {
-    var skin = "skin$newSkin"
+fun addCoins(coins: Int): Boolean {
+
     var result= false
     val latch = CountDownLatch(1)
     val mediaType = "application/x-www-form-urlencoded".toMediaTypeOrNull()
@@ -135,7 +85,7 @@ fun changeGridSkin(newSkin: String): Boolean {
     )
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/change-grid-skin?new_grid_skin=$skin")
+        .url("http://$ipBackend:8000/add-coins?amount=$coins")
         .post(body)
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer ${Globals.Token}")
@@ -158,18 +108,17 @@ fun changeGridSkin(newSkin: String): Boolean {
             val json = JSONObject(respuesta)
             //get the string from the response
             val status = json.getString("detail")
+            val actualCoins = json.getInt("coins")
             //println("STATUS: $status")
 
             if(status == "User not found"){
                 println("USER NOT FOUND")
-            } else if(status == "Grid skin not found"){
+            } else if(status == "Not authenticated") {
                 println("USER NOT AUTHENTICATED")
-            } else if (status == "User does not own this skin"){
-                println("User does not own this skin")
-            } else if (status=="Grid skin changed successfully"){
-                println("Grid skin changed successfully")
+            } else if (status== "Coins added successfully"){
+                println("Coins added successfully")
+                Globals.Coins=actualCoins.toString()
                 result= true
-                Globals.Mapa=newSkin
             } else {
                 println("ERROR")
             }

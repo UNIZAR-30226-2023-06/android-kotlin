@@ -283,35 +283,35 @@ fun FotoPerfil1(  foto: String , onCardClick: () -> Unit ){
     var painterID : Painter
     //Estoes muy cutre pero no se hacerlo mejor
     if(foto=="0"){
-        painterID = painterResource(R.drawable.personaje1)
+        painterID = painterResource(R.drawable.skin1)
     }
     else if(foto=="1"){
-        painterID = painterResource(R.drawable.personaje2)
+        painterID = painterResource(R.drawable.skin2)
     }
     else if(foto=="2"){
-        painterID = painterResource(R.drawable.personaje3)
+        painterID = painterResource(R.drawable.skin3)
     }
     else if(foto=="3"){
-        painterID = painterResource(R.drawable.personaje4)
+        painterID = painterResource(R.drawable.skin4)
     }
     else if(foto=="4"){
-        painterID = painterResource(R.drawable.personaje5)
+        painterID = painterResource(R.drawable.skin5)
     }
     else if(foto=="5"){
-        painterID = painterResource(R.drawable.personaje6)
+        painterID = painterResource(R.drawable.skin6)
     }
     else if(foto=="6"){
-        painterID = painterResource(R.drawable.personaje7)
+        painterID = painterResource(R.drawable.skin7)
     }
     else if(foto=="7"){
-        painterID = painterResource(R.drawable.personaje8)
+        painterID = painterResource(R.drawable.skin8)
     }
     else if (foto=="default")
     {
-        painterID = painterResource(R.drawable.personaje1)
+        painterID = painterResource(R.drawable.skin1)
     }
     else {
-        painterID = painterResource(R.drawable.personaje9)
+        painterID = painterResource(R.drawable.skin9)
     }
 
     Card(
