@@ -70,7 +70,7 @@ fun enviarLogin(username: String, password: String):Boolean {
                 Globals.Username = user.getClaim("username").asString()
 
                 //SOLICITAMOS INFO DEL USUARIO
-                //addCoins(50)
+                addCoins(50)
                 //subCoins(100)
                 getUserData(Globals.Id);
 

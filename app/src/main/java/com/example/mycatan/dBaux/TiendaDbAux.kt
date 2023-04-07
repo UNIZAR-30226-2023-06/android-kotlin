@@ -29,12 +29,14 @@ fun buyPersonaje(skinName: String): Boolean {
     )
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/buy-profile-picture?profile_picture_name=$skin")
+        .url("http://$ipBackend:8000/buy_profile_picture?profile_picture_name=$skin")
         .post(body)
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer ${Globals.Token}")
         .addHeader("Content-Type", "application/x-www-form-urlencoded")
         .build()
+
+    println(request)
 
     val client = OkHttpClient()
 
@@ -88,7 +90,7 @@ fun buyPiezas(skinName: String): Boolean {
     )
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/buy-profile-picture?profile_picture_name=$skin")
+        .url("http://$ipBackend:8000/buy_profile_picture?profile_picture_name=$skin")
         .post(body)
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer ${Globals.Token}")
@@ -147,7 +149,7 @@ fun buyMapa(skinName: String): Boolean {
     )
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/buy-piece-skin?piece_skin_name=$skin")
+        .url("http://$ipBackend:8000/buy_piece_skin?piece_skin_name=$skin")
         .post(body)
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer ${Globals.Token}")
