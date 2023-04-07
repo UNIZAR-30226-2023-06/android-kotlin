@@ -380,11 +380,11 @@ fun TiendaPOP(
                                 onClick = {
                                     if(buyPersonaje(fotoId.toString())){
 
-                                        Toast.makeText(context, "Mapa comprado correctamente", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(context, "Personaje comprado correctamente", Toast.LENGTH_SHORT).show()
 
                                         onConfirmed(fotoId)
                                     } else{
-                                        Toast.makeText(context, "ERROR el mapa no se ha comprado", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(context, "ERROR el personaje no se ha comprado", Toast.LENGTH_SHORT).show()
                                     }
                                     setShowDialog(false)
                                 },

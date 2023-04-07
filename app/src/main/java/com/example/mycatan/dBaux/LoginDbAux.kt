@@ -70,13 +70,11 @@ fun enviarLogin(username: String, password: String):Boolean {
                 Globals.Username = user.getClaim("username").asString()
 
                 //SOLICITAMOS INFO DEL USUARIO
-                addCoins(50)
+                //addCoins(500)
                 //subCoins(100)
-                getUserData(Globals.Id);
+                getUserData(Globals.Id)
+                globalizePersonajes(getListaPersonajes())
 
-                //forthemoment
-                Globals.fotosCompradas = BooleanArray(9)
-                Globals.fotosCompradas.fill(false)
                 //TODO: terminar esto
             }
             latch.countDown()
@@ -84,6 +82,22 @@ fun enviarLogin(username: String, password: String):Boolean {
     })
     latch.await()
     return result
+}
+
+//seran igual para los mapas y piezas
+fun globalizePersonajes( skins : Array<String>){
+
+    var temp :String
+    Globals.fotosCompradas = BooleanArray(9)
+    Globals.fotosCompradas.fill(false)
+
+    if (!skins.isEmpty()){
+
+        for ( skin in skins ) {
+            temp = skin.substring(4)
+            Globals.fotosCompradas[temp.toInt()] = true
+        }
+    }
 }
 
 fun getUserData( userId: String ){
@@ -142,4 +156,60 @@ fun getUserData( userId: String ){
             }
         }
     })
+}
+
+
+fun getListaPersonajes(): Array<String>{
+    var result  = emptyArray<String>()
+    val latch = CountDownLatch(1)
+
+    val request = Request.Builder()
+        .url("http://$ipBackend:8000/list-profile-pictures")
+        .get()
+        .addHeader("accept", "application/json")
+        .addHeader("Authorization", "Bearer ${Globals.Token}")
+        .addHeader("Content-Type", "application/x-www-form-urlencoded")
+        .build()
+
+    println(request)
+
+    val client = OkHttpClient()
+
+    //val response = client.newCall(request).execute()
+    client.newCall(request).enqueue(object : Callback {
+        override fun onFailure(call: Call, e: IOException) {
+            println("ERROR al conectar con backend")
+            latch.countDown()
+        }
+
+        override fun onResponse(call: Call, response: Response) {
+
+            val respuesta = response.body?.string().toString()
+            //transform the string to json object
+            val json = JSONObject(respuesta)
+            //get the string from the response
+            val status = json.getString("detail")
+
+            val jsonArray = json.getJSONArray("profile_pictures")
+            //7val jsonArray = JSONArray(status2)
+
+            if (status=="Not authenticated"){
+                println("NOT AUTHENTICATED")
+            }else if(status== "User not found"){
+                println("USER NOT FOUND")
+            }
+            else if (status ==  "Profile pictures listed successfully"){
+                println("Profile pictures listed successfully")
+
+                if(jsonArray.length() > 0) {
+                    result = Array(jsonArray.length()) { index -> jsonArray.getString(index) }
+
+                    println(result.contentToString())
+                }
+            }
+            latch.countDown()
+        }
+    })
+    latch.await()
+    return result
 }

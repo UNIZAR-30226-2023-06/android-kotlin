@@ -65,7 +65,7 @@ fun buyPersonaje(skinName: String): Boolean {
             } else if(status == "Not enough money"){
                 println("NOT ENOUGH MONEY")
             } else if (status=="Profile picture bought successfully"){
-                println("Board skin bought successfully")
+                println("Profile picture bought successfully")
                 result= true
             } else {
                 println("ERROR")
