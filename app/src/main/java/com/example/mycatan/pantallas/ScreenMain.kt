@@ -45,5 +45,8 @@ fun ScreenMain(){
         composable(Routes.EditarPerfil.route) {
             EditarPerfil(navController = navController)
         }
+        composable(Routes.Manual.route) {
+            ManualPage(navController = navController)
+        }
     }
 }

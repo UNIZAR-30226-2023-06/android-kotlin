@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Transparent
@@ -49,6 +50,16 @@ fun HomePage(navController: NavHostController) {
     val unirsePartida =  remember { mutableStateOf(false) }
     val pendiente by remember { mutableStateOf(getNumAmigosPendiente(Globals.Token)) }
     Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {  navController.navigate(Routes.Manual.route) },
+                backgroundColor = AzulOscuro,) {
+                /* FAB content */
+                Image(painter = painterResource(R.drawable.politicas),
+                    contentDescription = "reglas",
+                modifier= Modifier.size(30.dp).padding(3.dp))
+            }
+        },
         bottomBar = {
             BottomAppBar {
                 BottomNavigationItem(
@@ -216,30 +227,16 @@ fun HomePage(navController: NavHostController) {
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.TopEnd
             ) {
-
-                Row(modifier = Modifier
-                    .padding(10.dp, 5.dp),
-
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                )
-                {
-                    Card(
-                        modifier = Modifier
-                            .clickable {navController.navigate(Routes.Login.route)
-                            },
-                        backgroundColor = Transparent
-                    ){
-                        Image( painter = painterResource(R.drawable.logout),
-                            contentDescription = null,
-                            modifier = Modifier.size(25.dp)
-                        )
-                    }
-
-
+                ImagenClickable(
+                    painter = painterResource(R.drawable.logout),
+                    contentDescription = null,
+                    modifier= Modifier.size(30.dp)
+                ) {
+                    navController.navigate(Routes.Login.route)
                 }
-
             }
+
+
         }
 
 
@@ -252,6 +249,20 @@ fun HomePage(navController: NavHostController) {
 fun DefaultPreview5() {
     val navController = rememberNavController()
     HomePage(navController = navController)
+}
+
+@Composable
+fun ImagenClickable(
+    painter: Painter,
+    contentDescription: String? = null,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    Image(
+        painter = painter,
+        contentDescription = contentDescription,
+        modifier = modifier.clickable(onClick = onClick)
+    )
 }
 
 @Composable

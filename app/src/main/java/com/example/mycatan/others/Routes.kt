@@ -11,4 +11,6 @@ sealed class Routes(val route: String) { //para navegar entre pantallas
     object AmigosTodos: Routes("AmigosTodos")
     object AmigosPendiente: Routes("AmigosPendiente")
     object EditarPerfil: Routes("EditarPerfil")
+    object Manual: Routes("Manual")
+
 }
