@@ -607,7 +607,7 @@ fun EditacionPersonaje( setShowDialog: (Boolean) -> Unit ) {
     val context = LocalContext.current
     var personajeClicked by remember { mutableStateOf("null") }
     var colorClicado: Color
-
+    var sinObjetos = false
 
     Dialog(onDismissRequest = { setShowDialog(false) }) {
         Surface(
@@ -648,35 +648,36 @@ fun EditacionPersonaje( setShowDialog: (Boolean) -> Unit ) {
 
                     Spacer(modifier = Modifier.height(20.dp))
 
-                    //aqui van las fotos
-                    LazyRow(
-                        modifier = Modifier
-                            .fillMaxWidth(),
+                    val fotosCompradasTrue = Globals.fotosCompradas.withIndex().filter { it.value }.map { it.index }
 
-                        horizontalArrangement = Arrangement.spacedBy(5.dp), //maybe otra cosa
-                        verticalAlignment = Alignment.CenterVertically,
-                        contentPadding = PaddingValues(10.dp)
-                    ) {
-
-                        // deberá recorrer el bueno
-                        items(9)  {
-                            if( personajeClicked == it.toString() ){
-                                colorClicado = GrisAzuladoClaro
+                    if (fotosCompradasTrue.isEmpty()) {
+                        sinObjetos = true
+                        Text("¡Error! No has comprado ninguna foto.")
+                    } else {
+                        LazyRow(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(5.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            contentPadding = PaddingValues(10.dp)
+                        ) {
+                            items(fotosCompradasTrue.size) { index ->
+                                val foto = fotosCompradasTrue[index]
+                                colorClicado = if (personajeClicked == foto.toString()) GrisAzuladoClaro else Color.Transparent
+                                Box(
+                                    modifier = Modifier.background(colorClicado)
+                                ) {
+                                    PerfilItem(
+                                        foto = foto.toString(),
+                                        onCardClick = {
+                                            personajeClicked = foto.toString()
+                                            println(foto.toString())
+                                        }
+                                    )
+                                }
                             }
-                            else{
-                                colorClicado = Color.Transparent
-                            }
-                            Box(modifier = Modifier
-                                .background(colorClicado)
-
-                            ){
-                                PerfilItem(foto = it.toString(),
-                                    onCardClick = {personajeClicked=it.toString()
-                                        println(it.toString())})
-                            }
-
                         }
                     }
+
 
 
                     if(Globals.Personaje == personajeClicked || (Globals.Personaje == "default" && personajeClicked == "0") ) {
@@ -689,7 +690,7 @@ fun EditacionPersonaje( setShowDialog: (Boolean) -> Unit ) {
 
                             )
                         )
-                    } else {
+                    } else if (!sinObjetos) {
                         Text(
                             text = "Cambiar personaje ",
                             fontSize = 16.sp,
@@ -762,7 +763,7 @@ fun EditacionPersonaje( setShowDialog: (Boolean) -> Unit ) {
                         }
                     } else {
                         Button(
-                            onClick = {setShowDialog(true) },
+                            onClick = {setShowDialog(false) },
                             modifier = Modifier
                                 .width(300.dp)
                                 .height(50.dp),
@@ -950,7 +951,7 @@ fun EditacionPiezas( setShowDialog: (Boolean) -> Unit ) {
                         }
                     } else {
                         Button(
-                            onClick = { setShowDialog(true) },
+                            onClick = { setShowDialog(false) },
                             modifier = Modifier
                                 .width(300.dp)
                                 .height(50.dp),
@@ -1138,7 +1139,7 @@ fun EditacionMapa( setShowDialog: (Boolean) -> Unit ) {
                         }
                     } else {
                         Button(
-                            onClick = { setShowDialog(true) },
+                            onClick = { setShowDialog(false) },
                             modifier = Modifier
                                 .width(300.dp)
                                 .height(50.dp),

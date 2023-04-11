@@ -6,7 +6,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 
 //Javi 192.168.1.39
-val ipBackend = "192.168.1.139"
+val ipBackend = "192.168.1.39"
 //loreto: "192.168.1.133       "192.168.1.139"    10.1.54.191"
 
 object Globals {
@@ -15,6 +15,8 @@ object Globals {
     lateinit var Username: String
     lateinit var Email: String
     lateinit var fotosCompradas: BooleanArray
+    //lateinit var piezasCompradas: BooleanArray
+    //lateinit var mapasCompradas: BooleanArray
     lateinit var Coins: String
     lateinit var Personaje: String
     lateinit var Piezas: String
