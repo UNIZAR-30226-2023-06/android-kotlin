@@ -41,6 +41,7 @@ fun RegistroPage(navController: NavHostController) {
     var errorNombres by remember { mutableStateOf(false) }
     var errorRegistro by remember { mutableStateOf(false) }
     var errorActualizado by remember { mutableStateOf(false) }
+    var clicked by remember { mutableStateOf(false) }
     Box(modifier = Modifier
         .fillMaxHeight()
         .paint(
@@ -115,22 +116,26 @@ fun RegistroPage(navController: NavHostController) {
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            if(errorNombres){
+            if(errorNombres && clicked){
+                clicked = false
                 val toast = Toast.makeText(context, "ERROR: El correo o el nombre estan vacíos no coinciden", Toast.LENGTH_SHORT)
                 toast.show()
                 //Text(text = "ERROR: El correo o el nombre estan vacíos no coinciden", style = TextStyle(color = Rojo))
             }
-            else if(errorPswd){
+            else if(errorPswd && clicked){
+                clicked = false
                 val toast = Toast.makeText(context, "ERROR: Las contraseñas no coinciden  o están vacías. Vuelva a intentarlo.", Toast.LENGTH_SHORT)
                 toast.show()
                 //Text(text = "ERROR: Las contraseñas no coinciden  o están vacías. Vuelva a intentarlo.", style = TextStyle(color = Rojo))
             }
-            else if(errorRegistro){
+            else if(errorRegistro && clicked){
+                clicked = false
                 val toast = Toast.makeText(context, "ERROR: El email introducido está siendo usado o es incorrecto", Toast.LENGTH_SHORT)
                 toast.show()
                 //Text(text = "ERROR: El email introducido está siendo usado o es incorrecto", style = TextStyle(color = Rojo))
             }
-            else if(errorActualizado){
+            else if(errorActualizado && clicked){
+                clicked = false
                 errorActualizado = false
                 navController.navigate(Routes.Login.route)
             }
@@ -138,8 +143,10 @@ fun RegistroPage(navController: NavHostController) {
             Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp), ) {
                 Button(
                     onClick = {
+                        clicked = true
                         if ( nombre.value.text.isEmpty()
                             || correo.value.text.isEmpty()){
+
 
                             errorNombres = true
 
