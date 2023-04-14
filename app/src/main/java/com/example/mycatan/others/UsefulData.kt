@@ -15,8 +15,8 @@ object Globals {
     lateinit var Username: String
     lateinit var Email: String
     lateinit var fotosCompradas: BooleanArray
-    //lateinit var piezasCompradas: BooleanArray
-    //lateinit var mapasCompradas: BooleanArray
+    lateinit var piezasCompradas: BooleanArray
+    lateinit var mapasCompradas: BooleanArray
     lateinit var Coins: String
     lateinit var Personaje: String
     lateinit var Piezas: String

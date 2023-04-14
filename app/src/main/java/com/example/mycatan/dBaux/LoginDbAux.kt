@@ -74,8 +74,8 @@ fun enviarLogin(username: String, password: String):Boolean {
                 //subCoins(100)
                 getUserData(Globals.Id)
                 globalizePersonajes(getListaPersonajes())
-                /*globalizePiezas(getListaPiezas())
-                globalizeMapas(getListaMapas())*/
+                globalizePiezas(getListaPiezas())
+                globalizeMapas(getListaMapas())
 
             }
             latch.countDown()
@@ -95,13 +95,15 @@ fun globalizePersonajes( skins : Array<String>){
     if (!skins.isEmpty()){
 
         for ( skin in skins ) {
-            temp = skin.substring(4)
-            Globals.fotosCompradas[temp.toInt()] = true
+            if (skin != "default"){
+                temp = skin.substring(4)
+                Globals.fotosCompradas[temp.toInt()] = true
+            }
         }
     }
 }
 
-/*fun globalizePiezas( skins : Array<String>){
+fun globalizePiezas( skins : Array<String>){
 
     var temp :String
     Globals.piezasCompradas = BooleanArray(9)
@@ -129,7 +131,7 @@ fun globalizeMapas( skins : Array<String>){
             Globals.mapasCompradas[temp.toInt()] = true
         }
     }
-}*/
+}
 
 fun getUserData( userId: String ){
     println("userID: $userId")

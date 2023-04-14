@@ -652,7 +652,7 @@ fun EditacionPersonaje( setShowDialog: (Boolean) -> Unit ) {
 
                     if (fotosCompradasTrue.isEmpty()) {
                         sinObjetos = true
-                        Text("¡Error! No has comprado ninguna foto.")
+                        Text("¡Error! No has comprado ninguna skin.")
                     } else {
                         LazyRow(
                             modifier = Modifier.fillMaxWidth(),
@@ -796,6 +796,7 @@ fun EditacionPiezas( setShowDialog: (Boolean) -> Unit ) {
     val context = LocalContext.current
     var piezaClicked by remember { mutableStateOf("null") }
     var colorClicado: Color
+    var sinObjetos = false
 
 
     Dialog(onDismissRequest = { setShowDialog(false) }) {
@@ -837,33 +838,33 @@ fun EditacionPiezas( setShowDialog: (Boolean) -> Unit ) {
 
                     Spacer(modifier = Modifier.height(20.dp))
 
-                    //aqui van las fotos
-                    LazyRow(
-                        modifier = Modifier
-                            .fillMaxWidth(),
+                    val fotosCompradasTrue = Globals.piezasCompradas.withIndex().filter { it.value }.map { it.index }
 
-                        horizontalArrangement = Arrangement.spacedBy(5.dp), //maybe otra cosa
-                        verticalAlignment = Alignment.CenterVertically,
-                        contentPadding = PaddingValues(10.dp)
-                    ) {
-
-                        // deberá recorrer el bueno
-                        items(9)  {
-                            if( piezaClicked == it.toString() ){
-                                colorClicado = GrisAzuladoClaro
+                    if (fotosCompradasTrue.isEmpty()) {
+                        sinObjetos = true
+                        Text("¡Error! No has comprado ninguna skin.")
+                    } else {
+                        LazyRow(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(5.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            contentPadding = PaddingValues(10.dp)
+                        ) {
+                            items(fotosCompradasTrue.size) { index ->
+                                val foto = fotosCompradasTrue[index]
+                                colorClicado = if (piezaClicked == foto.toString()) GrisAzuladoClaro else Color.Transparent
+                                Box(
+                                    modifier = Modifier.background(colorClicado)
+                                ) {
+                                    PerfilItem(
+                                        foto = foto.toString(),
+                                        onCardClick = {
+                                            piezaClicked = foto.toString()
+                                            println(foto.toString())
+                                        }
+                                    )
+                                }
                             }
-                            else{
-                                colorClicado = Color.Transparent
-                            }
-                            Box(modifier = Modifier
-                                .background(colorClicado)
-
-                            ){
-                                PerfilItem(foto = it.toString(),
-                                    onCardClick = {piezaClicked=it.toString()
-                                        println(it.toString())})
-                            }
-
                         }
                     }
 
@@ -878,7 +879,7 @@ fun EditacionPiezas( setShowDialog: (Boolean) -> Unit ) {
 
                             )
                         )
-                    } else {
+                    } else if (!sinObjetos) {
                         Text(
                             text = "Cambiar piezas ",
                             fontSize = 16.sp,
@@ -984,7 +985,7 @@ fun EditacionMapa( setShowDialog: (Boolean) -> Unit ) {
     val context = LocalContext.current
     var mapaClicked by remember { mutableStateOf("null") }
     var colorClicado: Color
-
+    var sinObjetos = false
 
     Dialog(onDismissRequest = { setShowDialog(false) }) {
         Surface(
@@ -1025,33 +1026,33 @@ fun EditacionMapa( setShowDialog: (Boolean) -> Unit ) {
 
                     Spacer(modifier = Modifier.height(20.dp))
 
-                    //aqui van las fotos
-                    LazyRow(
-                        modifier = Modifier
-                            .fillMaxWidth(),
+                    val fotosCompradasTrue = Globals.mapasCompradas.withIndex().filter { it.value }.map { it.index }
 
-                        horizontalArrangement = Arrangement.spacedBy(5.dp), //maybe otra cosa
-                        verticalAlignment = Alignment.CenterVertically,
-                        contentPadding = PaddingValues(10.dp)
-                    ) {
-
-                        // deberá recorrer el bueno
-                        items(9)  {
-                            if( mapaClicked == it.toString() ){
-                                colorClicado = GrisAzuladoClaro
+                    if (fotosCompradasTrue.isEmpty()) {
+                        sinObjetos = true
+                        Text("¡Error! No has comprado ninguna skin.")
+                    } else {
+                        LazyRow(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(5.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            contentPadding = PaddingValues(10.dp)
+                        ) {
+                            items(fotosCompradasTrue.size) { index ->
+                                val foto = fotosCompradasTrue[index]
+                                colorClicado = if (mapaClicked == foto.toString()) GrisAzuladoClaro else Color.Transparent
+                                Box(
+                                    modifier = Modifier.background(colorClicado)
+                                ) {
+                                    PerfilItem(
+                                        foto = foto.toString(),
+                                        onCardClick = {
+                                            mapaClicked = foto.toString()
+                                            println(foto.toString())
+                                        }
+                                    )
+                                }
                             }
-                            else{
-                                colorClicado = Color.Transparent
-                            }
-                            Box(modifier = Modifier
-                                .background(colorClicado)
-
-                            ){
-                                PerfilItem(foto = it.toString(),
-                                    onCardClick = {mapaClicked=it.toString()
-                                        println(it.toString())})
-                            }
-
                         }
                     }
 
@@ -1066,7 +1067,7 @@ fun EditacionMapa( setShowDialog: (Boolean) -> Unit ) {
 
                             )
                         )
-                    } else {
+                    } else if (!sinObjetos) {
                         Text(
                             text = "Cambiar mapa ",
                             fontSize = 16.sp,

@@ -46,12 +46,7 @@ fun TiendaPage(navController: NavHostController) {
 
     //no se guarda si vas para atras
 
-    val onConfirmed: (Int) -> Unit = { index ->
-        subCoins(precios)
-        Globals.fotosCompradas[index] = true
-    }
-
-    /*val onConfirmedFoto: (Int) -> Unit = { index ->
+    val onConfirmedFoto: (Int) -> Unit = { index ->
         subCoins(precios)
         Globals.fotosCompradas[index] = true
     }
@@ -64,7 +59,7 @@ fun TiendaPage(navController: NavHostController) {
     val onConfirmedMapa: (Int) -> Unit = { index ->
         subCoins(precios)
         Globals.mapasCompradas[index] = true
-    }*/
+    }
 
     Scaffold(
         bottomBar = {
@@ -142,12 +137,7 @@ fun TiendaPage(navController: NavHostController) {
         )
         {
 
-
-            if(menuVisible.value)
-                TiendaPOP(fotoPopUp, setShowDialog = {
-                    menuVisible.value = it }, onConfirmed, precios)
-
-            /*if(menuVisible.value && clicked==1)
+            if(menuVisible.value && clicked==1)
                 TiendaPOPfoto(fotoPopUp, setShowDialog = {
                     menuVisible.value = it }, onConfirmedFoto, precios)
 
@@ -157,7 +147,7 @@ fun TiendaPage(navController: NavHostController) {
 
             if(menuVisible.value && clicked==3)
                 TiendaPOPmapa(fotoPopUp, setShowDialog = {
-                    menuVisible.value = it }, onConfirmedMapa, precios)*/
+                    menuVisible.value = it }, onConfirmedMapa, precios)
 
             LazyColumn(
                 modifier = Modifier
@@ -223,8 +213,7 @@ fun TiendaPage(navController: NavHostController) {
 
                         items(9) {
                             RackItem(foto = it,
-                                //comprada = Globals.piezasCompradas[it],
-                                comprada = Globals.fotosCompradas[it],
+                                comprada = Globals.piezasCompradas[it],
                                 onCardClick = {
                                     fotoPopUp = it
                                     menuVisible.value = true
@@ -254,8 +243,7 @@ fun TiendaPage(navController: NavHostController) {
 
                         items(9) {
                             RackItem(foto = it,
-                                //comprada = Globals.mapasCompradas[it],
-                                comprada = Globals.fotosCompradas[it],
+                                comprada = Globals.mapasCompradas[it],
                                 onCardClick = {
                                     fotoPopUp = it
                                     menuVisible.value = true
@@ -299,186 +287,6 @@ fun TiendaPage(navController: NavHostController) {
 
             }
 
-        }
-    }
-}
-
-@Composable
-fun TiendaPOP(
-    fotoId: Int,
-    setShowDialog: (Boolean) -> Unit,
-    onConfirmed: (Int) -> Unit,
-    precios: Int
-) {
-
-    val context = LocalContext.current
-
-    Dialog(onDismissRequest = { setShowDialog(false) }) {
-        Surface(
-            shape = RoundedCornerShape(16.dp),
-            color = AzulOscuro
-        ) {
-            Box(
-                contentAlignment = Alignment.Center
-            ) {
-                Column(modifier = Modifier.padding(20.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally) {
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "Elemento seleccionado",
-                            color = Blanco,
-                            style = TextStyle(
-                                fontSize = 24.sp,
-                                fontFamily = FontFamily.Default,
-                                fontWeight = FontWeight.Bold
-                            )
-                        )
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = "",
-                            tint = colorResource(android.R.color.darker_gray),
-                            modifier = Modifier
-                                .width(30.dp)
-                                .height(30.dp)
-                                .clickable { setShowDialog(false) }
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(20.dp))
-
-                    RackItem(foto = fotoId, comprada = false) {}
-
-                    Spacer(modifier = Modifier.height(5.dp))
-                    if (Globals.Coins.toInt() >= 25) {
-                        Text(
-                            text = "¿Estas seguro? ",
-                            fontSize = 14.sp,
-                            style = TextStyle(
-                                color = Blanco,
-                                fontWeight = FontWeight.Bold
-
-                            )
-                        )
-                    } else {
-                        Text(
-                            text = "Saldo Insuficiente ",
-                            fontSize = 14.sp,
-                            style = TextStyle(
-                                color = Blanco,
-                                fontWeight = FontWeight.Bold
-
-                            )
-                        )
-                    }
-
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    if (Globals.Coins.toInt() >= precios) {
-                        Row() {
-
-                            Button(
-                                onClick = { setShowDialog(false) },
-                                modifier = Modifier
-                                    .width(100.dp)
-                                    .height(50.dp),
-                                colors = ButtonDefaults.buttonColors(backgroundColor = Rojo),
-                                shape = RoundedCornerShape(50.dp),
-                                border = BorderStroke(3.dp, AzulOscuro)
-
-                            ) {
-                                Text(
-                                    text = "Cancelar",
-                                    style = TextStyle(
-                                        color = AzulOscuro, fontWeight = FontWeight.Bold
-                                    )
-                                )
-
-                            }
-
-                            Spacer(modifier = Modifier.width(10.dp))
-
-                            Button(
-                                onClick = {
-                                    if(buyPersonaje(fotoId.toString())){
-
-                                        Toast.makeText(context, "Personaje comprado correctamente", Toast.LENGTH_SHORT).show()
-
-                                        onConfirmed(fotoId)
-                                    } else{
-                                        Toast.makeText(context, "ERROR el personaje no se ha comprado", Toast.LENGTH_SHORT).show()
-                                    }
-                                    setShowDialog(false)
-                                },
-                                modifier = Modifier
-                                    .width(200.dp)
-                                    .height(50.dp),
-                                colors = ButtonDefaults.buttonColors(backgroundColor = Verde),
-                                shape = RoundedCornerShape(50.dp),
-                                border = BorderStroke(3.dp, AzulOscuro),
-
-                                ) {
-                                Column(
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-
-                                    Text(
-                                        text = "Comprar",
-                                        style = TextStyle(
-                                            color = AzulOscuro, fontWeight = FontWeight.Bold
-                                        )
-                                    )
-
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.Center
-                                    ) {
-
-                                        Text(
-                                            text = "   ${precios}",
-                                            style = TextStyle(
-                                                color = AzulOscuro, fontWeight = FontWeight.Bold
-                                            )
-                                        )
-                                        Icon(
-
-                                            imageVector = Icons.Default.Star,
-                                            contentDescription = null,
-                                            tint = Amarillo
-                                        )
-                                    }
-                                }
-
-                            }
-                        }
-                    } else {
-                        Button(
-                            onClick = { setShowDialog(false) },
-                            modifier = Modifier
-                                .width(300.dp)
-                                .height(50.dp),
-                            colors = ButtonDefaults.buttonColors(backgroundColor = Rojo),
-                            shape = RoundedCornerShape(50.dp),
-                            border = BorderStroke(3.dp, AzulOscuro)
-
-                        ) {
-                            Text(
-                                text = "Cancelar",
-                                style = TextStyle(
-                                    color = AzulOscuro, fontWeight = FontWeight.Bold
-                                )
-                            )
-
-                        }
-                    }
-                }
-            }
         }
     }
 }

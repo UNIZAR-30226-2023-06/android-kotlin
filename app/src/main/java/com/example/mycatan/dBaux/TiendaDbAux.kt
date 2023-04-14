@@ -78,7 +78,7 @@ fun buyPersonaje(skinName: String): Boolean {
 }
 
 //no funca
-fun buyPiezas(skinName: String): Boolean {
+fun buyMapa(skinName: String): Boolean {
     var skin = "skin$skinName"
     println("SKIN: $skin")
     var result= false
@@ -90,7 +90,7 @@ fun buyPiezas(skinName: String): Boolean {
     )
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/buy_profile_picture?profile_picture_name=$skin")
+        .url("http://$ipBackend:8000/buy_board_skin?board_skin_name=$skin")
         .post(body)
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer ${Globals.Token}")
@@ -119,11 +119,11 @@ fun buyPiezas(skinName: String): Boolean {
                 println("USER NOT FOUND")
             } else if(status == "Not authenticated"){
                 println("USER NOT AUTHENTICATED")
-            } else if(status == "User already has this profile picture"){
+            } else if(status == "User already has this board skin"){
                 println("USER ALREADY HAS THIS BOARD SKIN")
             } else if(status == "Not enough money"){
                 println("NOT ENOUGH MONEY")
-            } else if (status=="Profile picture bought successfully"){
+            } else if (status=="Board skin bought successfully"){
                 println("Board skin bought successfully")
                 result= true
             } else {
@@ -137,7 +137,7 @@ fun buyPiezas(skinName: String): Boolean {
 }
 
 //no funca
-fun buyMapa(skinName: String): Boolean {
+fun buyPiezas(skinName: String): Boolean {
     var skin = "skin$skinName"
     println("SKIN: $skin")
     var result= false
