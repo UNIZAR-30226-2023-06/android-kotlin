@@ -76,6 +76,15 @@ fun enviarLogin(username: String, password: String):Boolean {
                 globalizePersonajes(getListaPersonajes())
                 globalizePiezas(getListaPiezas())
                 globalizeMapas(getListaMapas())
+                Globals.precioFotos = IntArray(9)
+                Globals.precioFotos.fill(25)
+                getPrecioPersonaje("skin0")
+                getPrecioPersonaje("skin1")
+                getPrecioPersonaje("skin2")
+                getPrecioPersonaje("skin3")
+                getPrecioPersonaje("skin4")
+
+
 
             }
             latch.countDown()
@@ -350,6 +359,59 @@ fun getListaMapas(): Array<String>{
                     println(result.contentToString())
                 }
             }
+            latch.countDown()
+        }
+    })
+    latch.await()
+    return result
+}
+
+fun getPrecioPersonaje(skinName: String): Array<String>{
+    var result  = emptyArray<String>()
+    val latch = CountDownLatch(1)
+
+    val request = Request.Builder()
+        .url("http://$ipBackend:8000/get-profile-picture?profile_picture_name=$skinName")
+        .get()
+        .addHeader("accept", "application/json")
+        .addHeader("Content-Type", "application/x-www-form-urlencoded")
+        .build()
+
+    println(request)
+
+    val client = OkHttpClient()
+
+    //val response = client.newCall(request).execute()
+    client.newCall(request).enqueue(object : Callback {
+        override fun onFailure(call: Call, e: IOException) {
+            println("ERROR al conectar con backend")
+            latch.countDown()
+        }
+
+        override fun onResponse(call: Call, response: Response) {
+
+            val respuesta = response.body?.string().toString()
+            //transform the string to json object
+            val json = JSONObject(respuesta)
+            //get the string from the response
+            val status = json.getString("detail")
+
+
+            //7val jsonArray = JSONArray(status2)
+
+            if (status=="Profile picture not found"){
+                println("Profile picture not found")
+            }
+            else if (status ==  "Profile picture data listed successfully"){
+                println("Profile picture data listed successfully")
+
+                var precio = json.getInt("price")
+                println("PPRECCCIOOOOOOOOOOOOOS:::$precio")
+                var temp = skinName.substring(4).toInt()
+                Globals.precioFotos[temp] = precio
+
+            }
+
             latch.countDown()
         }
     })

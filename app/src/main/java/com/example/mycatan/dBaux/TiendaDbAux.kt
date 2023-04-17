@@ -252,6 +252,7 @@ fun addCoins(coins: Int): Boolean {
 
 fun subCoins(coins: Int): Boolean {
 
+    println("Restando: $coins")
     var result= false
     val latch = CountDownLatch(1)
     val mediaType = "application/x-www-form-urlencoded".toMediaTypeOrNull()
@@ -285,7 +286,7 @@ fun subCoins(coins: Int): Boolean {
             //get the string from the response
             val status = json.getString("detail")
             val actualCoins = json.getInt("coins")
-            //println("STATUS: $status")
+
 
             if(status == "User not found"){
                 println("USER NOT FOUND")

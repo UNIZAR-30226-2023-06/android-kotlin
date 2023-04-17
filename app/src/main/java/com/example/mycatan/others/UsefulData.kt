@@ -17,6 +17,9 @@ object Globals {
     lateinit var fotosCompradas: BooleanArray
     lateinit var piezasCompradas: BooleanArray
     lateinit var mapasCompradas: BooleanArray
+    lateinit var precioFotos: IntArray
+    //lateinit var precioMapas: IntArray
+    //lateinit var precopPiezas: IntArray
     lateinit var Coins: String
     lateinit var Personaje: String
     lateinit var Piezas: String

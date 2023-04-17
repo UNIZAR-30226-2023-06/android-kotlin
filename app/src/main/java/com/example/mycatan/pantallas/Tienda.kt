@@ -47,7 +47,8 @@ fun TiendaPage(navController: NavHostController) {
     //no se guarda si vas para atras
 
     val onConfirmedFoto: (Int) -> Unit = { index ->
-        subCoins(precios)
+
+        subCoins(Globals.precioFotos[index])
         Globals.fotosCompradas[index] = true
     }
 
@@ -183,6 +184,7 @@ fun TiendaPage(navController: NavHostController) {
                     ) {
                         items(9) {
                             RackItem(foto = it,
+                                precio = Globals.precioFotos[it],
                                 comprada = Globals.fotosCompradas[it],
                                 onCardClick = {
                                     fotoPopUp = it
@@ -213,6 +215,7 @@ fun TiendaPage(navController: NavHostController) {
 
                         items(9) {
                             RackItem(foto = it,
+                                precio = 25,
                                 comprada = Globals.piezasCompradas[it],
                                 onCardClick = {
                                     fotoPopUp = it
@@ -243,6 +246,7 @@ fun TiendaPage(navController: NavHostController) {
 
                         items(9) {
                             RackItem(foto = it,
+                                precio = 25,
                                 comprada = Globals.mapasCompradas[it],
                                 onCardClick = {
                                     fotoPopUp = it
@@ -340,7 +344,7 @@ fun TiendaPOPfoto(
 
                     Spacer(modifier = Modifier.height(20.dp))
 
-                    RackItem(foto = fotoId, comprada = false) {}
+                    RackItem(foto = fotoId,precio = Globals.precioFotos[fotoId], comprada = false) {}
 
                     Spacer(modifier = Modifier.height(5.dp))
                     if (Globals.Coins.toInt() >= 25) {
@@ -368,7 +372,7 @@ fun TiendaPOPfoto(
 
                     Spacer(modifier = Modifier.height(10.dp))
 
-                    if (Globals.Coins.toInt() >= precios) {
+                    if (Globals.Coins.toInt() >= 2*Globals.precioFotos[fotoId]) {
                         Row() {
 
                             Button(
@@ -520,7 +524,7 @@ fun TiendaPOPpiezas(
 
                     Spacer(modifier = Modifier.height(20.dp))
 
-                    RackItem(foto = fotoId, comprada = false) {}
+                    RackItem(foto = fotoId,precio = 25, comprada = false) {}
 
                     Spacer(modifier = Modifier.height(5.dp))
                     if (Globals.Coins.toInt() >= 25) {
@@ -577,7 +581,7 @@ fun TiendaPOPpiezas(
                                     if(buyPiezas(fotoId.toString())){
 
                                         Toast.makeText(context, "Piezas compradas correctamente", Toast.LENGTH_SHORT).show()
-
+                                        println("clickado putos")
                                         onConfirmed(fotoId)
                                     } else{
                                         Toast.makeText(context, "ERROR las piezas no se han comprado", Toast.LENGTH_SHORT).show()
@@ -700,7 +704,7 @@ fun TiendaPOPmapa(
 
                     Spacer(modifier = Modifier.height(20.dp))
 
-                    RackItem(foto = fotoId, comprada = false) {}
+                    RackItem(foto = fotoId,precio = 25, comprada = false) {}
 
                     Spacer(modifier = Modifier.height(5.dp))
                     if (Globals.Coins.toInt() >= 25) {
@@ -832,9 +836,9 @@ fun TiendaPOPmapa(
 }
 
 @Composable
-fun RackItem( foto: Int ,  comprada: Boolean,   onCardClick: () -> Unit ){
+fun RackItem( foto: Int , precio: Int,  comprada: Boolean,   onCardClick: () -> Unit ){
 
-    var precio = "25"
+
 
     var painterID : Painter
     //Estoes muy cutre pero no se hacerlo mejor
@@ -913,7 +917,7 @@ fun RackItem( foto: Int ,  comprada: Boolean,   onCardClick: () -> Unit ){
                 ) {
 
                     Text(
-                        text =  precio,
+                        text =  (2*precio).toString(),
                         fontSize = 14.sp,
                         style = TextStyle(
                             color = Blanco,
