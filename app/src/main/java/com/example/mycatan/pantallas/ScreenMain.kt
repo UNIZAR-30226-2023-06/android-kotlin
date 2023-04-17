@@ -13,7 +13,7 @@ fun ScreenMain(){
     val navController = rememberNavController()
     //LockScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
 
-    NavHost(navController = navController, startDestination = Routes.Login.route) {
+    NavHost(navController = navController, startDestination = /*Routes.Login.route*/ Routes.CatanBoard.route ) {
 
         composable(Routes.Login.route) {
             LoginPage(navController = navController)

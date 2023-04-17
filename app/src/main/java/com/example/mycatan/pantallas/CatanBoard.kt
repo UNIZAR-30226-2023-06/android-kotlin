@@ -48,9 +48,11 @@ import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.*
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import com.example.mycatan.R
 
 var clickedVertex: Offset? = null
 @Composable
@@ -89,26 +91,117 @@ fun CatanBoard(navController: NavHostController) {
     Box(
         modifier = Modifier
             .background(AzulClaro)
-            .padding(20.dp)
-            .graphicsLayer(
-                scaleX = scale,
-                scaleY = scale,
-                rotationZ = rotation,
-                translationX = offset.x,
-                translationY = offset.y
-            )
-            // add transformable to listen to multitouch transformation events
-            // after offset
-            .transformable(state = state)
-            .fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
+            .padding(5.dp)
+            .fillMaxSize()
+    ){
+        Box(
+            modifier = Modifier
+                .graphicsLayer(
+                    scaleX = scale,
+                    scaleY = scale,
+                    rotationZ = rotation,
+                    translationX = offset.x,
+                    translationY = offset.y
+                )
+                // add transformable to listen to multitouch transformation events
+                // after offset
+                .transformable(state = state)
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
             TileGrid(tiles)
+        }
 
+        //DISPLAY DE LOS ENEMIGOS
+        Box (
+            modifier = Modifier
+                .fillMaxWidth(),
+            contentAlignment = Alignment.Center
+                ){
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                dataJugador(modifier = Modifier.weight(1f), colorEne = Verde, foto = painterResource(R.drawable.skin2), ptsV = 5 , ejercito = false, carreteras = false)
+                dataJugador(modifier = Modifier.weight(1f), colorEne = Rojo, foto = painterResource(R.drawable.skin1), ptsV = 2, ejercito = false, carreteras = false)
+                dataJugador(modifier = Modifier.weight(1f), colorEne = Purple200, foto = painterResource(R.drawable.skin4), ptsV = 3, ejercito = true, carreteras = false)
+            }
+        }
+
+        //MI INFO
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.BottomStart
+        ) {
+            dataJugador(modifier = Modifier.width(150.dp), colorEne = Amarillo,foto = painterResource(R.drawable.skin3),  ptsV = 3, ejercito = false, carreteras = true)
+        }
     }
-
-
 }
+
+@Composable
+fun dataJugador(modifier: Modifier = Modifier, colorEne: Color, ptsV: Int, foto: Painter, ejercito: Boolean, carreteras: Boolean) {
+    Box(
+        modifier = modifier
+            .padding(horizontal = 6.dp)
+            .height(50.dp)
+            .background(color = colorEne, shape = RoundedCornerShape(10.dp))
+    ) {
+        // Contenido de la caja aquí
+
+        var swordsTint = Negro
+        var roadTint = Negro
+        if (ejercito){
+            swordsTint = Blanco
+        }
+        if (carreteras){
+            roadTint = Blanco
+        }
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            Image(
+                painter = painterResource(R.drawable.skin1),
+                contentDescription = null,
+                modifier = Modifier.size(35.dp)
+            )
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
+                Text(
+                    text = ptsV.toString(),
+                    fontSize = 14.sp,
+                    style = TextStyle(
+                        color = Negro,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+
+                Icon(
+                    painter = painterResource(R.drawable.crown),
+                    contentDescription = null,
+                    modifier = Modifier.size(45.dp)
+                )
+            }
+
+            Icon(
+                painter = painterResource(R.drawable.swords),
+                contentDescription = null,
+                modifier = Modifier.size(25.dp),
+                tint = swordsTint
+            )
+
+            Icon(
+                painter = painterResource(R.drawable.road),
+                contentDescription = null,
+                modifier = Modifier.size(45.dp),
+                tint = roadTint
+            )
+        }
+    }
+}
+
 
 class Tile(val terrain: String, val number: Int, val coordinates: Pair<Int, Int>){
     // Calculo lista de vertices de cada hexagono para hacerlos clicables y dibujarlos con el canvas
@@ -126,62 +219,66 @@ class Tile(val terrain: String, val number: Int, val coordinates: Pair<Int, Int>
 fun TileGrid(tiles: List<Tile>) {
     val context = LocalContext.current
     val isClicked = remember { mutableStateOf(false) }
-    Canvas(modifier = Modifier.fillMaxSize().pointerInput(Unit)
-    {
-        // Obtener el ancho y la altura del canvas
-        val canvasWidth = size.width
-        val canvasHeight = size.height
+    Canvas(modifier = Modifier
+        .fillMaxSize()
+        .pointerInput(Unit)
+        {
+            // Obtener el ancho y la altura del canvas
+            val canvasWidth = size.width
+            val canvasHeight = size.height
 
-        // Calcular el ancho y la altura del tablero
-        val hexRadius = 100
-        val hexHeight = hexRadius * 2
-        val hexWidth = (sqrt(3f) / 2f) * hexHeight
-        val boardWidth = hexWidth * 5
-        val boardHeight = hexRadius * 6
+            // Calcular el ancho y la altura del tablero
+            val hexRadius = 100
+            val hexHeight = hexRadius * 2
+            val hexWidth = (sqrt(3f) / 2f) * hexHeight
+            val boardWidth = hexWidth * 5
+            val boardHeight = hexRadius * 6
 
-        // Calcular el centro del canvas
-        val centerX = canvasWidth / 2f
-        val centerY = canvasHeight / 2f
+            // Calcular el centro del canvas
+            val centerX = canvasWidth / 2f
+            val centerY = canvasHeight / 2f
 
-        // Calcular la posición del tablero en el canvas
-        val boardX = centerX - boardWidth / 2f
-        val boardY = centerY - boardHeight / 2f
-        // Detectar si se hizo clic en el círculo
-        // Detectar si se hizo clic en un círculo clicable
-        detectTapGestures { tap ->
-            val x = tap.x
-            val y = tap.y
+            // Calcular la posición del tablero en el canvas
+            val boardX = centerX - boardWidth / 2f
+            val boardY = centerY - boardHeight / 2f
+            // Detectar si se hizo clic en el círculo
+            // Detectar si se hizo clic en un círculo clicable
+            detectTapGestures { tap ->
+                val x = tap.x
+                val y = tap.y
 
-            for (tile in tiles) {
-                val tileX = boardX + (tile.coordinates.first + tile.coordinates.second / 2f) * hexWidth
-                val tileY = boardY + tile.coordinates.second * 1.5f * hexRadius
+                for (tile in tiles) {
+                    val tileX =
+                        boardX + (tile.coordinates.first + tile.coordinates.second / 2f) * hexWidth
+                    val tileY = boardY + tile.coordinates.second * 1.5f * hexRadius
 
-                for (vertex in getHexagonVertices(tileX, tileY, hexRadius)) {
-                    println("VERTEX: $vertex")
-                    println("X:  $y")
-                    println("Y: $x")
+                    for (vertex in getHexagonVertices(tileX, tileY, hexRadius)) {
+                        println("VERTEX: $vertex")
+                        println("X:  $y")
+                        println("Y: $x")
 
-                    if (x >= vertex.x - 6f && x <= vertex.x + 6f &&
-                        y >= vertex.y - 6f && y <= vertex.y + 6f) {
-                        clickedVertex = vertex
-                        break
+                        if (x >= vertex.x - 6f && x <= vertex.x + 6f &&
+                            y >= vertex.y - 6f && y <= vertex.y + 6f
+                        ) {
+                            clickedVertex = vertex
+                            break
+                        }
+
+
                     }
 
-
+                    if (clickedVertex != null) {
+                        // hacer lo que necesites hacer cuando se hace clic en un vértice
+                        // ...
+                        val toast = Toast.makeText(context, "$clickedVertex", Toast.LENGTH_SHORT)
+                        toast.show()
+                        break
+                    }
                 }
 
-                if (clickedVertex != null) {
-                    // hacer lo que necesites hacer cuando se hace clic en un vértice
-                    // ...
-                    val toast = Toast.makeText(context, "$clickedVertex", Toast.LENGTH_SHORT)
-                    toast.show()
-                    break
-                }
+                clickedVertex = null
             }
-
-            clickedVertex = null
         }
-    }
 
     ) {
         // Obtener el ancho y la altura del canvas
