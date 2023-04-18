@@ -49,12 +49,17 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.window.Dialog
 import com.example.mycatan.R
 import com.example.mycatan.others.Routes
 
 var clickedVertex: Offset? = null
 @Composable
 fun CatanBoard(navController: NavHostController) {
+
+    val showTablaCostes =  remember { mutableStateOf(false) }
+
     // set up all transformation states
     var scale by remember { mutableStateOf(1f) }
     var rotation by remember { mutableStateOf(0f) }
@@ -110,6 +115,11 @@ fun CatanBoard(navController: NavHostController) {
             TileGrid(tiles)
         }
 
+        if(showTablaCostes.value)
+            showTablaCostes(setShowDialog = {
+                showTablaCostes.value = it
+            })
+
         //Jugadores
         Box (
             modifier = Modifier.fillMaxSize(),
@@ -141,8 +151,25 @@ fun CatanBoard(navController: NavHostController) {
         ) {
             Column(horizontalAlignment = Alignment.Start) {
 
+
+                Column(
+                    modifier = Modifier.background(color = TransparenteBlanco, shape = RoundedCornerShape(15.dp)). padding(vertical = 5.dp, horizontal = 2.dp ),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+
+                    dataRecurso(id = "oveja", cantidad = 1)
+                    dataRecurso(id = "arcilla", cantidad = 2)
+                    dataRecurso(id = "madera", cantidad = 6)
+                    dataRecurso(id = "trigo", cantidad = 0)
+                    dataRecurso(id = "roca", cantidad = 3)
+                }
+
+                Spacer(modifier = Modifier.height(5.dp))
+
+                //Tabla costes
                 Button(
-                    onClick = { },
+                    onClick = { showTablaCostes.value = true},
                     modifier = Modifier
                         .width(50.dp)
                         .height(50.dp),
@@ -159,6 +186,7 @@ fun CatanBoard(navController: NavHostController) {
 
                 Spacer(modifier = Modifier.height(5.dp))
 
+                //Chat
                 Button(
                     onClick = { },
                     modifier = Modifier
@@ -181,13 +209,104 @@ fun CatanBoard(navController: NavHostController) {
             }
         }
 
-        //CHAT
-        Box(
+        //Recursos
+
+        /*Box(
             modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.BottomStart
+            contentAlignment = Alignment.CenterEnd
         ) {
 
+            Column(
+                modifier = Modifier.background(color = TransparenteBlanco, shape = RoundedCornerShape(15.dp)). padding(vertical = 5.dp, horizontal = 2.dp ),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
 
+                dataRecurso(id = "oveja", cantidad = 1)
+                dataRecurso(id = "arcilla", cantidad = 2)
+                dataRecurso(id = "madera", cantidad = 6)
+                dataRecurso(id = "trigo", cantidad = 0)
+                dataRecurso(id = "roca", cantidad = 3)
+            }
+
+        }*/
+    }
+}
+@Composable
+fun dataRecurso(id: String, cantidad: Int) {
+
+    var painterID = painterResource(R.drawable.sheep)
+    when (id) {
+        "oveja" -> {
+            painterID = painterResource(R.drawable.sheep)
+        }
+        "arcilla" -> {
+            painterID = painterResource(R.drawable.clay)
+        }
+        "trigo" -> {
+            painterID = painterResource(R.drawable.trigo)
+        }
+        "roca" -> {
+            painterID = painterResource(R.drawable.rock)
+        }
+        "madera" -> {
+            painterID = painterResource(R.drawable.wood)
+        }
+    }
+
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+
+
+        Image(
+            painter = painterID,
+            contentDescription = null,
+            modifier = Modifier.size(35.dp)
+        )
+
+        Text(
+            text = cantidad.toString(),
+            fontSize = 14.sp,
+            style = TextStyle(
+                color = Negro,
+                fontWeight = FontWeight.Bold
+            )
+        )
+    }
+}
+
+
+@Composable
+fun showTablaCostes(setShowDialog: (Boolean) -> Unit) {
+
+    Dialog(onDismissRequest = { setShowDialog(false) }) {
+        Surface(
+            shape = RoundedCornerShape(16.dp),
+            color = AzulOscuro
+        ) {
+            Box(
+                modifier = Modifier
+                    .paint(
+                        painterResource(R.drawable.tablacostes),
+
+                        )
+                    .padding(20.dp),
+                contentAlignment = Alignment.TopEnd
+            ) {
+
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = "",
+                    tint = Negro,
+                    modifier = Modifier
+                        .width(30.dp)
+                        .height(30.dp)
+                        .clickable { setShowDialog(false) }
+                )
+
+            }
         }
     }
 }
