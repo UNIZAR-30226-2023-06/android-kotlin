@@ -12,10 +12,6 @@ import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,6 +42,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
+import androidx.compose.material.icons.filled.*
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.painter.Painter
@@ -53,6 +50,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import com.example.mycatan.R
+import com.example.mycatan.others.Routes
 
 var clickedVertex: Offset? = null
 @Composable
@@ -112,38 +110,101 @@ fun CatanBoard(navController: NavHostController) {
             TileGrid(tiles)
         }
 
-        //DISPLAY DE LOS ENEMIGOS
+        //Jugadores
         Box (
-            modifier = Modifier
-                .fillMaxWidth(),
-            contentAlignment = Alignment.Center
-                ){
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                dataJugador(modifier = Modifier.weight(1f), colorEne = Verde, foto = painterResource(R.drawable.skin2), ptsV = 5 , ejercito = false, carreteras = false)
-                dataJugador(modifier = Modifier.weight(1f), colorEne = Rojo, foto = painterResource(R.drawable.skin1), ptsV = 2, ejercito = false, carreteras = false)
-                dataJugador(modifier = Modifier.weight(1f), colorEne = Purple200, foto = painterResource(R.drawable.skin4), ptsV = 3, ejercito = true, carreteras = false)
-            }
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.TopStart
+        )
+        {
+                dataJugador(mainPlayer = false ,colorEne = Verde, foto = painterResource(R.drawable.skin2), ptsV = 5 , ejercito = false, carreteras = false)
         }
 
+        Box (
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.TopEnd
+        )
+        {
+            dataJugador(mainPlayer = false,colorEne = Rojo, foto = painterResource(R.drawable.skin1), ptsV = 2, ejercito = false, carreteras = false)
+        }
+
+        Box (
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.BottomEnd
+        )
+        {
+            dataJugador(mainPlayer = false  ,colorEne = Purple200, foto = painterResource(R.drawable.skin4), ptsV = 3, ejercito = true, carreteras = false)
+        }
         //MI INFO
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.BottomStart
         ) {
-            dataJugador(modifier = Modifier.width(150.dp), colorEne = Amarillo,foto = painterResource(R.drawable.skin3),  ptsV = 3, ejercito = false, carreteras = true)
+            Column(horizontalAlignment = Alignment.Start) {
+
+                Button(
+                    onClick = { },
+                    modifier = Modifier
+                        .width(50.dp)
+                        .height(50.dp),
+                    shape = RoundedCornerShape(15.dp),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
+
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.hammer),
+                        contentDescription = null,
+                        tint = Blanco
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(5.dp))
+
+                Button(
+                    onClick = { },
+                    modifier = Modifier
+                        .width(50.dp)
+                        .height(50.dp),
+                    shape = RoundedCornerShape(15.dp),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
+
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Email,
+                        contentDescription = null,
+                        tint = Blanco
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(5.dp))
+
+                dataJugador(mainPlayer = true,colorEne = Amarillo,foto = painterResource(R.drawable.skin3),  ptsV = 3, ejercito = false, carreteras = true)
+            }
+        }
+
+        //CHAT
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.BottomStart
+        ) {
+
+
         }
     }
 }
 
 @Composable
-fun dataJugador(modifier: Modifier = Modifier, colorEne: Color, ptsV: Int, foto: Painter, ejercito: Boolean, carreteras: Boolean) {
+fun dataJugador(mainPlayer: Boolean, colorEne: Color, ptsV: Int, foto: Painter, ejercito: Boolean, carreteras: Boolean) {
+
+    var colorBorder = Color.Transparent
+    if (mainPlayer){
+        colorBorder = AzulOscuro
+    }
     Box(
-        modifier = modifier
-            .padding(horizontal = 6.dp)
+        modifier = Modifier
+            .width(150.dp)
             .height(50.dp)
-            .background(color = colorEne, shape = RoundedCornerShape(10.dp))
+            .background(color = colorEne, shape = RoundedCornerShape(15.dp))
+            .border(color = colorBorder, width = 3.dp, shape = RoundedCornerShape(15.dp))
     ) {
         // Contenido de la caja aquí
 
@@ -156,17 +217,22 @@ fun dataJugador(modifier: Modifier = Modifier, colorEne: Color, ptsV: Int, foto:
             roadTint = Blanco
         }
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-
+            
+            Spacer(modifier = Modifier.width(3.dp))
             Image(
-                painter = painterResource(R.drawable.skin1),
+                painter = foto,
                 contentDescription = null,
                 modifier = Modifier.size(35.dp)
             )
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically
+
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(0.dp)
             ) {
 
                 Text(
@@ -181,8 +247,10 @@ fun dataJugador(modifier: Modifier = Modifier, colorEne: Color, ptsV: Int, foto:
                 Icon(
                     painter = painterResource(R.drawable.crown),
                     contentDescription = null,
-                    modifier = Modifier.size(45.dp)
+                    modifier = Modifier.size(35.dp)
                 )
+
+
             }
 
             Icon(
