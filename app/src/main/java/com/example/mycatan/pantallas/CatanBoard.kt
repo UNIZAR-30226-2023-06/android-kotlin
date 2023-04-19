@@ -188,7 +188,7 @@ fun CatanBoard(navController: NavHostController) {
 
                 //Chat
                 Button(
-                    onClick = { },
+                    onClick = { navController.navigate(Routes.Chat.route)},
                     modifier = Modifier
                         .width(50.dp)
                         .height(50.dp),

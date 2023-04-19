@@ -49,5 +49,8 @@ fun ScreenMain(){
         composable(Routes.Manual.route) {
             ManualPage(navController = navController)
         }
+        composable(Routes.Chat.route) {
+            Chat(navController = navController)
+        }
     }
 }
