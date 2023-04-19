@@ -66,7 +66,6 @@ fun CatanBoard(navController: NavHostController) {
     var offset by remember { mutableStateOf(Offset.Zero) }
     val state = rememberTransformableState { zoomChange, offsetChange, rotationChange ->
         scale *= zoomChange
-        rotation += rotationChange
         offset += offsetChange
     }
     val tiles = listOf(
@@ -91,66 +90,173 @@ fun CatanBoard(navController: NavHostController) {
         Tile("montaña", 6, Pair(0, 4))
 
     )
-    Box(
-        modifier = Modifier
-            .background(AzulClaro)
-            .padding(5.dp)
-            .fillMaxSize()
-    ){
+    Scaffold(
+        bottomBar = {
+            BottomAppBar {
+                BottomNavigationItem(
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.Place,
+                            contentDescription = null,
+                            tint = Blanco,
+                        )
+                    },
+                    selected = true,
+                    onClick = {
+                        navController.navigate(Routes.CatanBoard.route)
+                    }
+                )
+                BottomNavigationItem(
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.Email,
+                            contentDescription = null,
+                            tint = Blanco,
+                            modifier = Modifier.padding(5.dp)
+                        )
+                        /*if (pendiente.toInt() > 0) { SI HAY MENSAJES
+                            Badge(
+                                backgroundColor = Color.Red,
+                                contentColor = Color.White
+                            ) {
+                                Text(text = pendiente)
+                            }
+                        }*/
+                    },
+                    selected = false,
+                    onClick = {
+                        navController.navigate(Routes.Chat.route)
+                    }
+
+                )
+
+            }
+        },
+    ) {
         Box(
             modifier = Modifier
-                .graphicsLayer(
-                    scaleX = scale,
-                    scaleY = scale,
-                    rotationZ = rotation,
-                    translationX = offset.x,
-                    translationY = offset.y
-                )
-                // add transformable to listen to multitouch transformation events
-                // after offset
-                .transformable(state = state)
-                .fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            TileGrid(tiles)
-        }
+                .background(AzulClaro)
+                .padding(5.dp)
+                .fillMaxSize()
+        ){
+            Box(
+                modifier = Modifier
+                    .graphicsLayer(
+                        scaleX = scale,
+                        scaleY = scale,
+                        rotationZ = rotation,
+                        translationX = offset.x,
+                        translationY = offset.y
+                    )
+                    // add transformable to listen to multitouch transformation events
+                    // after offset
+                    .transformable(state = state)
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                TileGrid(tiles)
+            }
 
-        if(showTablaCostes.value)
-            showTablaCostes(setShowDialog = {
-                showTablaCostes.value = it
-            })
+            if(showTablaCostes.value)
+                showTablaCostes(setShowDialog = {
+                    showTablaCostes.value = it
+                })
 
-        //Jugadores
-        Box (
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.TopStart
-        )
-        {
-                dataJugador(mainPlayer = false ,colorEne = Verde, foto = painterResource(R.drawable.skin2), ptsV = 5 , ejercito = false, carreteras = false)
-        }
+            //Jugadores
+            Box (
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.TopStart
+            )
+            {
+                    dataJugador(mainPlayer = false ,colorEne = Verde, foto = painterResource(R.drawable.skin2), ptsV = 5 , ejercito = false, carreteras = false)
+            }
 
-        Box (
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.TopEnd
-        )
-        {
-            dataJugador(mainPlayer = false,colorEne = Rojo, foto = painterResource(R.drawable.skin1), ptsV = 2, ejercito = false, carreteras = false)
-        }
+            Box (
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.TopEnd
+            )
+            {
+                dataJugador(mainPlayer = false,colorEne = Rojo, foto = painterResource(R.drawable.skin1), ptsV = 2, ejercito = false, carreteras = false)
+            }
 
-        Box (
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.BottomEnd
-        )
-        {
-            dataJugador(mainPlayer = false  ,colorEne = Purple200, foto = painterResource(R.drawable.skin4), ptsV = 3, ejercito = true, carreteras = false)
-        }
-        //MI INFO
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.BottomStart
-        ) {
-            Column(horizontalAlignment = Alignment.Start) {
+            Box (
+                modifier = Modifier.fillMaxSize().padding(0.dp,0.dp,0.dp,55.dp),
+                contentAlignment = Alignment.BottomEnd
+            )
+            {
+                dataJugador(mainPlayer = false  ,colorEne = Purple200, foto = painterResource(R.drawable.skin4), ptsV = 3, ejercito = true, carreteras = false)
+            }
+            //MI INFO
+            Box(
+                modifier = Modifier.fillMaxSize().padding(0.dp,0.dp,0.dp,55.dp),
+                contentAlignment = Alignment.BottomStart
+            ) {
+                Column(horizontalAlignment = Alignment.Start) {
 
+
+                    Column(
+                        modifier = Modifier.background(color = TransparenteBlanco, shape = RoundedCornerShape(15.dp)). padding(vertical = 5.dp, horizontal = 2.dp ),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+
+                        dataRecurso(id = "oveja", cantidad = 1)
+                        dataRecurso(id = "arcilla", cantidad = 2)
+                        dataRecurso(id = "madera", cantidad = 6)
+                        dataRecurso(id = "trigo", cantidad = 0)
+                        dataRecurso(id = "roca", cantidad = 3)
+                    }
+
+                    Spacer(modifier = Modifier.height(5.dp))
+
+                    //Tabla costes
+                    Button(
+                        onClick = { showTablaCostes.value = true},
+                        modifier = Modifier
+                            .width(50.dp)
+                            .height(50.dp),
+                        shape = RoundedCornerShape(15.dp),
+                        colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
+
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.hammer),
+                            contentDescription = null,
+                            tint = Blanco
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(5.dp))
+
+                    //Chat
+                   /* Button(
+                        onClick = { navController.navigate(Routes.Chat.route)},
+                        modifier = Modifier
+                            .width(50.dp)
+                            .height(50.dp),
+                        shape = RoundedCornerShape(15.dp),
+                        colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
+
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Email,
+                            contentDescription = null,
+                            tint = Blanco
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(5.dp))*/
+
+                    dataJugador(mainPlayer = true,colorEne = Amarillo,foto = painterResource(R.drawable.skin3),  ptsV = 3, ejercito = false, carreteras = true)
+                }
+            }
+
+            //Recursos
+
+            /*Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.CenterEnd
+            ) {
 
                 Column(
                     modifier = Modifier.background(color = TransparenteBlanco, shape = RoundedCornerShape(15.dp)). padding(vertical = 5.dp, horizontal = 2.dp ),
@@ -165,71 +271,8 @@ fun CatanBoard(navController: NavHostController) {
                     dataRecurso(id = "roca", cantidad = 3)
                 }
 
-                Spacer(modifier = Modifier.height(5.dp))
-
-                //Tabla costes
-                Button(
-                    onClick = { showTablaCostes.value = true},
-                    modifier = Modifier
-                        .width(50.dp)
-                        .height(50.dp),
-                    shape = RoundedCornerShape(15.dp),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
-
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.hammer),
-                        contentDescription = null,
-                        tint = Blanco
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(5.dp))
-
-                //Chat
-                Button(
-                    onClick = { navController.navigate(Routes.Chat.route)},
-                    modifier = Modifier
-                        .width(50.dp)
-                        .height(50.dp),
-                    shape = RoundedCornerShape(15.dp),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
-
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Email,
-                        contentDescription = null,
-                        tint = Blanco
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(5.dp))
-
-                dataJugador(mainPlayer = true,colorEne = Amarillo,foto = painterResource(R.drawable.skin3),  ptsV = 3, ejercito = false, carreteras = true)
-            }
+            }*/
         }
-
-        //Recursos
-
-        /*Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.CenterEnd
-        ) {
-
-            Column(
-                modifier = Modifier.background(color = TransparenteBlanco, shape = RoundedCornerShape(15.dp)). padding(vertical = 5.dp, horizontal = 2.dp ),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-
-                dataRecurso(id = "oveja", cantidad = 1)
-                dataRecurso(id = "arcilla", cantidad = 2)
-                dataRecurso(id = "madera", cantidad = 6)
-                dataRecurso(id = "trigo", cantidad = 0)
-                dataRecurso(id = "roca", cantidad = 3)
-            }
-
-        }*/
     }
 }
 @Composable
