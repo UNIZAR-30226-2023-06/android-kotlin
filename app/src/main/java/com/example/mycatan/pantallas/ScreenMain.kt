@@ -16,7 +16,8 @@ fun ScreenMain(){
     NavHost(navController = navController, startDestination = /*Routes.Login.route*/ Routes.CatanBoard.route ) {
 
         composable(Routes.Login.route) {
-            LoginPage(navController = navController)
+            CatanBoard(navController = navController)
+
         }
         composable(Routes.Home.route) {
             HomePage(navController = navController)

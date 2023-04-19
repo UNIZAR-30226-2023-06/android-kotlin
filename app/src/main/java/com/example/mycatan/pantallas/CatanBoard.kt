@@ -289,7 +289,7 @@ fun showTablaCostes(setShowDialog: (Boolean) -> Unit) {
             Box(
                 modifier = Modifier
                     .paint(
-                        painterResource(R.drawable.tablacostes),
+                        painterResource(R.drawable.tabla),
 
                         )
                     .padding(20.dp),
@@ -430,41 +430,30 @@ fun TileGrid(tiles: List<Tile>) {
             val boardY = centerY - boardHeight / 2f
             // Detectar si se hizo clic en el círculo
             // Detectar si se hizo clic en un círculo clicable
-            detectTapGestures { tap ->
-                val x = tap.x
-                val y = tap.y
+            detectTapGestures(
+                onTap = { offset ->
+                    for (tile in tiles) {
+                        val tileX = boardX + (tile.coordinates.first + tile.coordinates.second / 2f) * hexWidth
+                        val tileY = boardY + tile.coordinates.second * 1.5f * hexRadius
+                        for (vertex in getHexagonVertices(tileX, tileY, hexRadius)) {
+                            val radius = 6f
 
-                for (tile in tiles) {
-                    val tileX =
-                        boardX + (tile.coordinates.first + tile.coordinates.second / 2f) * hexWidth
-                    val tileY = boardY + tile.coordinates.second * 1.5f * hexRadius
-
-                    for (vertex in getHexagonVertices(tileX, tileY, hexRadius)) {
-                        println("VERTEX: $vertex")
-                        println("X:  $y")
-                        println("Y: $x")
-
-                        if (x >= vertex.x - 6f && x <= vertex.x + 6f &&
-                            y >= vertex.y - 6f && y <= vertex.y + 6f
-                        ) {
-                            clickedVertex = vertex
-                            break
+                            // Calcula la distancia entre el centro del círculo y la posición del clic del mouse
+                            val distance = sqrt((offset.x - vertex.x).pow(2) + (offset.y - vertex.y).pow(2))
+                            // Verifica si la distancia es menor que el radio del círculo
+                            if (distance <= radius) {
+                                // El clic está dentro del círculos
+                                println("punto: ${offset.x} tap: ${vertex.x}")
+                                Toast.makeText(context, "OK", Toast.LENGTH_SHORT).show()
+                                // Aquí puedes agregar el código para manejar el evento de clic en el círculo
+                                clickedVertex = vertex
+                                break
+                            }
                         }
-
-
-                    }
-
-                    if (clickedVertex != null) {
-                        // hacer lo que necesites hacer cuando se hace clic en un vértice
-                        // ...
-                        val toast = Toast.makeText(context, "$clickedVertex", Toast.LENGTH_SHORT)
-                        toast.show()
-                        break
                     }
                 }
+            )
 
-                clickedVertex = null
-            }
         }
 
     ) {
