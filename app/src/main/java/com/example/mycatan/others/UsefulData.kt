@@ -25,3 +25,12 @@ object Globals {
     lateinit var Piezas: String
     lateinit var Mapa: String
 }
+
+object Partida {
+    lateinit var Arcilla: String
+    lateinit var Madera: String
+    lateinit var Roca: String
+    lateinit var Trigo: String
+    lateinit var Ovejas: String
+
+}

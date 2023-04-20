@@ -2,6 +2,7 @@ package com.example.mycatan.pantallas
 
 import android.graphics.Paint
 import android.util.Log
+import android.widget.Space
 import android.widget.Toast
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
@@ -42,6 +43,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.filled.*
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.*
@@ -52,13 +54,42 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.window.Dialog
 import com.example.mycatan.R
+import com.example.mycatan.dBaux.buyPersonaje
+import com.example.mycatan.dBaux.changeProfilePicture
+import com.example.mycatan.others.Globals
+import com.example.mycatan.others.Partida
 import com.example.mycatan.others.Routes
 
 var clickedVertex: Offset? = null
 @Composable
 fun CatanBoard(navController: NavHostController) {
 
+    Partida.Madera = "5"
+    Partida.Arcilla = "5"
+    Partida.Roca = "5"
+    Partida.Ovejas = "5"
+    Partida.Trigo = "5"
+
+
     val showTablaCostes =  remember { mutableStateOf(false) }
+    val tradePlayer1 =  remember { mutableStateOf(false) }
+    val tradePlayer2 =  remember { mutableStateOf(false) }
+    val tradePlayer3 =  remember { mutableStateOf(false) }
+
+
+    //Registro nombres de los jugadores
+    var namePlayer1 =  remember { mutableStateOf("player1") }
+    var namePlayer2 =  remember { mutableStateOf("player2") }
+    var namePlayer3 =  remember { mutableStateOf("player3") }
+
+    //Registro fotos de los jugadores
+    var paint1temp = painterResource(R.drawable.skin4)
+    val paint1 =  remember { mutableStateOf(paint1temp) }
+    val paint2 =  remember { mutableStateOf(paint1temp) }
+    paint2.value = painterResource(R.drawable.skin2)
+    val paint3 =  remember { mutableStateOf(paint1temp) }
+    paint3.value = painterResource(R.drawable.skin3)
+
 
     // set up all transformation states
     var scale by remember { mutableStateOf(1f) }
@@ -161,6 +192,12 @@ fun CatanBoard(navController: NavHostController) {
                 showTablaCostes(setShowDialog = {
                     showTablaCostes.value = it
                 })
+            if(tradePlayer1.value)
+                showTrading(name = namePlayer1.value , foto = paint1.value , setShowDialog = {tradePlayer1.value = it})
+            if(tradePlayer2.value)
+                showTrading(name = namePlayer2.value , foto = paint2.value , setShowDialog = {tradePlayer2.value = it})
+            if(tradePlayer3.value)
+                showTrading(name = namePlayer3.value , foto = paint3.value , setShowDialog = {tradePlayer3.value = it})
 
             //Jugadores
             Box (
@@ -168,7 +205,8 @@ fun CatanBoard(navController: NavHostController) {
                 contentAlignment = Alignment.TopStart
             )
             {
-                    dataJugador(mainPlayer = false ,colorEne = Verde, foto = painterResource(R.drawable.skin2), ptsV = 5 , ejercito = false, carreteras = false)
+                dataJugador(player = 1 ,colorEne = Verde, foto = paint1.value , ptsV = 5 , ejercito = false, carreteras = false, onCardClick = { tradePlayer1.value=true })
+
             }
 
             Box (
@@ -176,35 +214,47 @@ fun CatanBoard(navController: NavHostController) {
                 contentAlignment = Alignment.TopEnd
             )
             {
-                dataJugador(mainPlayer = false,colorEne = Rojo, foto = painterResource(R.drawable.skin1), ptsV = 2, ejercito = false, carreteras = false)
+                dataJugador(player = 2,colorEne = Rojo, foto = paint2.value, ptsV = 2, ejercito = false, carreteras = false, onCardClick = { tradePlayer2.value=true })
+
             }
 
             Box (
-                modifier = Modifier.fillMaxSize().padding(0.dp,0.dp,0.dp,55.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(0.dp, 0.dp, 0.dp, 55.dp),
                 contentAlignment = Alignment.BottomEnd
             )
             {
-                dataJugador(mainPlayer = false  ,colorEne = Purple200, foto = painterResource(R.drawable.skin4), ptsV = 3, ejercito = true, carreteras = false)
+
+                dataJugador(player = 3 ,colorEne = Purple200, foto = paint3.value, ptsV = 3, ejercito = true, carreteras = false, onCardClick = { tradePlayer3.value=true })
+
             }
             //MI INFO
             Box(
-                modifier = Modifier.fillMaxSize().padding(0.dp,0.dp,0.dp,55.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(0.dp, 0.dp, 0.dp, 55.dp),
                 contentAlignment = Alignment.BottomStart
             ) {
                 Column(horizontalAlignment = Alignment.Start) {
 
 
                     Column(
-                        modifier = Modifier.background(color = TransparenteBlanco, shape = RoundedCornerShape(15.dp)). padding(vertical = 5.dp, horizontal = 2.dp ),
+                        modifier = Modifier
+                            .background(
+                                color = TransparenteBlanco,
+                                shape = RoundedCornerShape(15.dp)
+                            )
+                            .padding(vertical = 5.dp, horizontal = 2.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
 
-                        dataRecurso(id = "oveja", cantidad = 1)
-                        dataRecurso(id = "arcilla", cantidad = 2)
-                        dataRecurso(id = "madera", cantidad = 6)
-                        dataRecurso(id = "trigo", cantidad = 0)
-                        dataRecurso(id = "roca", cantidad = 3)
+                        dataRecurso(id = "oveja", cantidad = Partida.Ovejas.toInt())
+                        dataRecurso(id = "arcilla", cantidad = Partida.Arcilla.toInt())
+                        dataRecurso(id = "madera", cantidad = Partida.Madera.toInt())
+                        dataRecurso(id = "trigo", cantidad = Partida.Trigo.toInt())
+                        dataRecurso(id = "roca", cantidad = Partida.Roca.toInt())
                     }
 
                     Spacer(modifier = Modifier.height(5.dp))
@@ -247,31 +297,10 @@ fun CatanBoard(navController: NavHostController) {
 
                     Spacer(modifier = Modifier.height(5.dp))*/
 
-                    dataJugador(mainPlayer = true,colorEne = Amarillo,foto = painterResource(R.drawable.skin3),  ptsV = 3, ejercito = false, carreteras = true)
+                    dataJugador(player = 0 ,colorEne = Amarillo,foto = painterResource(R.drawable.skin3),  ptsV = 3, ejercito = false, carreteras = true, onCardClick = {})
                 }
             }
 
-            //Recursos
-
-            /*Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.CenterEnd
-            ) {
-
-                Column(
-                    modifier = Modifier.background(color = TransparenteBlanco, shape = RoundedCornerShape(15.dp)). padding(vertical = 5.dp, horizontal = 2.dp ),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-
-                    dataRecurso(id = "oveja", cantidad = 1)
-                    dataRecurso(id = "arcilla", cantidad = 2)
-                    dataRecurso(id = "madera", cantidad = 6)
-                    dataRecurso(id = "trigo", cantidad = 0)
-                    dataRecurso(id = "roca", cantidad = 3)
-                }
-
-            }*/
         }
     }
 }
@@ -308,6 +337,8 @@ fun dataRecurso(id: String, cantidad: Int) {
             contentDescription = null,
             modifier = Modifier.size(35.dp)
         )
+        
+        Spacer(modifier = Modifier.width(2.dp))
 
         Text(
             text = cantidad.toString(),
@@ -317,6 +348,226 @@ fun dataRecurso(id: String, cantidad: Int) {
                 fontWeight = FontWeight.Bold
             )
         )
+    }
+}
+
+@Composable
+fun incIntercambio( tipo : String){
+    // INCREMENTADOR/DECREMENTADOR NUMERO
+    var inicio = 0;
+    var count by remember { mutableStateOf(inicio) }
+
+    Row (modifier = Modifier
+        .background(Color.White, RoundedCornerShape(20.dp)),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+
+        ){
+
+        IconButton(
+            onClick = {
+                if(count > 0){
+                    count--
+                } },
+            modifier = Modifier.size(25.dp)  ) {
+            Icon(Icons.Filled.KeyboardArrowDown,contentDescription = "Decrement",)
+        }
+        Text(text = count.toString(), fontSize = 14.sp,)
+        IconButton(
+            onClick = {
+                if(tipo == "arcilla" && count < Partida.Arcilla.toInt()){
+                    count++
+                }
+                if(tipo == "oveja" && count < Partida.Ovejas.toInt()){
+                    count++
+                }
+                if(tipo == "trigo" && count < Partida.Trigo.toInt()){
+                    count++
+                }
+                if(tipo == "roca" && count < Partida.Roca.toInt()){
+                    count++
+                }
+                if(tipo == "madera" && count < Partida.Madera.toInt()){
+                    count++
+                }
+            },
+
+            modifier = Modifier.size(25.dp) ) {
+            Icon(Icons.Filled.KeyboardArrowUp, contentDescription = "Increment")
+        }
+    }
+}
+
+@Composable
+fun intercambioRecurso(id: String) {
+
+    var painterID = painterResource(R.drawable.sheep)
+    when (id) {
+        "oveja" -> {
+            painterID = painterResource(R.drawable.sheep)
+        }
+        "arcilla" -> {
+            painterID = painterResource(R.drawable.clay)
+        }
+        "trigo" -> {
+            painterID = painterResource(R.drawable.trigo)
+        }
+        "roca" -> {
+            painterID = painterResource(R.drawable.rock)
+        }
+        "madera" -> {
+            painterID = painterResource(R.drawable.wood)
+        }
+    }
+
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+
+        Image(
+            painter = painterID,
+            contentDescription = null,
+            modifier = Modifier.size(35.dp)
+        )
+        incIntercambio(id)
+
+    }
+}
+
+
+
+
+@Composable
+fun playerFoto(modifier: Modifier, foto: Painter){
+    Card(
+        modifier = modifier,
+
+        shape = CircleShape,
+        backgroundColor = Blanco,
+    ){
+        Image(
+            painter = foto,
+            contentDescription = null,
+        )
+    }
+}
+
+
+@Composable
+fun showTrading(name :String ,foto: Painter, setShowDialog: (Boolean) -> Unit) {
+
+    val context = LocalContext.current
+
+    Dialog(onDismissRequest = { setShowDialog(false) }) {
+        Surface(
+            shape = RoundedCornerShape(16.dp),
+            color = AzulOscuro
+        ) {
+
+            Box(
+                contentAlignment = Alignment.Center
+            ) {
+
+                Column(modifier = Modifier.padding(20.dp))
+                {
+                    Row(
+                    )
+                    {
+                        Text(
+                            text = "Intercambiar con $name",
+                            color = Blanco,
+                            style = TextStyle(
+                                fontSize = 24.sp,
+                                fontFamily = FontFamily.Default,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+
+                        Spacer(modifier = Modifier.width(5.dp))
+
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "",
+                            tint = Blanco,
+                            modifier = Modifier
+                                .width(30.dp)
+                                .height(30.dp)
+                                .clickable { setShowDialog(false) }
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(5.dp))
+
+                    Row() {
+
+                        Spacer(modifier = Modifier.width(15.dp))
+
+                        Column() {
+                            intercambioRecurso(id = "arcilla")
+                            intercambioRecurso(id = "roca")
+                            intercambioRecurso(id = "oveja")
+                            intercambioRecurso(id = "trigo")
+                            intercambioRecurso(id = "madera")
+                        }
+
+                        Spacer(modifier = Modifier.width(15.dp))
+
+                        Column(modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 50.dp),
+                            verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+
+                            playerFoto( modifier= Modifier.size(130.dp) ,foto = foto )
+
+                            Spacer(modifier = Modifier.height(5.dp))
+
+                            Button(
+                                onClick = {
+                                    setShowDialog(false)
+                                },
+                                modifier = Modifier
+                                    //.fillMaxWidth(0.5f)
+                                    .width(130.dp)
+                                    .height(50.dp),
+                                colors = ButtonDefaults.buttonColors(backgroundColor = Verde),
+                                shape = RoundedCornerShape(50.dp),
+                                border = BorderStroke(3.dp, AzulOscuro),
+
+                                ) {
+                                Text(
+                                    text = "Proponer",
+                                    style = TextStyle(
+                                        color = AzulOscuro, fontWeight = FontWeight.Bold
+                                    )
+                                )
+                            }
+
+                            Button(
+                                onClick = { setShowDialog(false) },
+                                modifier = Modifier
+                                    //.fillMaxWidth(0.5f)
+                                    .width(130.dp)
+                                    .height(50.dp),
+                                colors = ButtonDefaults.buttonColors(backgroundColor = Rojo),
+                                shape = RoundedCornerShape(50.dp),
+                                border = BorderStroke(3.dp, AzulOscuro)
+
+                            ) {
+                                Text(
+                                    text = "Cancelar",
+                                    style = TextStyle(
+                                        color = AzulOscuro, fontWeight = FontWeight.Bold
+                                    )
+                                )
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -355,14 +606,19 @@ fun showTablaCostes(setShowDialog: (Boolean) -> Unit) {
 }
 
 @Composable
-fun dataJugador(mainPlayer: Boolean, colorEne: Color, ptsV: Int, foto: Painter, ejercito: Boolean, carreteras: Boolean) {
+fun dataJugador(player: Int, colorEne: Color, ptsV: Int, foto: Painter, ejercito: Boolean, carreteras: Boolean, onCardClick: () -> Unit  ) {
 
     var colorBorder = Color.Transparent
-    if (mainPlayer){
+    if (player==0){
         colorBorder = AzulOscuro
     }
     Box(
         modifier = Modifier
+            .clickable {
+                if (player != 0) {
+                    onCardClick()
+                }
+            }
             .width(150.dp)
             .height(50.dp)
             .background(color = colorEne, shape = RoundedCornerShape(15.dp))
@@ -385,11 +641,8 @@ fun dataJugador(mainPlayer: Boolean, colorEne: Color, ptsV: Int, foto: Painter, 
         ) {
             
             Spacer(modifier = Modifier.width(3.dp))
-            Image(
-                painter = foto,
-                contentDescription = null,
-                modifier = Modifier.size(35.dp)
-            )
+
+            playerFoto(modifier = Modifier.size(35.dp), foto = foto )
 
 
             Column(
@@ -476,18 +729,22 @@ fun TileGrid(tiles: List<Tile>) {
             detectTapGestures(
                 onTap = { offset ->
                     for (tile in tiles) {
-                        val tileX = boardX + (tile.coordinates.first + tile.coordinates.second / 2f) * hexWidth
+                        val tileX =
+                            boardX + (tile.coordinates.first + tile.coordinates.second / 2f) * hexWidth
                         val tileY = boardY + tile.coordinates.second * 1.5f * hexRadius
                         for (vertex in getHexagonVertices(tileX, tileY, hexRadius)) {
                             val radius = 6f
 
                             // Calcula la distancia entre el centro del círculo y la posición del clic del mouse
-                            val distance = sqrt((offset.x - vertex.x).pow(2) + (offset.y - vertex.y).pow(2))
+                            val distance =
+                                sqrt((offset.x - vertex.x).pow(2) + (offset.y - vertex.y).pow(2))
                             // Verifica si la distancia es menor que el radio del círculo
                             if (distance <= radius) {
                                 // El clic está dentro del círculos
                                 println("punto: ${offset.x} tap: ${vertex.x}")
-                                Toast.makeText(context, "OK", Toast.LENGTH_SHORT).show()
+                                Toast
+                                    .makeText(context, "OK", Toast.LENGTH_SHORT)
+                                    .show()
                                 // Aquí puedes agregar el código para manejar el evento de clic en el círculo
                                 clickedVertex = vertex
                                 break
