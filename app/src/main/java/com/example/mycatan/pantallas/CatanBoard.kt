@@ -502,9 +502,36 @@ fun showTrading(name :String ,foto: Painter, setShowDialog: (Boolean) -> Unit) {
 
                     Spacer(modifier = Modifier.height(5.dp))
 
+                    Row(modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = "Ofreces",
+                            color = Blanco,
+                            style = TextStyle(
+                                fontSize = 18.sp,
+                                fontFamily = FontFamily.Default,
+                                fontWeight = FontWeight.Bold
+                            ),
+                            textDecoration = TextDecoration.Underline
+                        )
+
+                        Spacer(modifier = Modifier.width(75.dp))
+
+                        Text(
+                            text = "Solicitas",
+                            color = Blanco,
+                            style = TextStyle(
+                                fontSize = 18.sp,
+                                fontFamily = FontFamily.Default,
+                                fontWeight = FontWeight.Bold
+                            ),
+                            textDecoration = TextDecoration.Underline
+                        )
+                    }
+
                     Row() {
 
-                        Spacer(modifier = Modifier.width(15.dp))
+                        Spacer(modifier = Modifier.width(5.dp))
 
                         Column() {
                             intercambioRecurso(id = "arcilla")
@@ -512,19 +539,14 @@ fun showTrading(name :String ,foto: Painter, setShowDialog: (Boolean) -> Unit) {
                             intercambioRecurso(id = "oveja")
                             intercambioRecurso(id = "trigo")
                             intercambioRecurso(id = "madera")
+
                         }
 
                         Spacer(modifier = Modifier.width(15.dp))
 
-                        Column(modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 50.dp),
-                            verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
-
-                            playerFoto( modifier= Modifier.size(130.dp) ,foto = foto )
-
-                            Spacer(modifier = Modifier.height(5.dp))
-
+                        Column(modifier = Modifier.height(310.dp),
+                            verticalArrangement = Arrangement.Bottom, horizontalAlignment = Alignment.CenterHorizontally)
+                        {
                             Button(
                                 onClick = {
                                     setShowDialog(false)
@@ -545,27 +567,20 @@ fun showTrading(name :String ,foto: Painter, setShowDialog: (Boolean) -> Unit) {
                                     )
                                 )
                             }
-
-                            Button(
-                                onClick = { setShowDialog(false) },
-                                modifier = Modifier
-                                    //.fillMaxWidth(0.5f)
-                                    .width(130.dp)
-                                    .height(50.dp),
-                                colors = ButtonDefaults.buttonColors(backgroundColor = Rojo),
-                                shape = RoundedCornerShape(50.dp),
-                                border = BorderStroke(3.dp, AzulOscuro)
-
-                            ) {
-                                Text(
-                                    text = "Cancelar",
-                                    style = TextStyle(
-                                        color = AzulOscuro, fontWeight = FontWeight.Bold
-                                    )
-                                )
-
-                            }
                         }
+
+                        Spacer(modifier = Modifier.width(15.dp))
+
+                        Column() {
+                            intercambioRecurso(id = "arcilla")
+                            intercambioRecurso(id = "roca")
+                            intercambioRecurso(id = "oveja")
+                            intercambioRecurso(id = "trigo")
+                            intercambioRecurso(id = "madera")
+                        }
+
+                        Spacer(modifier = Modifier.width(5.dp))
+
                     }
                 }
             }
