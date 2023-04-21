@@ -1,5 +1,6 @@
 package com.example.mycatan.pantallas
 
+import android.graphics.BitmapFactory
 import android.graphics.Paint
 import android.util.Log
 import android.widget.Space
@@ -101,20 +102,20 @@ fun CatanBoard(navController: NavHostController) {
     }
     val tiles = listOf(
         Tile("bosque", 5, Pair(0, 0)),
-        Tile("lago", 2, Pair(1, 0)),
+        Tile("cultivos", 2, Pair(1, 0)),
         Tile("montaña", 9, Pair(2, 0)),
         Tile("montaña", 8, Pair(-1, 1)),
-        Tile("lago", 3, Pair(0, 1)),
+        Tile("cultivos", 3, Pair(0, 1)),
         Tile("montaña", 10, Pair(1, 1)),
         Tile("bosque", 6, Pair(2, 1)),
         Tile("montaña", 12, Pair(-2, 2)),
-        Tile("lago", 11, Pair(-1, 2)),
-        Tile("montaña", 4, Pair(0, 2)),
+        Tile("mina", 11, Pair(-1, 2)),
+        Tile("campo", 4, Pair(0, 2)),
         Tile("montaña", 8, Pair(1, 2)),
-        Tile("lago", 10, Pair(2, 2)),
+        Tile("mina", 10, Pair(2, 2)),
         Tile("bosque", 9, Pair(-2, 3)),
         Tile("bosque", 4, Pair(-1, 3)),
-        Tile("montaña", 5, Pair(0, 3)),
+        Tile("campo", 5, Pair(0, 3)),
         Tile("montaña", 10, Pair(1, 3)),
         Tile("desierto", 11, Pair(-2, 4)),
         Tile("bosque", 3, Pair(-1, 4)),
@@ -804,6 +805,61 @@ fun TileGrid(tiles: List<Tile>) {
                         textSize = 30f
                         textAlign = Paint.Align.CENTER
                     }
+
+                    if(tile.terrain == "campo"){
+                        // Obtener el Drawable de la imagen desde el contexto
+                        val drawable = context.resources.getDrawable(R.drawable.sheephexagon, null)
+
+                        // Dibujar la imagen en el canvas
+                        drawable.setBounds((tileX -85).toInt(), (tileY-95).toInt(), (tileX + 85).toInt(), (tileY + 95).toInt())
+                        drawable.draw(canvas.nativeCanvas)
+                    }
+
+                    if(tile.terrain == "montaña"){
+                        // Obtener el Drawable de la imagen desde el contexto
+                        val drawable = context.resources.getDrawable(R.drawable.rockhexagon, null)
+
+                        // Dibujar la imagen en el canvas
+                        drawable.setBounds((tileX -100).toInt(), (tileY-102).toInt(), (tileX + 101).toInt(), (tileY + 104).toInt())
+                        drawable.draw(canvas.nativeCanvas)
+                    }
+
+                    if(tile.terrain == "desierto"){
+                        // Obtener el Drawable de la imagen desde el contexto
+                        val drawable = context.resources.getDrawable(R.drawable.deserthexagon, null)
+
+                        // Dibujar la imagen en el canvas
+                        drawable.setBounds((tileX -120).toInt(), (tileY-121).toInt(), (tileX + 122).toInt(), (tileY + 121).toInt())
+                        drawable.draw(canvas.nativeCanvas)
+                    }
+
+                    if(tile.terrain == "cultivos"){
+                        // Obtener el Drawable de la imagen desde el contexto
+                        val drawable = context.resources.getDrawable(R.drawable.trigohexagon, null)
+
+                        // Dibujar la imagen en el canvas
+                        drawable.setBounds((tileX -95).toInt(), (tileY-108).toInt(), (tileX + 95).toInt(), (tileY + 108).toInt())
+                        drawable.draw(canvas.nativeCanvas)
+                    }
+
+                    if(tile.terrain == "mina"){
+                        // Obtener el Drawable de la imagen desde el contexto
+                        val drawable = context.resources.getDrawable(R.drawable.clayhexagon, null)
+
+                        // Dibujar la imagen en el canvas
+                        drawable.setBounds((tileX -85).toInt(), (tileY-97).toInt(), (tileX + 85).toInt(), (tileY + 99).toInt())
+                        drawable.draw(canvas.nativeCanvas)
+                    }
+
+                    if(tile.terrain == "bosque"){
+                        // Obtener el Drawable de la imagen desde el contexto
+                        val drawable = context.resources.getDrawable(R.drawable.woodhexagon, null)
+
+                        // Dibujar la imagen en el canvas
+                        drawable.setBounds((tileX -85).toInt(), (tileY-95).toInt(), (tileX + 85).toInt(), (tileY + 98).toInt())
+                        drawable.draw(canvas.nativeCanvas)
+                    }
+
                     canvas.nativeCanvas.drawText(
                         tile.number.toString(),
                         tileX,
