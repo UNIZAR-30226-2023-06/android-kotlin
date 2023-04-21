@@ -1,6 +1,6 @@
 package com.example.mycatan.pantallas
 
-import android.graphics.BitmapFactory
+import android.graphics.*
 import android.graphics.Paint
 import android.util.Log
 import android.widget.Space
@@ -48,6 +48,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.filled.*
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.*
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
@@ -101,25 +102,25 @@ fun CatanBoard(navController: NavHostController) {
         offset += offsetChange
     }
     val tiles = listOf(
-        Tile("bosque", 5, Pair(0, 0)),
-        Tile("cultivos", 2, Pair(1, 0)),
-        Tile("montaña", 9, Pair(2, 0)),
-        Tile("montaña", 8, Pair(-1, 1)),
-        Tile("cultivos", 3, Pair(0, 1)),
-        Tile("montaña", 10, Pair(1, 1)),
-        Tile("bosque", 6, Pair(2, 1)),
-        Tile("montaña", 12, Pair(-2, 2)),
-        Tile("mina", 11, Pair(-1, 2)),
-        Tile("campo", 4, Pair(0, 2)),
-        Tile("montaña", 8, Pair(1, 2)),
-        Tile("mina", 10, Pair(2, 2)),
-        Tile("bosque", 9, Pair(-2, 3)),
-        Tile("bosque", 4, Pair(-1, 3)),
-        Tile("campo", 5, Pair(0, 3)),
-        Tile("montaña", 10, Pair(1, 3)),
-        Tile("desierto", 11, Pair(-2, 4)),
-        Tile("bosque", 3, Pair(-1, 4)),
-        Tile("montaña", 6, Pair(0, 4))
+        Tile("bosque", 5, thief = false , Pair(0, 0)),
+        Tile("cultivos", 2, thief = false ,Pair(1, 0)),
+        Tile("montaña", 9, thief = false ,Pair(2, 0)),
+        Tile("montaña", 8, thief = false ,Pair(-1, 1)),
+        Tile("cultivos", 3, thief = false ,Pair(0, 1)),
+        Tile("montaña", 10, thief = false ,Pair(1, 1)),
+        Tile("bosque", 6, thief = false ,Pair(2, 1)),
+        Tile("montaña", 12, thief = false ,Pair(-2, 2)),
+        Tile("mina", 11, thief = false ,Pair(-1, 2)),
+        Tile("campo", 4, thief = false ,Pair(0, 2)),
+        Tile("montaña", 8, thief = false ,Pair(1, 2)),
+        Tile("mina", 10, thief = false ,Pair(2, 2)),
+        Tile("bosque", 9, thief = false ,Pair(-2, 3)),
+        Tile("bosque", 4, thief = false ,Pair(-1, 3)),
+        Tile("campo", 5, thief = false ,Pair(0, 3)),
+        Tile("montaña", 10, thief = false ,Pair(1, 3)),
+        Tile("desierto", 11, thief = true ,Pair(-2, 4)),
+        Tile("bosque", 3, thief = false ,Pair(-1, 4)),
+        Tile("montaña", 6, thief = false ,Pair(0, 4))
 
     )
     Scaffold(
@@ -687,7 +688,7 @@ fun dataJugador(player: Int, colorEne: Color, ptsV: Int, foto: Painter, ejercito
 }
 
 
-class Tile(val terrain: String, val number: Int, val coordinates: Pair<Int, Int>){
+class Tile(val terrain: String, val number: Int, val thief: Boolean,val coordinates: Pair<Int, Int>){
     // Calculo lista de vertices de cada hexagono para hacerlos clicables y dibujarlos con el canvas
     val vertices = listOf(
         Pair(coordinates.first, coordinates.second - 1),
@@ -860,12 +861,45 @@ fun TileGrid(tiles: List<Tile>) {
                         drawable.draw(canvas.nativeCanvas)
                     }
 
-                    canvas.nativeCanvas.drawText(
-                        tile.number.toString(),
-                        tileX,
-                        tileY + paint.textSize / 2f,
-                        paint
-                    )
+                    if (tile.thief){
+
+                        println("cuidado ladron")
+                        val drawable = context.resources.getDrawable(R.drawable.thief, null)
+
+                        // Dibujar la imagen en el canvas
+                        drawable.setBounds((tileX -90).toInt(), (tileY-90).toInt(), (tileX + 0).toInt(), (tileY + 0).toInt())
+                        drawable.draw(canvas.nativeCanvas)
+                    }
+
+
+                    var colorNumber = Color.Black
+                    if (tile.terrain != "desierto"){
+
+                        // Dibuja el círculo blanco
+                        paint.apply {
+                            color = Color.White.toArgb()
+                            style = Paint.Style.FILL
+                        }
+                        canvas.nativeCanvas.drawCircle((tileX+1), (tileY-0), 17f, paint)
+
+                        if (tile.number == 8 || tile.number == 9){
+                            colorNumber = Color.Red
+                        }
+
+                        canvas.nativeCanvas.drawText(
+                            tile.number.toString(),
+                            tileX,
+                            tileY + paint.textSize -36 / 2f,
+                            Paint().apply {
+                                color = colorNumber.toArgb()
+                                textSize = 30f
+                                textAlign = Paint.Align.CENTER
+                                isFakeBoldText = true
+                            }
+                        )
+                    }
+
+
                 }
             }
 
@@ -900,9 +934,9 @@ fun getHexagonVertices(centerX: Float, centerY: Float, radius: Int): List<Offset
     return vertices
 }
 
-@Preview
+/*@Preview
 @Composable
 fun PreviewTileGrid() {
     val tiles = listOf(Tile("bosque", 5, Pair(0, 0)), Tile("lago", 10, Pair(1, 0)), Tile("montaña", 3, Pair(2, 0)))
     TileGrid(tiles)
-}
+}*/
