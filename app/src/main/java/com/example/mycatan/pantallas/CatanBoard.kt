@@ -2,6 +2,7 @@ package com.example.mycatan.pantallas
 
 import android.graphics.*
 import android.graphics.Paint
+import android.provider.Settings.Global
 import android.util.Log
 import android.widget.Space
 import android.widget.Toast
@@ -46,6 +47,7 @@ import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.filled.*
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.Color
@@ -85,12 +87,11 @@ fun CatanBoard(navController: NavHostController) {
     var namePlayer3 =  remember { mutableStateOf("player3") }
 
     //Registro fotos de los jugadores
-    var paint1temp = painterResource(R.drawable.skin4)
-    val paint1 =  remember { mutableStateOf(paint1temp) }
-    val paint2 =  remember { mutableStateOf(paint1temp) }
-    paint2.value = painterResource(R.drawable.skin2)
-    val paint3 =  remember { mutableStateOf(paint1temp) }
-    paint3.value = painterResource(R.drawable.skin3)
+    Globals.Personaje  = "0 " //temporal
+    val paint1 =  remember { mutableStateOf("1") }
+    val paint2 =  remember { mutableStateOf("3") }
+    val paint3 =  remember { mutableStateOf("2") }
+
 
 
     // set up all transformation states
@@ -299,7 +300,7 @@ fun CatanBoard(navController: NavHostController) {
 
                     Spacer(modifier = Modifier.height(5.dp))*/
 
-                    dataJugador(player = 0 ,colorEne = Amarillo,foto = painterResource(R.drawable.skin3),  ptsV = 3, ejercito = false, carreteras = true, onCardClick = {})
+                    dataJugador(player = 0 ,colorEne = Amarillo,foto = Globals.Personaje,  ptsV = 3, ejercito = false, carreteras = true, onCardClick = {})
                 }
             }
 
@@ -354,7 +355,7 @@ fun dataRecurso(id: String, cantidad: Int) {
 }
 
 @Composable
-fun incIntercambio( tipo : String){
+fun incIntercambio( tipo : String, mainPlayer: Boolean){
     // INCREMENTADOR/DECREMENTADOR NUMERO
     var inicio = 0;
     var count by remember { mutableStateOf(inicio) }
@@ -377,21 +378,27 @@ fun incIntercambio( tipo : String){
         Text(text = count.toString(), fontSize = 14.sp,)
         IconButton(
             onClick = {
-                if(tipo == "arcilla" && count < Partida.Arcilla.toInt()){
+                if (mainPlayer){
+                    if(tipo == "arcilla" && count < Partida.Arcilla.toInt()){
+                        count++
+                    }
+                    if(tipo == "oveja" && count < Partida.Ovejas.toInt()){
+                        count++
+                    }
+                    if(tipo == "trigo" && count < Partida.Trigo.toInt()){
+                        count++
+                    }
+                    if(tipo == "roca" && count < Partida.Roca.toInt()){
+                        count++
+                    }
+                    if(tipo == "madera" && count < Partida.Madera.toInt()){
+                        count++
+                    }
+                }
+                else {
                     count++
                 }
-                if(tipo == "oveja" && count < Partida.Ovejas.toInt()){
-                    count++
-                }
-                if(tipo == "trigo" && count < Partida.Trigo.toInt()){
-                    count++
-                }
-                if(tipo == "roca" && count < Partida.Roca.toInt()){
-                    count++
-                }
-                if(tipo == "madera" && count < Partida.Madera.toInt()){
-                    count++
-                }
+
             },
 
             modifier = Modifier.size(25.dp) ) {
@@ -401,7 +408,7 @@ fun incIntercambio( tipo : String){
 }
 
 @Composable
-fun intercambioRecurso(id: String) {
+fun intercambioRecurso(id: String, mainPlayer: Boolean) {
 
     var painterID = painterResource(R.drawable.sheep)
     when (id) {
@@ -433,7 +440,7 @@ fun intercambioRecurso(id: String) {
             contentDescription = null,
             modifier = Modifier.size(35.dp)
         )
-        incIntercambio(id)
+        incIntercambio(id, mainPlayer)
 
     }
 }
@@ -442,7 +449,43 @@ fun intercambioRecurso(id: String) {
 
 
 @Composable
-fun playerFoto(modifier: Modifier, foto: Painter){
+fun playerFoto(modifier: Modifier, foto: String){
+
+    var painterID : Painter
+    //Estoes muy cutre pero no se hacerlo mejor
+    if(foto=="0"){
+        painterID = painterResource(R.drawable.skin1)
+    }
+    else if(foto=="1"){
+        painterID = painterResource(R.drawable.skin2)
+    }
+    else if(foto=="2"){
+        painterID = painterResource(R.drawable.skin3)
+    }
+    else if(foto=="3"){
+        painterID = painterResource(R.drawable.skin4)
+    }
+    else if(foto=="4"){
+        painterID = painterResource(R.drawable.skin5)
+    }
+    else if(foto=="5"){
+        painterID = painterResource(R.drawable.skin6)
+    }
+    else if(foto=="6"){
+        painterID = painterResource(R.drawable.skin7)
+    }
+    else if(foto=="7"){
+        painterID = painterResource(R.drawable.skin8)
+    }
+    else if (foto=="default")
+    {
+        painterID = painterResource(R.drawable.skin1)
+    }
+    else {
+        painterID = painterResource(R.drawable.skin9)
+    }
+
+
     Card(
         modifier = modifier,
 
@@ -450,7 +493,7 @@ fun playerFoto(modifier: Modifier, foto: Painter){
         backgroundColor = Blanco,
     ){
         Image(
-            painter = foto,
+            painter = painterID,
             contentDescription = null,
         )
     }
@@ -458,7 +501,7 @@ fun playerFoto(modifier: Modifier, foto: Painter){
 
 
 @Composable
-fun showTrading(name :String ,foto: Painter, setShowDialog: (Boolean) -> Unit) {
+fun showTrading(name :String ,foto: String, setShowDialog: (Boolean) -> Unit) {
 
     val context = LocalContext.current
 
@@ -515,7 +558,7 @@ fun showTrading(name :String ,foto: Painter, setShowDialog: (Boolean) -> Unit) {
                             textDecoration = TextDecoration.Underline
                         )
 
-                        Spacer(modifier = Modifier.width(75.dp))
+                        Spacer(modifier = Modifier.width(100.dp))
 
                         Text(
                             text = "Solicitas",
@@ -534,19 +577,44 @@ fun showTrading(name :String ,foto: Painter, setShowDialog: (Boolean) -> Unit) {
                         Spacer(modifier = Modifier.width(5.dp))
 
                         Column() {
-                            intercambioRecurso(id = "arcilla")
-                            intercambioRecurso(id = "roca")
-                            intercambioRecurso(id = "oveja")
-                            intercambioRecurso(id = "trigo")
-                            intercambioRecurso(id = "madera")
+                            intercambioRecurso(id = "arcilla", true)
+                            intercambioRecurso(id = "roca", true)
+                            intercambioRecurso(id = "oveja", true)
+                            intercambioRecurso(id = "trigo", true)
+                            intercambioRecurso(id = "madera", true)
 
                         }
 
                         Spacer(modifier = Modifier.width(15.dp))
 
                         Column(modifier = Modifier.height(310.dp),
-                            verticalArrangement = Arrangement.Bottom, horizontalAlignment = Alignment.CenterHorizontally)
+                            horizontalAlignment = Alignment.CenterHorizontally)
                         {
+
+                            Spacer(modifier = Modifier.height(40.dp))
+
+                            Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+
+                                playerFoto(modifier = Modifier.size(55.dp), foto = Globals.Personaje )
+
+                                Spacer(modifier = Modifier.height(10.dp))
+
+                                Icon(
+                                    painter = painterResource(R.drawable.exchangearrows),
+                                    contentDescription = null,
+                                    tint = Blanco,
+                                    modifier = Modifier.rotate(90f)
+                                )
+
+
+                                Spacer(modifier = Modifier.height(10.dp))
+
+                                playerFoto(modifier = Modifier.size(55.dp), foto = foto )
+
+                            }
+
+                            Spacer(modifier = Modifier.height(25.dp))
+
                             Button(
                                 onClick = {
                                     setShowDialog(false)
@@ -572,11 +640,11 @@ fun showTrading(name :String ,foto: Painter, setShowDialog: (Boolean) -> Unit) {
                         Spacer(modifier = Modifier.width(15.dp))
 
                         Column() {
-                            intercambioRecurso(id = "arcilla")
-                            intercambioRecurso(id = "roca")
-                            intercambioRecurso(id = "oveja")
-                            intercambioRecurso(id = "trigo")
-                            intercambioRecurso(id = "madera")
+                            intercambioRecurso(id = "arcilla", false)
+                            intercambioRecurso(id = "roca", false)
+                            intercambioRecurso(id = "oveja", false)
+                            intercambioRecurso(id = "trigo", false)
+                            intercambioRecurso(id = "madera", false)
                         }
 
                         Spacer(modifier = Modifier.width(5.dp))
@@ -623,7 +691,7 @@ fun showTablaCostes(setShowDialog: (Boolean) -> Unit) {
 }
 
 @Composable
-fun dataJugador(player: Int, colorEne: Color, ptsV: Int, foto: Painter, ejercito: Boolean, carreteras: Boolean, onCardClick: () -> Unit  ) {
+fun dataJugador(player: Int, colorEne: Color, ptsV: Int, foto: String, ejercito: Boolean, carreteras: Boolean, onCardClick: () -> Unit  ) {
 
     var colorBorder = Color.Transparent
     if (player==0){
