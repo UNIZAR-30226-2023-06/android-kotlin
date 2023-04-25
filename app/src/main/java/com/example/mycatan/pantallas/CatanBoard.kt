@@ -60,9 +60,7 @@ import androidx.compose.ui.window.Dialog
 import com.example.mycatan.R
 import com.example.mycatan.dBaux.buyPersonaje
 import com.example.mycatan.dBaux.changeProfilePicture
-import com.example.mycatan.others.Globals
-import com.example.mycatan.others.Partida
-import com.example.mycatan.others.Routes
+import com.example.mycatan.others.*
 
 var clickedVertex: Offset? = null
 @Composable
@@ -103,25 +101,25 @@ fun CatanBoard(navController: NavHostController) {
         offset += offsetChange
     }
     val tiles = listOf(
-        Tile("bosque", 5, thief = false , Pair(0, 0)),
-        Tile("cultivos", 2, thief = false ,Pair(1, 0)),
-        Tile("montaña", 9, thief = false ,Pair(2, 0)),
-        Tile("montaña", 8, thief = false ,Pair(-1, 1)),
-        Tile("cultivos", 3, thief = false ,Pair(0, 1)),
-        Tile("montaña", 10, thief = false ,Pair(1, 1)),
-        Tile("bosque", 6, thief = false ,Pair(2, 1)),
-        Tile("montaña", 12, thief = false ,Pair(-2, 2)),
-        Tile("mina", 11, thief = false ,Pair(-1, 2)),
-        Tile("campo", 4, thief = false ,Pair(0, 2)),
-        Tile("montaña", 8, thief = false ,Pair(1, 2)),
-        Tile("mina", 10, thief = false ,Pair(2, 2)),
-        Tile("bosque", 9, thief = false ,Pair(-2, 3)),
-        Tile("bosque", 4, thief = false ,Pair(-1, 3)),
-        Tile("campo", 5, thief = false ,Pair(0, 3)),
-        Tile("montaña", 10, thief = false ,Pair(1, 3)),
-        Tile("desierto", 11, thief = true ,Pair(-2, 4)),
-        Tile("bosque", 3, thief = false ,Pair(-1, 4)),
-        Tile("montaña", 6, thief = false ,Pair(0, 4))
+        Tile("bosque", 5, thief = false , Pair(0, 0), id = "37"),
+        Tile("cultivos", 2, thief = false ,Pair(1, 0), id = "59"),
+        Tile("montaña", 9, thief = false ,Pair(2, 0), id = "7B"),
+        Tile("montaña", 8, thief = false ,Pair(-1, 1), id = "35"),
+        Tile("cultivos", 3, thief = false ,Pair(0, 1), id = "57"),
+        Tile("montaña", 10, thief = false ,Pair(1, 1), id = "79"),
+        Tile("bosque", 6, thief = false ,Pair(2, 1), id = "9B"),
+        Tile("montaña", 12, thief = false ,Pair(-2, 2), id = "33"),
+        Tile("mina", 11, thief = false ,Pair(-1, 2), id = "55"),
+        Tile("campo", 4, thief = false ,Pair(0, 2), id = "77"),
+        Tile("montaña", 8, thief = false ,Pair(1, 2), id = "99"),
+        Tile("mina", 10, thief = false ,Pair(2, 2), id = "BB"),
+        Tile("bosque", 9, thief = false ,Pair(-2, 3), id = "53"),
+        Tile("bosque", 4, thief = false ,Pair(-1, 3), id = "75"),
+        Tile("campo", 5, thief = false ,Pair(0, 3), id = "97"),
+        Tile("montaña", 10, thief = false ,Pair(1, 3), id = "B9"),
+        Tile("desierto", 11, thief = true ,Pair(-2, 4), id = "73"),
+        Tile("bosque", 3, thief = false ,Pair(-1, 4), id = "95"),
+        Tile("montaña", 6, thief = false ,Pair(0, 4), id = "B7")
 
     )
     Scaffold(
@@ -188,6 +186,8 @@ fun CatanBoard(navController: NavHostController) {
                     .fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
+                inicializarVertices()
+                inicializarCoordVertices()
                 TileGrid(tiles)
             }
 
@@ -771,7 +771,7 @@ fun dataJugador(player: Int, colorEne: Color, ptsV: Int, foto: String, ejercito:
 }
 
 
-class Tile(val terrain: String, val number: Int, val thief: Boolean,val coordinates: Pair<Int, Int>){
+class Tile(val terrain: String, val number: Int, val thief: Boolean,val coordinates: Pair<Int, Int>, val id: String){
     // Calculo lista de vertices de cada hexagono para hacerlos clicables y dibujarlos con el canvas
     val vertices = listOf(
         Pair(coordinates.first, coordinates.second - 1),
@@ -786,7 +786,7 @@ class Tile(val terrain: String, val number: Int, val thief: Boolean,val coordina
 @Composable
 fun TileGrid(tiles: List<Tile>) {
     val context = LocalContext.current
-    val isClicked = remember { mutableStateOf(false) }
+    val isUpdaqt = remember { mutableStateOf(false) }
     Canvas(modifier = Modifier
         .fillMaxSize()
         .pointerInput(Unit)
@@ -817,6 +817,8 @@ fun TileGrid(tiles: List<Tile>) {
                         val tileX =
                             boardX + (tile.coordinates.first + tile.coordinates.second / 2f) * hexWidth
                         val tileY = boardY + tile.coordinates.second * 1.5f * hexRadius
+
+
                         for (vertex in getHexagonVertices(tileX, tileY, hexRadius)) {
                             val radius = 6f
 
@@ -831,6 +833,12 @@ fun TileGrid(tiles: List<Tile>) {
                                     .makeText(context, "OK", Toast.LENGTH_SHORT)
                                     .show()
                                 // Aquí puedes agregar el código para manejar el evento de clic en el círculo
+                                var temp = Partida.CoordVertices[vertex]
+                                // momentaneo
+
+                                println("verticeclicado: ${temp.toString()}")
+                                Partida.Vertices[temp.toString()] = "pueblo"
+
                                 clickedVertex = vertex
                                 break
                             }
@@ -861,14 +869,18 @@ fun TileGrid(tiles: List<Tile>) {
         val boardX = centerX - boardWidth / 2f
         val boardY = centerY - boardHeight / 2f
 
+
         // Dibujar los hexágonos y los números en el tablero
         for (tile in tiles) {
             val tileX = boardX + (tile.coordinates.first + tile.coordinates.second / 2f) * hexWidth
             val tileY = boardY + tile.coordinates.second * 1.5f * hexRadius
 
+            getVertexCoord(tileX, tileY, hexRadius, tile.id)
+
             val path = Path().apply {
                 moveTo(tileX, tileY + hexRadius)
-                lineTo(tileX - hexWidth / 2f, tileY + hexRadius / 2f)
+
+
                 lineTo(tileX - hexWidth / 2f, tileY - hexRadius / 2f)
                 lineTo(tileX, tileY - hexRadius)
                 lineTo(tileX + hexWidth / 2f, tileY - hexRadius / 2f)
@@ -946,7 +958,6 @@ fun TileGrid(tiles: List<Tile>) {
 
                     if (tile.thief){
 
-                        println("cuidado ladron")
                         val drawable = context.resources.getDrawable(R.drawable.thief, null)
 
                         // Dibujar la imagen en el canvas
@@ -987,6 +998,7 @@ fun TileGrid(tiles: List<Tile>) {
             }
 
             // Dibujar círculos clicables en cada vértice
+
             for (vertex in getHexagonVertices(tileX, tileY, hexRadius)) {
                 val color = if (vertex == clickedVertex) {
                     Color.Blue
@@ -998,8 +1010,22 @@ fun TileGrid(tiles: List<Tile>) {
                     radius = 6f,
                     color = color,
                 )
+                val idVert = Partida.CoordVertices[vertex]
 
+                //ESTO MO ESTAFUNCIONANDO
+                //println(Partida.Vertices[idVert.toString()] )
+                if (Partida.Vertices[idVert.toString()] != "nada"){
+                    println("estoy aqui ")
 
+                    drawIntoCanvas { canvas ->
+                        val drawable = context.resources.getDrawable(R.drawable.amarillo_poblado_1, null)
+
+                        // Dibujar la imagen en el canvas
+                        drawable.setBounds((tileX -90).toInt(), (tileY-90).toInt(), (tileX + 0).toInt(), (tileY + 0).toInt())
+                        drawable.draw(canvas.nativeCanvas)
+                    }
+
+                }
             }
         }
     }
@@ -1016,6 +1042,63 @@ fun getHexagonVertices(centerX: Float, centerY: Float, radius: Int): List<Offset
     }
     return vertices
 }
+
+fun getVertexCoord(centerX: Float, centerY: Float, radius: Int, id: String){
+
+    val angle_deg = 60f
+    var ids  = listOf<String>("error","error", "error", "error", "error", "error")
+
+    if (id == "37") {
+         ids = listOf<String>("58","49", "38", "27", "36", "47", )
+    } else if (id == "59") {
+         ids = listOf<String>("7A", "69", "58", "49", "5A", "6B" )
+    } else if (id == "7B") {
+         ids = listOf<String>("9C", "8B", "7A", "6B", "7C", "8D", )
+    } else if (id == "35") {
+         ids = listOf<String>("56", "45", "34", "25", "36", "47" )
+    } else if (id == "57") {
+         ids = listOf<String>("78", "67", "56", "47", "58", "69" )
+    } else if (id == "79") {
+         ids = listOf<String>("9A", "89", "78", "69", "7A", "8B" )
+    } else if (id == "9B") {
+         ids = listOf<String>("BC", "AB", "9A", "8B", "9C", "AD", )
+    } else if (id == "33") {
+         ids = listOf<String>("54", "43", "32", "23", "34", "45" )
+    } else if (id == "55") {
+         ids = listOf<String>("76", "65", "54", "45", "56", "67" )
+    } else if (id == "77") {
+         ids = listOf<String>( "98", "87", "76", "67", "78", "89",)
+    } else if (id == "99") {
+         ids = listOf<String>( "BA", "A9", "98", "89", "9A", "AB",)
+    } else if (id == "BB") {
+         ids = listOf<String>( "DC", "CB", "BA", "AB", "BC", "CD",)
+    } else if (id == "53") {
+         ids = listOf<String>("74", "63", "52", "43", "54", "65" )
+    } else if (id == "75") {
+         ids = listOf<String>("96", "85", "74", "65", "76", "87", )
+    } else if (id == "97") {
+         ids = listOf<String>("B8", "A7", "96", "87", "98", "A9", )
+    } else if (id == "B9") {
+        ids = listOf<String>("DA", "C9", "B8", "A9", "BA", "CB", )
+    } else if (id == "73") {
+         ids = listOf<String>( "94", "83", "72", "63", "74", "85",)
+    } else if (id == "95") {
+         ids = listOf<String>("B6", "A5", "94", "85", "96", "A7", )
+    } else if (id == "B7") {
+         ids = listOf<String>("D8", "C7", "B6", "A7", "B8", "C9", )
+    }
+
+    for (i in 0 until 6) {
+        val angle_rad = Math.PI / 180 * (angle_deg * i + 30)
+        val x = centerX + radius * cos(angle_rad).toFloat()
+        val y = centerY + radius * sin(angle_rad).toFloat()
+
+        //Partida.CoordVertices[Offset(x,y)] = ids[i]
+        Partida.CoordVertices.put(Offset(x,y),ids[i])
+
+    }
+}
+
 
 /*@Preview
 @Composable

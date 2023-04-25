@@ -1,10 +1,17 @@
 package com.example.mycatan.others
 
+import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Vertices
+import com.example.mycatan.pantallas.Tile
+import com.example.mycatan.pantallas.clickedVertex
+import com.example.mycatan.pantallas.getHexagonVertices
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 //Javi 192.168.1.39
 val ipBackend = "192.168.1.39"
@@ -35,6 +42,7 @@ object Partida {
     lateinit var Ovejas: String
     lateinit var Vertices: HashMap<String,String>
     lateinit var Aristas: HashMap<String,String>
+    lateinit var CoordVertices: HashMap<Offset, String>
 }
 
 fun inicializarVertices() {
@@ -44,10 +52,16 @@ fun inicializarVertices() {
         "DC", "43", "65", "87", "A9", "CB", "52", "74", "96", "B8", "DA", "63", "85", "A7", "C9", "72",
         "94", "B6", "D8", "83", "A5", "C7"
     )
+    Partida.Vertices = hashMapOf("hola" to "hola")
     for (clave in claves) {
         Partida.Vertices[clave] = "nada"
     }
 }
+
+fun inicializarCoordVertices(){
+    Partida.CoordVertices = hashMapOf(Offset(0f, 0f) to "Arbitrario")
+}
+
 
 fun inicializarAristas() {
     val claves = listOf(
