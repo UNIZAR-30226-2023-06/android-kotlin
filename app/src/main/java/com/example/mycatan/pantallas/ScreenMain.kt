@@ -5,6 +5,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.mycatan.others.Routes
+import com.example.mycatan.others.inicializarCoordVertices
+import com.example.mycatan.others.inicializarVertices
 import com.example.mycatan.pantallas.amigos.AmigosPendientePage
 import com.example.mycatan.pantallas.amigos.AmigosTodosPage
 
@@ -12,6 +14,10 @@ import com.example.mycatan.pantallas.amigos.AmigosTodosPage
 fun ScreenMain(){
     val navController = rememberNavController()
     //LockScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
+
+    //maybe sirve
+    inicializarVertices()
+    inicializarCoordVertices()
 
     NavHost(navController = navController, startDestination = /*Routes.Login.route*/ Routes.CatanBoard.route ) {
 

@@ -2,43 +2,28 @@ package com.example.mycatan.pantallas
 
 import android.graphics.*
 import android.graphics.Paint
-import android.provider.Settings.Global
-import android.util.Log
-import android.widget.Space
 import android.widget.Toast
 import androidx.compose.animation.*
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.ClickableText
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
-import androidx.compose.ui.graphics.PaintingStyle.Companion.Stroke
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.unit.times
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.mycatan.ui.theme.*
 import kotlin.math.*
 import androidx.compose.foundation.clickable
@@ -53,12 +38,10 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.window.Dialog
 import com.example.mycatan.R
-import com.example.mycatan.dBaux.buyPersonaje
 import com.example.mycatan.dBaux.changeProfilePicture
 import com.example.mycatan.others.*
 
@@ -77,6 +60,9 @@ fun CatanBoard(navController: NavHostController) {
     val tradePlayer1 =  remember { mutableStateOf(false) }
     val tradePlayer2 =  remember { mutableStateOf(false) }
     val tradePlayer3 =  remember { mutableStateOf(false) }
+
+    var showConstruir =  remember { mutableStateOf(false) }
+    var verticeChosen = remember { mutableStateOf("nada") }
 
 
     //Registro nombres de los jugadores
@@ -186,9 +172,8 @@ fun CatanBoard(navController: NavHostController) {
                     .fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                inicializarVertices()
-                inicializarCoordVertices()
-                TileGrid(tiles)
+
+                TileGrid(tiles = tiles, chosenV = {verticeChosen.value = it}, onVerticeClick = {showConstruir.value = true} )
             }
 
             if(showTablaCostes.value)
@@ -201,6 +186,8 @@ fun CatanBoard(navController: NavHostController) {
                 showTrading(name = namePlayer2.value , foto = paint2.value , setShowDialog = {tradePlayer2.value = it})
             if(tradePlayer3.value)
                 showTrading(name = namePlayer3.value , foto = paint3.value , setShowDialog = {tradePlayer3.value = it})
+            if(showConstruir.value)
+                showConstruir(idVert = verticeChosen.value , setShowDialog = {showConstruir.value = it})
 
             //Jugadores
             Box (
@@ -784,9 +771,9 @@ class Tile(val terrain: String, val number: Int, val thief: Boolean,val coordina
 }
 
 @Composable
-fun TileGrid(tiles: List<Tile>) {
+fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () -> Unit) {
     val context = LocalContext.current
-    val isUpdaqt = remember { mutableStateOf(false) }
+    val isUpdated = remember { mutableStateOf(true) }
     Canvas(modifier = Modifier
         .fillMaxSize()
         .pointerInput(Unit)
@@ -833,11 +820,11 @@ fun TileGrid(tiles: List<Tile>) {
                                     .makeText(context, "OK", Toast.LENGTH_SHORT)
                                     .show()
                                 // Aquí puedes agregar el código para manejar el evento de clic en el círculo
-                                var temp = Partida.CoordVertices[vertex]
-                                // momentaneo
+                                var idCoord = Partida.CoordVertices[vertex]
 
-                                println("verticeclicado: ${temp.toString()}")
-                                Partida.Vertices[temp.toString()] = "pueblo"
+                                println("verticeclicado: ${idCoord.toString()}")
+                                chosenV(idCoord.toString())
+                                onVerticeClick()
 
                                 clickedVertex = vertex
                                 break
@@ -1005,30 +992,43 @@ fun TileGrid(tiles: List<Tile>) {
                 } else {
                     Color.Black
                 }
-                drawCircle(
-                    center = vertex,
-                    radius = 6f,
-                    color = color,
-                )
-                val idVert = Partida.CoordVertices[vertex]
 
-                //ESTO MO ESTAFUNCIONANDO
-                //println(Partida.Vertices[idVert.toString()] )
-                if (Partida.Vertices[idVert.toString()] != "nada"){
-                    println("estoy aqui ")
+                drawIntoCanvas { canvas ->
+                    drawCircle(
+                        center = vertex,
+                        radius = 6f,
+                        color = color,
+                    )
 
-                    drawIntoCanvas { canvas ->
-                        val drawable = context.resources.getDrawable(R.drawable.amarillo_poblado_1, null)
+                    val idVert = Partida.CoordVertices[vertex]
+                    if (Partida.Vertices[idVert.toString()] == "poblado"){
 
-                        // Dibujar la imagen en el canvas
-                        drawable.setBounds((tileX -90).toInt(), (tileY-90).toInt(), (tileX + 0).toInt(), (tileY + 0).toInt())
+                        val drawable = context.resources.getDrawable(R.drawable.rojo_poblado_1, null)
+
+                        val x = vertex.x // coordenada x
+                        val y = vertex.y // coordenada y
+                        drawable.setBounds((x-30).toInt(), (y-29).toInt(), (x +30).toInt(), (y +25).toInt())
+                        drawable.draw(canvas.nativeCanvas)
+                    }
+                    if (Partida.Vertices[idVert.toString()] == "ciudad"){
+
+                        val drawable = context.resources.getDrawable(R.drawable.rojo_ciudad_1, null)
+
+                        val x = vertex.x // coordenada x
+                        val y = vertex.y // coordenada y
+                        drawable.setBounds((x-30).toInt(), (y-35).toInt(), (x +30).toInt(), (y +25).toInt())
                         drawable.draw(canvas.nativeCanvas)
                     }
 
                 }
+
             }
+
+
+
         }
     }
+
 }
 
 fun getHexagonVertices(centerX: Float, centerY: Float, radius: Int): List<Offset> {
@@ -1096,9 +1096,233 @@ fun getVertexCoord(centerX: Float, centerY: Float, radius: Int, id: String){
         //Partida.CoordVertices[Offset(x,y)] = ids[i]
         Partida.CoordVertices.put(Offset(x,y),ids[i])
 
+
     }
 }
 
+@Composable
+fun showConstruir( idVert: String, setShowDialog: (Boolean) -> Unit) {
+    val partida = remember { mutableStateOf(TextFieldValue()) }
+    val context = LocalContext.current
+
+    Dialog(onDismissRequest = { setShowDialog(false) }) {
+        Surface(
+            shape = RoundedCornerShape(16.dp),
+            color = AzulOscuro
+        ) {
+            Box(
+                contentAlignment = Alignment.Center
+            ) {
+                Column(modifier = Modifier.padding(20.dp)) {
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Seleccione una construccion",
+                            color = Blanco,
+                            style = TextStyle(
+                                fontSize = 20.sp,
+                                fontFamily = FontFamily.Default,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "",
+                            tint = Blanco,
+                            modifier = Modifier
+                                .width(30.dp)
+                                .height(30.dp)
+                                .clickable { setShowDialog(false) }
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    Row(Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
+
+                        Text(
+                            text = "Poblado",
+                            color = Blanco,
+                            style = TextStyle(
+                                fontSize = 18.sp,
+                                fontFamily = FontFamily.Default,
+                                fontWeight = FontWeight.Bold
+                            ),
+                            textDecoration = TextDecoration.Underline
+                        )
+
+                        Spacer(modifier = Modifier.width(90.dp))
+
+                        Text(
+                            text = "Ciudad",
+                            color = Blanco,
+                            style = TextStyle(
+                                fontSize = 18.sp,
+                                fontFamily = FontFamily.Default,
+                                fontWeight = FontWeight.Bold
+                            ),
+                            textDecoration = TextDecoration.Underline
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    Row(Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+
+
+                            Image(painter = painterResource(id = R.drawable.blanco_poblado_1), contentDescription = null, modifier = Modifier.size(50.dp))
+
+                            Spacer(modifier = Modifier.height(15.dp))
+
+                            Row(horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
+                                Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+                                    Image(painter = painterResource(id = R.drawable.wood), contentDescription = null, modifier = Modifier.size(30.dp))
+                                    Text(
+                                        text = "1",
+                                        color = Blanco,
+                                        style = TextStyle(
+                                            fontSize = 18.sp,
+                                            fontFamily = FontFamily.Default,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    )
+                                }
+                                Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+                                    Image(painter = painterResource(id = R.drawable.clay), contentDescription = null, modifier = Modifier.size(30.dp))
+                                    Text(
+                                        text = "1",
+                                        color = Blanco,
+                                        style = TextStyle(
+                                            fontSize = 18.sp,
+                                            fontFamily = FontFamily.Default,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    )
+                                }
+                                Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+                                    Image(painter = painterResource(id = R.drawable.trigo), contentDescription = null, modifier = Modifier.size(30.dp))
+                                    Text(
+                                        text = "1",
+                                        color = Blanco,
+                                        style = TextStyle(
+                                            fontSize = 18.sp,
+                                            fontFamily = FontFamily.Default,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    )
+                                }
+                                Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+                                    Image(painter = painterResource(id = R.drawable.sheep), contentDescription = null, modifier = Modifier.size(30.dp))
+                                    Text(
+                                        text = "1",
+                                        color = Blanco,
+                                        style = TextStyle(
+                                            fontSize = 18.sp,
+                                            fontFamily = FontFamily.Default,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    )
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(15.dp))
+
+                            Button(
+                                onClick = { Partida.Vertices[idVert] = "poblado"
+                                    setShowDialog(false) },
+                                modifier = Modifier
+                                    //.fillMaxWidth(0.5f)
+                                    .width(100.dp)
+                                    .height(50.dp),
+                                colors = ButtonDefaults.buttonColors(backgroundColor = Verde),
+                                shape = RoundedCornerShape(50.dp),
+                                border = BorderStroke(3.dp, AzulOscuro),
+
+                                ) {
+                                Text(
+                                    text = "Construir",
+                                    style = TextStyle(
+                                        color = AzulOscuro, fontWeight = FontWeight.Bold
+                                    )
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.width(30.dp))
+
+                        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+
+                            Image(painter = painterResource(id = R.drawable.blanco_ciudad_1), contentDescription = null, modifier = Modifier.size(50.dp))
+
+                            Spacer(modifier = Modifier.height(15.dp))
+
+                            Row(horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
+                                Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+                                    Image(painter = painterResource(id = R.drawable.trigo), contentDescription = null, modifier = Modifier.size(30.dp))
+                                    Text(
+                                        text = "2",
+                                        color = Blanco,
+                                        style = TextStyle(
+                                            fontSize = 18.sp,
+                                            fontFamily = FontFamily.Default,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    )
+                                }
+                                Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+                                    Image(painter = painterResource(id = R.drawable.rock), contentDescription = null, modifier = Modifier.size(30.dp))
+                                    Text(
+                                        text = "3",
+                                        color = Blanco,
+                                        style = TextStyle(
+                                            fontSize = 18.sp,
+                                            fontFamily = FontFamily.Default,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    )
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(15.dp))
+
+                            Button(
+                                onClick = {Partida.Vertices[idVert] = "ciudad"
+                                    setShowDialog(false) },
+                                modifier = Modifier
+                                    //.fillMaxWidth(0.5f)
+                                    .width(100.dp)
+                                    .height(50.dp),
+                                colors = ButtonDefaults.buttonColors(backgroundColor = Verde),
+                                shape = RoundedCornerShape(50.dp),
+                                border = BorderStroke(3.dp, AzulOscuro),
+
+                                ) {
+                                Text(
+                                    text = "Construir",
+                                    style = TextStyle(
+                                        color = AzulOscuro, fontWeight = FontWeight.Bold
+                                    )
+                                )
+                            }
+                        }
+
+
+                    }
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                }
+            }
+        }
+    }
+}
 
 /*@Preview
 @Composable
