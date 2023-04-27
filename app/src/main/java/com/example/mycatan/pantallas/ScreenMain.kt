@@ -5,7 +5,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.mycatan.others.Routes
-import com.example.mycatan.others.inicializarCoordVertices
+import com.example.mycatan.others.inicializarAristas
+import com.example.mycatan.others.inicializarCoords
 import com.example.mycatan.others.inicializarVertices
 import com.example.mycatan.pantallas.amigos.AmigosPendientePage
 import com.example.mycatan.pantallas.amigos.AmigosTodosPage
@@ -17,7 +18,8 @@ fun ScreenMain(){
 
     //maybe sirve
     inicializarVertices()
-    inicializarCoordVertices()
+    inicializarAristas()
+    inicializarCoords()
 
     NavHost(navController = navController, startDestination = /*Routes.Login.route*/ Routes.CatanBoard.route ) {
 

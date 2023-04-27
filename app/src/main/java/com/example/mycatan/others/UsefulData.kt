@@ -43,6 +43,7 @@ object Partida {
     lateinit var Vertices: HashMap<String,String>
     lateinit var Aristas: HashMap<String,String>
     lateinit var CoordVertices: HashMap<Offset, String>
+    lateinit var CoordAristas: HashMap<Offset, String>
 }
 
 fun inicializarVertices() {
@@ -58,9 +59,11 @@ fun inicializarVertices() {
     }
 }
 
-fun inicializarCoordVertices(){
+fun inicializarCoords(){
     Partida.CoordVertices = hashMapOf(Offset(0f, 0f) to "Arbitrario")
+    Partida.CoordAristas = hashMapOf(Offset(0f, 0f) to "Arbitrario")
 }
+
 
 
 fun inicializarAristas() {
@@ -71,6 +74,7 @@ fun inicializarAristas() {
         "CB", "42", "64", "86", "A8", "CA", "52", "63", "74", "85", "96", "A7", "B8", "C9", "62", "84",
         "A6", "C8", "72", "83", "94", "A5", "B6", "C7"
     )
+    Partida.Aristas = hashMapOf("hola" to "hola")
     for (clave in claves) {
         Partida.Aristas[clave] = "nada"
     }
