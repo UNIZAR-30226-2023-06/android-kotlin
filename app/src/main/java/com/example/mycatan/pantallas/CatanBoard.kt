@@ -804,10 +804,42 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                         val tileX =
                             boardX + (tile.coordinates.first + tile.coordinates.second / 2f) * hexWidth
                         val tileY = boardY + tile.coordinates.second * 1.5f * hexRadius
+                         // Devolver las aristas para cada hexágono -----------------------------
+                        val vertices = getHexagonVertices(tileX, tileY, hexRadius)
+                        val coordinates = mutableListOf<Offset>() // Lista de coordenadas de las aristas
+                        for (i in 0 until vertices.size - 1) {
+                            val vertex1 = vertices[i]
+                            val vertex2 = vertices[i + 1]
+                            println("Vertices $vertex1 $vertex2")
+                            coordinates.addAll(getHexagonLineCoordinates(vertex1, vertex2))
+                        }
+                        // Agrega también la última arista que va desde el último vértice hasta el primer vértice
+                        val vertex1 = vertices.last()
+                        val vertex2 = vertices.first()
+                        coordinates.addAll(getHexagonLineCoordinates(vertex1, vertex2))
+                        println(coordinates)
+                        // Detectar si el clic se hizo en una arista ------------------------------
+                        for (coordinate in coordinates) {
+                            val radius = 20f
+                            // Calcula la distancia entre el centro del círculo y la posición del clic del mouse
+                            val distance =
+                                sqrt((offset.x - coordinate.x).pow(2) + (offset.y - coordinate.y).pow(2))
+                            // Verifica si la distancia es menor que el radio del círculo
+                            if (distance <= radius) {
+                                // El clic está dentro del círculos
+                                println("punto: ${offset.x} tap: ${coordinate.x}")
+                                Toast
+                                    .makeText(context, "ARIST", Toast.LENGTH_SHORT)
+                                    .show()
+                                // Aquí puedes agregar el código para manejar el evento de clic en el círculo
+                                var idCoord = Partida.CoordVertices[coordinate]
+                                println("verticeclicado: ${idCoord}")
+                            }
+                        }
 
-
+                        // Deetectar si el click se hace en un vértice --------------------------
                         for (vertex in getHexagonVertices(tileX, tileY, hexRadius)) {
-                            val radius = 6f
+                            val radius = 10f
 
                             // Calcula la distancia entre el centro del círculo y la posición del clic del mouse
                             val distance =
@@ -1041,6 +1073,27 @@ fun getHexagonVertices(centerX: Float, centerY: Float, radius: Int): List<Offset
         vertices.add(Offset(x, y))
     }
     return vertices
+}
+
+// Function to get hexagon arist coordinates
+fun getHexagonLineCoordinates(vertx1: Offset, vertx2: Offset): List<Offset>{
+    // Get the coordinates between vertx1 and vertx2 in a straight line
+    val lineCoordinates = mutableListOf<Offset>()
+    val x1 = vertx1.x
+    val x2 = vertx2.x
+    val y1 = vertx1.y
+    val y2 = vertx2.y
+
+    val m = (y2-y1)/(x2-x1)
+    val b = y1 - m*x1
+
+    for (x in x1.toInt()..x2.toInt()){
+        val y = m*x + b
+        lineCoordinates.add(Offset(x.toFloat(), y.toFloat()))
+    }
+
+    return lineCoordinates
+
 }
 
 fun getVertexCoord(centerX: Float, centerY: Float, radius: Int, id: String){
