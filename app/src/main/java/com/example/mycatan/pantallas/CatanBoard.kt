@@ -778,6 +778,8 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
         .fillMaxSize()
         .pointerInput(Unit)
         {
+            // Detectar si se hizo clic
+            var detectClick = false
             // Obtener el ancho y la altura del canvas
             val canvasWidth = size.width
             val canvasHeight = size.height
@@ -800,6 +802,7 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
             // Detectar si se hizo clic en un círculo clicable
             detectTapGestures(
                 onTap = { offset ->
+                    detectClick = false
                     for (tile in tiles) {
                         val tileX =
                             boardX + (tile.coordinates.first + tile.coordinates.second / 2f) * hexWidth
@@ -820,7 +823,7 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                         println(coordinates)
                         // Detectar si el clic se hizo en una arista ------------------------------
                         for (coordinate in coordinates) {
-                            val radius = 20f
+                            val radius = 10f
                             // Calcula la distancia entre el centro del círculo y la posición del clic del mouse
                             val distance =
                                 sqrt((offset.x - coordinate.x).pow(2) + (offset.y - coordinate.y).pow(2))
@@ -828,12 +831,14 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                             if (distance <= radius) {
                                 // El clic está dentro del círculos
                                 println("punto: ${offset.x} tap: ${coordinate.x}")
-                                Toast
-                                    .makeText(context, "ARIST", Toast.LENGTH_SHORT)
-                                    .show()
-                                // Aquí puedes agregar el código para manejar el evento de clic en el círculo
-                                var idCoord = Partida.CoordVertices[coordinate]
-                                println("verticeclicado: ${idCoord}")
+                                // CLICK DE UNA ARISTA ---------------------------------------------------------------
+                                if(!detectClick){
+                                    Toast
+                                        .makeText(context, "ARIST", Toast.LENGTH_SHORT)
+                                        .show()
+                                    detectClick = true
+                                }
+
                             }
                         }
 
@@ -846,6 +851,7 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                                 sqrt((offset.x - vertex.x).pow(2) + (offset.y - vertex.y).pow(2))
                             // Verifica si la distancia es menor que el radio del círculo
                             if (distance <= radius) {
+                                detectClick = true
                                 // El clic está dentro del círculos
                                 println("punto: ${offset.x} tap: ${vertex.x}")
                                 Toast
@@ -1367,6 +1373,53 @@ fun showConstruir( idVert: String, setShowDialog: (Boolean) -> Unit) {
                         }
 
 
+                    }
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun construirCamino(value: String, setShowDialog: (Boolean) -> Unit) {
+
+
+    Dialog(onDismissRequest = { setShowDialog(false) }) {
+        Surface(
+            shape = RoundedCornerShape(16.dp),
+            color = AzulOscuro
+        ) {
+            Box(
+                contentAlignment = Alignment.Center
+            ) {
+                Column(modifier = Modifier.padding(20.dp)) {
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Construir camino",
+                            color = Blanco,
+                            style = TextStyle(
+                                fontSize = 24.sp,
+                                fontFamily = FontFamily.Default,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "",
+                            tint = colorResource(android.R.color.darker_gray),
+                            modifier = Modifier
+                                .width(30.dp)
+                                .height(30.dp)
+                                .clickable { setShowDialog(false) }
+                        )
                     }
 
                     Spacer(modifier = Modifier.height(20.dp))
