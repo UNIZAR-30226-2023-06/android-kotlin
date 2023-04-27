@@ -807,9 +807,10 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                         val tileX =
                             boardX + (tile.coordinates.first + tile.coordinates.second / 2f) * hexWidth
                         val tileY = boardY + tile.coordinates.second * 1.5f * hexRadius
-                         // Devolver las aristas para cada hexágono -----------------------------
+                        // Devolver las aristas para cada hexágono -----------------------------
                         val vertices = getHexagonVertices(tileX, tileY, hexRadius)
-                        val coordinates = mutableListOf<Offset>() // Lista de coordenadas de las aristas
+                        val coordinates =
+                            mutableListOf<Offset>() // Lista de coordenadas de las aristas
                         for (i in 0 until vertices.size - 1) {
                             val vertex1 = vertices[i]
                             val vertex2 = vertices[i + 1]
@@ -826,13 +827,17 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                             val radius = 10f
                             // Calcula la distancia entre el centro del círculo y la posición del clic del mouse
                             val distance =
-                                sqrt((offset.x - coordinate.x).pow(2) + (offset.y - coordinate.y).pow(2))
+                                sqrt(
+                                    (offset.x - coordinate.x).pow(2) + (offset.y - coordinate.y).pow(
+                                        2
+                                    )
+                                )
                             // Verifica si la distancia es menor que el radio del círculo
                             if (distance <= radius) {
                                 // El clic está dentro del círculos
                                 println("punto: ${offset.x} tap: ${coordinate.x}")
                                 // CLICK DE UNA ARISTA ---------------------------------------------------------------
-                                if(!detectClick){
+                                if (!detectClick) {
                                     Toast
                                         .makeText(context, "ARIST", Toast.LENGTH_SHORT)
                                         .show()
@@ -860,11 +865,14 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                                 // Aquí puedes agregar el código para manejar el evento de clic en el círculo
                                 var idCoord = Partida.CoordVertices[vertex]
 
-                                println("verticeclicado: ${idCoord.toString()}")
-                                chosenV(idCoord.toString())
-                                onVerticeClick()
+                                if (Partida.Vertices[idCoord.toString()] == "nada") {
+                                    println("verticeclicado: ${idCoord.toString()}")
+                                    chosenV(idCoord.toString())
+                                    onVerticeClick()
 
-                                clickedVertex = vertex
+                                    clickedVertex = vertex
+                                }
+
                                 break
                             }
                         }
@@ -1159,6 +1167,18 @@ fun getVertexCoord(centerX: Float, centerY: Float, radius: Int, id: String){
     }
 }
 
+fun buildCiudad(){
+    Partida.Trigo = (Partida.Trigo.toInt() -2).toString()
+    Partida.Roca = (Partida.Roca.toInt() -3).toString()
+}
+
+fun buildPoblado(){
+    Partida.Trigo = (Partida.Trigo.toInt() -1).toString()
+    Partida.Madera = (Partida.Madera.toInt() -1).toString()
+    Partida.Ovejas = (Partida.Ovejas.toInt() -1).toString()
+    Partida.Arcilla = (Partida.Arcilla.toInt() -1).toString()
+}
+
 @Composable
 fun showConstruir( idVert: String, setShowDialog: (Boolean) -> Unit) {
     val partida = remember { mutableStateOf(TextFieldValue()) }
@@ -1293,28 +1313,45 @@ fun showConstruir( idVert: String, setShowDialog: (Boolean) -> Unit) {
 
                             Spacer(modifier = Modifier.height(15.dp))
 
-                            Button(
-                                onClick = { Partida.Vertices[idVert] = "poblado"
-                                    setShowDialog(false) },
-                                modifier = Modifier
-                                    //.fillMaxWidth(0.5f)
-                                    .width(100.dp)
-                                    .height(50.dp),
-                                colors = ButtonDefaults.buttonColors(backgroundColor = Verde),
-                                shape = RoundedCornerShape(50.dp),
-                                border = BorderStroke(3.dp, AzulOscuro),
+                            if(Partida.Trigo.toInt()>=1 && Partida.Madera.toInt()>=1 && Partida.Ovejas.toInt()>=1 && Partida.Arcilla.toInt()>=1 ){
+                                Button(
+                                    onClick = {
+                                        Partida.Vertices[idVert] = "poblado"
+                                        buildPoblado()
+                                        setShowDialog(false) },
+                                    modifier = Modifier
+                                        //.fillMaxWidth(0.5f)
+                                        .width(100.dp)
+                                        .height(50.dp),
+                                    colors = ButtonDefaults.buttonColors(backgroundColor = Verde),
+                                    shape = RoundedCornerShape(50.dp),
+                                    border = BorderStroke(3.dp, AzulOscuro),
 
-                                ) {
-                                Text(
-                                    text = "Construir",
-                                    style = TextStyle(
-                                        color = AzulOscuro, fontWeight = FontWeight.Bold
+                                    ) {
+                                    Text(
+                                        text = "Construir",
+                                        style = TextStyle(
+                                            color = AzulOscuro, fontWeight = FontWeight.Bold
+                                        )
                                     )
+                                }
+                            }
+                            else{
+                                Text(
+                                    text = "Sin Materiales",
+                                    color = Color.Red,
+                                    style = TextStyle(
+                                        fontSize = 14.sp,
+                                        fontFamily = FontFamily.Default,
+                                        fontWeight = FontWeight.Bold
+                                    ),
+                                    textDecoration = TextDecoration.Underline
                                 )
+
                             }
                         }
 
-                        Spacer(modifier = Modifier.width(30.dp))
+                        Spacer(modifier = Modifier.width(45.dp))
 
                         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
 
@@ -1351,27 +1388,45 @@ fun showConstruir( idVert: String, setShowDialog: (Boolean) -> Unit) {
 
                             Spacer(modifier = Modifier.height(15.dp))
 
-                            Button(
-                                onClick = {Partida.Vertices[idVert] = "ciudad"
-                                    setShowDialog(false) },
-                                modifier = Modifier
-                                    //.fillMaxWidth(0.5f)
-                                    .width(100.dp)
-                                    .height(50.dp),
-                                colors = ButtonDefaults.buttonColors(backgroundColor = Verde),
-                                shape = RoundedCornerShape(50.dp),
-                                border = BorderStroke(3.dp, AzulOscuro),
+                            if(Partida.Trigo.toInt()>=2 && Partida.Roca.toInt()>=3 ){
+                                Button(
+                                    onClick = {
+                                        Partida.Vertices[idVert] = "ciudad"
+                                        buildCiudad()
+                                        setShowDialog(false) },
+                                    modifier = Modifier
+                                        //.fillMaxWidth(0.5f)
+                                        .width(100.dp)
+                                        .height(50.dp),
+                                    colors = ButtonDefaults.buttonColors(backgroundColor = Verde),
+                                    shape = RoundedCornerShape(50.dp),
+                                    border = BorderStroke(3.dp, AzulOscuro),
 
-                                ) {
-                                Text(
-                                    text = "Construir",
-                                    style = TextStyle(
-                                        color = AzulOscuro, fontWeight = FontWeight.Bold
+                                    ) {
+                                    Text(
+                                        text = "Construir",
+                                        style = TextStyle(
+                                            color = AzulOscuro, fontWeight = FontWeight.Bold
+                                        )
                                     )
+                                }
+                            }
+                            else{
+                                Text(
+                                    text = "Sin Materiales",
+                                    color = Color.Red,
+                                    style = TextStyle(
+                                        fontSize = 14.sp,
+                                        fontFamily = FontFamily.Default,
+                                        fontWeight = FontWeight.Bold
+                                    ),
+                                    textDecoration = TextDecoration.Underline
                                 )
                             }
+
                         }
 
+                        Spacer(modifier = Modifier.width(20.dp))
 
                     }
 
