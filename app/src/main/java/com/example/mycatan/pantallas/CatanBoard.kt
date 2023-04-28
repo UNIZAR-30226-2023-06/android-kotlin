@@ -835,7 +835,7 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                             // Verifica si la distancia es menor que el radio del círculo
                             if (distance <= radius) {
                                 // El clic está dentro del círculos
-                                println("punto: ${offset.x} tap: ${coordinate.x}")
+                                //println("punto: ${offset.x} tap: ${coordinate.x}")
                                 // CLICK DE UNA ARISTA ---------------------------------------------------------------
                                 if (!detectClick) {
                                     Toast
@@ -845,6 +845,7 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
 
                                     var idCoord = Partida.CoordAristas[coordinate]
                                     Partida.Aristas[idCoord.toString()] = "carretera"
+                                    println("arista clicada: ${Partida.CoordAristas[coordinate]}")
                                 }
 
                             }
@@ -917,73 +918,6 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
             // Devolver las aristas para cada hexágono -----------------------------
             val vertices = getHexagonVertices(tileX, tileY, hexRadius)
             // Lista de coordenadas de las aristas
-            for (i in 0 until vertices.size-1) {
-                val vertex1 = vertices[i]
-                val vertex2 = vertices[i + 1]
-
-                for (c in getHexagonLineCoordinates(vertex1, vertex2)){ // se guardacada coordenada de una arista en su correspondiente id
-                    var temp1 = Partida.CoordAristas[c]
-                    if (Partida.Aristas[temp1.toString()] == "carretera"){
-                        //se chekean entre que vertices son y se printea la carreteraen funcion
-                        drawIntoCanvas { canvas ->
-                            if(i==0 || i==3 ){
-                                //vertical
-                                if (i==0){
-                                    val drawable = context.resources.getDrawable(R.drawable.rojo_carretera_1, null)
-
-                                    // Dibujar la imagen en el canvas
-                                    drawable.setBounds((tileX -120).toInt(), (tileY-121).toInt(), (tileX + 122).toInt(), (tileY + 121).toInt())
-                                    drawable.draw(canvas.nativeCanvas)
-                                }
-                                if (i==3){
-                                    val drawable = context.resources.getDrawable(R.drawable.rojo_carretera_1, null)
-
-                                    // Dibujar la imagen en el canvas
-                                    drawable.setBounds((tileX -120).toInt(), (tileY-121).toInt(), (tileX + 122).toInt(), (tileY + 121).toInt())
-                                    drawable.draw(canvas.nativeCanvas)
-                                }
-                            }
-                            else if(i==1 || i==4 ){
-                                //izq
-                                if (i==1){
-                                    val drawable = context.resources.getDrawable(R.drawable.rojo_carretera_1_izq, null)
-
-                                    // Dibujar la imagen en el canvas
-                                    drawable.setBounds((tileX -120).toInt(), (tileY-121).toInt(), (tileX + 122).toInt(), (tileY + 121).toInt())
-                                    drawable.draw(canvas.nativeCanvas)
-                                }
-                                if (i==4){
-                                    val drawable = context.resources.getDrawable(R.drawable.rojo_carretera_1_izq, null)
-
-                                    // Dibujar la imagen en el canvas
-                                    drawable.setBounds((tileX -120).toInt(), (tileY-121).toInt(), (tileX + 122).toInt(), (tileY + 121).toInt())
-                                    drawable.draw(canvas.nativeCanvas)
-                                }
-                            }
-                            else if (i==2 || i==5) {
-                                //dcha
-                                if (i==2){
-                                    val drawable = context.resources.getDrawable(R.drawable.rojo_carretera_1_dcha, null)
-
-                                    // Dibujar la imagen en el canvas
-                                    drawable.setBounds((tileX -120).toInt(), (tileY-121).toInt(), (tileX + 122).toInt(), (tileY + 121).toInt())
-                                    drawable.draw(canvas.nativeCanvas)
-                                }
-                                if (i==4){
-                                    val drawable = context.resources.getDrawable(R.drawable.rojo_carretera_1_dcha, null)
-
-                                    // Dibujar la imagen en el canvas
-                                    drawable.setBounds((tileX -120).toInt(), (tileY-121).toInt(), (tileX + 122).toInt(), (tileY + 121).toInt())
-                                    drawable.draw(canvas.nativeCanvas)
-                                }
-                            }
-                        }
-
-                        break
-                    }
-                }
-
-            }
 
 
             val path = Path().apply {
@@ -1105,6 +1039,84 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
 
                 }
             }
+
+            for (i in 0 until vertices.size) {
+                var vertex1 : Offset
+                var vertex2 : Offset
+
+                if (i == vertices.size-1){
+                    vertex1 = vertices.last()
+                    vertex2 = vertices.first()
+                }
+                else{
+                    vertex1 = vertices[i]
+                    vertex2 = vertices[i + 1]
+                }
+
+                for (c in getHexagonLineCoordinates(vertex1, vertex2)){ // se guardacada coordenada de una arista en su correspondiente id
+                    var temp1 = Partida.CoordAristas[c]
+                    if (Partida.Aristas[temp1.toString()] == "carretera"){
+                        //se chekean entre que vertices son y se printea la carreteraen funcion
+                        drawIntoCanvas { canvas ->
+                            if(i==0 || i==3 ){
+                                //vertical
+                                if (i==0){
+                                    val drawable = context.resources.getDrawable(R.drawable.rojo_carretera_1, null)
+
+                                    // Dibujar la imagen en el canvas
+                                    drawable.setBounds((tileX -120).toInt(), (tileY-121).toInt(), (tileX + 122).toInt(), (tileY + 121).toInt())
+                                    drawable.draw(canvas.nativeCanvas)
+                                }
+                                if (i==3){
+                                    val drawable = context.resources.getDrawable(R.drawable.rojo_carretera_1, null)
+
+                                    // Dibujar la imagen en el canvas
+                                    drawable.setBounds((tileX -120).toInt(), (tileY-121).toInt(), (tileX + 122).toInt(), (tileY + 121).toInt())
+                                    drawable.draw(canvas.nativeCanvas)
+                                }
+                            }
+                            else if(i==1 || i==4 ){
+                                //izq
+                                if (i==1){
+                                    val drawable = context.resources.getDrawable(R.drawable.rojo_carretera_1_izq, null)
+
+                                    // Dibujar la imagen en el canvas
+                                    drawable.setBounds((tileX -30).toInt(), (tileY-30).toInt(), (tileX + 0).toInt(), (tileY + 0).toInt())
+                                    drawable.draw(canvas.nativeCanvas)
+                                }
+                                if (i==4){ //arriba derecha
+                                    val drawable = context.resources.getDrawable(R.drawable.rojo_carretera_1_izq, null)
+
+                                    // Dibujar la imagen en el canvas
+                                    drawable.setBounds((tileX -1).toInt(), (tileY-105).toInt(), (tileX + 82).toInt(), (tileY + -35).toInt())
+                                    drawable.draw(canvas.nativeCanvas)
+                                }
+                            }
+                            else if (i==2 || i==5) {
+                                //dcha
+                                if (i==2){
+                                    val drawable = context.resources.getDrawable(R.drawable.rojo_carretera_1_dcha, null)
+
+                                    // Dibujar la imagen en el canvas
+                                    drawable.setBounds((tileX -120).toInt(), (tileY-121).toInt(), (tileX + 122).toInt(), (tileY + 121).toInt())
+                                    drawable.draw(canvas.nativeCanvas)
+                                }
+                                if (i==4){
+                                    val drawable = context.resources.getDrawable(R.drawable.rojo_carretera_1_dcha, null)
+
+                                    // Dibujar la imagen en el canvas
+                                    drawable.setBounds((tileX -120).toInt(), (tileY-121).toInt(), (tileX + 122).toInt(), (tileY + 121).toInt())
+                                    drawable.draw(canvas.nativeCanvas)
+                                }
+                            }
+                        }
+
+                        break
+                    }
+                }
+
+            }
+
 
             // Dibujar círculos clicables en cada vértice
 
@@ -1249,44 +1261,46 @@ fun getAristasCoord(centerX: Float, centerY: Float, radius: Int, id: String){
     var ids  = listOf<String>("error","error", "error", "error", "error", "error")
 
     if (id == "37") {
-        ids = listOf<String>("48","38", "27", "26", "36","47" )
+        ids = listOf<String>("47", "36", "26", "27", "38", "48")
     } else if (id == "59") {
-        ids = listOf<String>("6A", "5A", "49", "48", "58", "69" )
+        ids = listOf<String>("69", "58", "48", "49", "5A", "6A")
     } else if (id == "7B") {
-        ids = listOf<String>("8C", "7C", "6B", "6A", "7A","8B" )
+        ids = listOf<String>("8B", "7A", "6A", "6B", "7C", "8C")
     } else if (id == "35") {
-        ids = listOf<String>("46", "36", "25", "24", "34", "45" )
+        ids = listOf<String>("45", "34", "24", "25", "36", "46")
     } else if (id == "57") {
-        ids = listOf<String>("68", "58", "47", "46", "56", "67" )
+        ids = listOf<String>("67", "56", "46", "47", "58", "68")
     } else if (id == "79") {
-        ids = listOf<String>("8A", "7A", "69", "68", "78", "89" )
+        ids = listOf<String>("89", "78", "68", "69", "7A", "8A")
     } else if (id == "9B") {
-        ids = listOf<String>("AC", "9C", "8B", "8A", "9A", "AB", )
+        ids = listOf<String>("AB", "9A", "8A", "8B", "9C", "AC")
     } else if (id == "33") {
-        ids = listOf<String>("44", "34", "23", "22", "32", "43" )
+        ids = listOf<String>("43", "32", "22", "23", "34", "44")
     } else if (id == "55") {
-        ids = listOf<String>("66", "56", "45", "44", "54", "65" )
+        ids = listOf<String>("65", "54", "44", "45", "56", "66")
     } else if (id == "77") {
-        ids = listOf<String>( "88", "78", "67", "66", "76", "87",)
+        ids = listOf<String>("87", "76", "66", "67", "78", "88")
     } else if (id == "99") {
-        ids = listOf<String>( "AA", "9A", "89", "88", "98", "A9",)
+        ids = listOf<String>("A9", "98", "88", "89", "9A", "AA")
     } else if (id == "BB") {
-        ids = listOf<String>( "CC", "BC", "AB", "AA", "BA", "CB",)
+        ids = listOf<String>("CB", "BA", "AA", "AB", "BC", "CC")
     } else if (id == "53") {
-        ids = listOf<String>("64", "54", "43", "42", "52", "63" )
+        ids = listOf<String>("63", "52", "42", "43", "54", "64")
     } else if (id == "75") {
-        ids = listOf<String>("86", "76", "65", "64", "74", "85", )
+        ids = listOf<String>("85", "74", "64", "65", "76", "86")
     } else if (id == "97") {
-        ids = listOf<String>("A8", "98", "87", "86", "96", "A7", )
+        ids = listOf<String>("A7", "96", "86", "87", "98", "A8")
     } else if (id == "B9") {
-        ids = listOf<String>("CA", "BA", "A9", "A8", "B8", "C9", )
+        ids = listOf<String>("C9", "B8", "A8", "A9", "BA", "CA")
     } else if (id == "73") {
-        ids = listOf<String>( "84", "74", "63", "62", "72", "83",)
+        ids = listOf<String>("83", "72", "62", "63", "74", "84")
     } else if (id == "95") {
-        ids = listOf<String>("A6", "96", "85", "84", "94", "A5", )
+        ids = listOf<String>("A5", "94", "84", "85", "96", "A6")
     } else if (id == "B7") {
-        ids = listOf<String>("C8", "B8", "A7", "A6", "B6", "C7", )
+        ids = listOf<String>("C7", "B6", "A6", "A7", "B8", "C8")
     }
+
+
 
     // Devolver las aristas para cada hexágono -----------------------------
     val vertices = getHexagonVertices(centerX, centerY, radius)
