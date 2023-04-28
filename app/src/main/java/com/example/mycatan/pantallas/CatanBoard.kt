@@ -824,6 +824,8 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                         println(coordinates)*/
                         // Detectar si el clic se hizo en una arista ------------------------------
                         for (coordinate in Partida.CoordAristas.keys) {
+
+
                             val radius = 10f
                             // Calcula la distancia entre el centro del círculo y la posición del clic del mouse
                             val distance =
@@ -1261,64 +1263,76 @@ fun getAristasCoord(centerX: Float, centerY: Float, radius: Int, id: String){
     var ids  = listOf<String>("error","error", "error", "error", "error", "error")
 
     if (id == "37") {
-        ids = listOf<String>("47", "36", "26", "27", "38", "48")
+        ids = listOf<String>("48","38", "27", "26", "36","47" )
     } else if (id == "59") {
-        ids = listOf<String>("69", "58", "48", "49", "5A", "6A")
+        ids = listOf<String>("6A", "5A", "49", "48", "58", "69" )
     } else if (id == "7B") {
-        ids = listOf<String>("8B", "7A", "6A", "6B", "7C", "8C")
+        ids = listOf<String>("8C", "7C", "6B", "6A", "7A","8B" )
     } else if (id == "35") {
-        ids = listOf<String>("45", "34", "24", "25", "36", "46")
+        ids = listOf<String>("46", "36", "25", "24", "34", "45" )
     } else if (id == "57") {
-        ids = listOf<String>("67", "56", "46", "47", "58", "68")
+        ids = listOf<String>("68", "58", "47", "46", "56", "67" )
     } else if (id == "79") {
-        ids = listOf<String>("89", "78", "68", "69", "7A", "8A")
+        ids = listOf<String>("8A", "7A", "69", "68", "78", "89" )
     } else if (id == "9B") {
-        ids = listOf<String>("AB", "9A", "8A", "8B", "9C", "AC")
+        ids = listOf<String>("AC", "9C", "8B", "8A", "9A", "AB", )
     } else if (id == "33") {
-        ids = listOf<String>("43", "32", "22", "23", "34", "44")
+        ids = listOf<String>("44", "34", "23", "22", "32", "43" )
     } else if (id == "55") {
-        ids = listOf<String>("65", "54", "44", "45", "56", "66")
+        ids = listOf<String>("66", "56", "45", "44", "54", "65" )
     } else if (id == "77") {
-        ids = listOf<String>("87", "76", "66", "67", "78", "88")
+        ids = listOf<String>( "88", "78", "67", "66", "76", "87",)
     } else if (id == "99") {
-        ids = listOf<String>("A9", "98", "88", "89", "9A", "AA")
+        ids = listOf<String>( "AA", "9A", "89", "88", "98", "A9",)
     } else if (id == "BB") {
-        ids = listOf<String>("CB", "BA", "AA", "AB", "BC", "CC")
+        ids = listOf<String>( "CC", "BC", "AB", "AA", "BA", "CB",)
     } else if (id == "53") {
-        ids = listOf<String>("63", "52", "42", "43", "54", "64")
+        ids = listOf<String>("64", "54", "43", "42", "52", "63" )
     } else if (id == "75") {
-        ids = listOf<String>("85", "74", "64", "65", "76", "86")
+        ids = listOf<String>("86", "76", "65", "64", "74", "85", )
     } else if (id == "97") {
-        ids = listOf<String>("A7", "96", "86", "87", "98", "A8")
+        ids = listOf<String>("A8", "98", "87", "86", "96", "A7", )
     } else if (id == "B9") {
-        ids = listOf<String>("C9", "B8", "A8", "A9", "BA", "CA")
+        ids = listOf<String>("CA", "BA", "A9", "A8", "B8", "C9", )
     } else if (id == "73") {
-        ids = listOf<String>("83", "72", "62", "63", "74", "84")
+        ids = listOf<String>( "84", "74", "63", "62", "72", "83",)
     } else if (id == "95") {
-        ids = listOf<String>("A5", "94", "84", "85", "96", "A6")
+        ids = listOf<String>("A6", "96", "85", "84", "94", "A5", )
     } else if (id == "B7") {
-        ids = listOf<String>("C7", "B6", "A6", "A7", "B8", "C8")
+        ids = listOf<String>("C8", "B8", "A7", "A6", "B6", "C7", )
     }
 
 
 
     // Devolver las aristas para cada hexágono -----------------------------
     val vertices = getHexagonVertices(centerX, centerY, radius)
-    // Lista de coordenadas de las aristas
-    for (i in 0 until vertices.size - 1) {
-        val vertex1 = vertices[i]
-        val vertex2 = vertices[i + 1]
 
-        for (c in getHexagonLineCoordinates(vertex1, vertex2)){ // se guardacada coordenada de una arista en su correspondiente id
-            Partida.CoordAristas.put(c, ids[i])
+    for (i in 0 until vertices.size) {
+        var vertex1: Offset
+        var vertex2: Offset
+
+        if (i == vertices.size - 1) {
+            vertex1 = vertices.last()
+            vertex2 = vertices.first()
+        } else {
+            vertex1 = vertices[i]
+            vertex2 = vertices[i + 1]
         }
 
-    }
-    // Agrega también la última arista que va desde el último vértice hasta el primer vértice
-    val vertex1 = vertices.last()
-    val vertex2 = vertices.first()
-    for (c in getHexagonLineCoordinates(vertex1, vertex2)){
-        Partida.CoordAristas.put(c, ids[vertices.size-1])
+        println("id_hexagono: $id")
+        println("vertice1: ${Partida.CoordVertices[vertex1]}")
+        println("vertice2: ${Partida.CoordVertices[vertex2]}")
+
+        var ya = false
+        for (c in getHexagonLineCoordinates(vertex1, vertex2)){ // se guardacada coordenada de una arista en su correspondiente id
+            Partida.CoordAristas.put(c, ids[i])
+            if (!ya){
+                println("arista colocada: ${Partida.CoordAristas[c]}")
+                ya= true
+            }
+        }
+
+
     }
 
 }
