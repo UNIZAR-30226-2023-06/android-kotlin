@@ -857,8 +857,7 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
 
                         for (coordinate in Partida.CoordAristas.keys) {//maybe no hay que leer tods los  hexagonos
 
-
-                            val radius = 10f
+                            val radius = 20f
                             // Calcula la distancia entre el centro del círculo y la posición del clic del mouse
                             val distance =
                                 sqrt(
@@ -938,10 +937,12 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
             val tileX = boardX + (tile.coordinates.first + tile.coordinates.second / 2f) * hexWidth
             val tileY = boardY + tile.coordinates.second * 1.5f * hexRadius
 
+
             //getVertexCoord(tileX, tileY, hexRadius, tile.id)
             //getAristasCoord(tileX, tileY, hexRadius, tile.id)
             // Devolver las aristas para cada hexágono -----------------------------
             val vertices = getHexagonVertices(tileX, tileY, hexRadius)
+
             // Lista de coordenadas de las aristas
 
 
@@ -1080,12 +1081,10 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
 
 
 
-                var skipFirst = true
+
+
                 for (c in getHexagonLineCoordinates(vertex1, vertex2)){ // se guardacada coordenada de una arista en su correspondiente id
-                    if (skipFirst){
-                        skipFirst = false
-                        continue
-                    }
+
 
 
                     var temp1 = Partida.CoordAristas[c]
@@ -1094,8 +1093,8 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
 
                         aristasPintadas[temp1.toString()] = "painted"
 
-                        println("vert1: ${Partida.CoordVertices[vertex1]}")
-                        println("vert2: ${Partida.CoordVertices[vertex2]}")
+                        //println(temp1)
+
 
                         //se chekean entre que vertices son y se printea la carreteraen funcion
                         drawIntoCanvas { canvas ->
@@ -1136,7 +1135,8 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                                 val drawable = context.resources.getDrawable(R.drawable.rojo_carretera_1_dcha, null)
 
                                 // Dibujar la imagen en el canvas
-                                drawable.setBounds((tileX -1).toInt(), (tileY-105).toInt(), (tileX + 82).toInt(), (tileY + -35).toInt())
+                                drawable.setBounds((tileX - 85).toInt(), (tileY - 105).toInt(), (tileX - 1).toInt(), (tileY - 35).toInt())
+
                                 drawable.draw(canvas.nativeCanvas)
                             }
 
@@ -1365,7 +1365,7 @@ fun getAristasCoord(centerX: Float, centerY: Float, radius: Int, id: String){
     // Devolver las aristas para cada hexágono -----------------------------
     val vertices = getHexagonVertices(centerX, centerY, radius)
 
-    //println("id_hexagono: $id")
+    println("id_hexagono: $id")
 
     for (i in vertices.indices) {
         var vertex1: Offset
@@ -1384,11 +1384,11 @@ fun getAristasCoord(centerX: Float, centerY: Float, radius: Int, id: String){
         //println(getHexagonLineCoordinates(x1,x2))
 
 
-        //println("verticefake1: $vertex1")
-        //println("verticefake1: $vertex2")
-        //println("vertice1: ${Partida.CoordVertices[vertex1]}")
-        //println("vertice2: ${Partida.CoordVertices[vertex2]}")
-        //println("coord: ${getHexagonLineCoordinates(vertex1,vertex2)}")
+        println("verticefake1: $vertex1")
+        println("verticefake1: $vertex2")
+        println("vertice1: ${Partida.CoordVertices[vertex1]}")
+        println("vertice2: ${Partida.CoordVertices[vertex2]}")
+        println("coord: ${getHexagonLineCoordinates(vertex1,vertex2)}")
 
         var ya = false
         for (c in getHexagonLineCoordinates(vertex1, vertex2)){ // se guardacada coordenada de una arista en su correspondiente id
