@@ -44,6 +44,14 @@ object Partida {
     lateinit var Aristas: HashMap<String,String>
     lateinit var CoordVertices: HashMap<Offset, String>
     lateinit var CoordAristas: HashMap<Offset, String>
+    var iniciadasAristas = false
+    val listUpRight = listOf<String>("38", "5A", "7C", "36","58", "7A", "9C", "34", "56", "78", "9A", "BC", "54", "76", "98", "BA", "74", "96", "B8")
+    val listDownRight = listOf<String>("47", "69", "8B", "45","67", "89", "AB", "43", "65", "87", "A9", "CB", "63", "85", "A7", "C9", "83", "A5", "C7")
+    val listDownLeft = listOf<String>("36", "58", "7A", "34","56", "78", "9A", "32", "54", "76", "98", "BA", "52", "74", "96", "B8", "72", "94", "B6")
+    val listLeft = listOf<String>("26", "48", "6A", "24","46", "68", "8A", "22", "44", "66", "88", "AA", "42", "64", "86", "A8", "62", "84", "A6")
+    val listRight = listOf<String>("48", "6A", "8C", "46","68", "8A", "AC", "44", "66", "88", "AA", "CC", "64", "86", "A8", "CA", "84", "A6", "C8")
+    val listUpLeft = listOf<String>("27", "49", "6B", "25","47", "69", "8B", "23", "45", "67", "89", "AB", "43", "65", "87", "A9", "63", "85", "A7")
+
 }
 
 fun inicializarVertices() {

@@ -928,6 +928,12 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
         }
 
         // Dibujar los hexágonos y los números en el tablero
+
+        var aristasPintadas = HashMap(Partida.Aristas)
+        for (i in aristasPintadas.keys){
+            aristasPintadas[i] = "not painted"
+        }
+
         for (tile in tiles) {
             val tileX = boardX + (tile.coordinates.first + tile.coordinates.second / 2f) * hexWidth
             val tileY = boardY + tile.coordinates.second * 1.5f * hexRadius
@@ -1059,7 +1065,7 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                 }
             }
 
-            for (i in 0 until vertices.size) {
+            for (i in vertices.indices) {
                 var vertex1 : Offset
                 var vertex2 : Offset
 
@@ -1072,62 +1078,87 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                     vertex2 = vertices[i + 1]
                 }
 
+
+
+                var skipFirst = true
                 for (c in getHexagonLineCoordinates(vertex1, vertex2)){ // se guardacada coordenada de una arista en su correspondiente id
+                    if (skipFirst){
+                        skipFirst = false
+                        continue
+                    }
+
+
                     var temp1 = Partida.CoordAristas[c]
-                    if (Partida.Aristas[temp1.toString()] == "carretera"){
+
+                    if (Partida.Aristas[temp1.toString()] == "carretera" && aristasPintadas[temp1.toString()] =="not painted"){
+
+                        aristasPintadas[temp1.toString()] = "painted"
+
+                        println("vert1: ${Partida.CoordVertices[vertex1]}")
+                        println("vert2: ${Partida.CoordVertices[vertex2]}")
+
                         //se chekean entre que vertices son y se printea la carreteraen funcion
                         drawIntoCanvas { canvas ->
-                            if(i==0 || i==3 ){ // esto no esta bien
-                                //vertical
-                                if (i==0){
-                                    val drawable = context.resources.getDrawable(R.drawable.rojo_carretera_1, null)
 
-                                    // Dibujar la imagen en el canvas
-                                    drawable.setBounds((tileX -1).toInt(), (tileY-105).toInt(), (tileX + 82).toInt(), (tileY + -35).toInt())
-                                    drawable.draw(canvas.nativeCanvas)
-                                }
-                                if (i==3){
-                                    val drawable = context.resources.getDrawable(R.drawable.rojo_carretera_1, null)
+                            //vertical
+                            if (i == 0){
+                                println("downright")
+                                val drawable = context.resources.getDrawable(R.drawable.rojo_carretera_1_dcha, null)
 
-                                    // Dibujar la imagen en el canvas
-                                    drawable.setBounds((tileX -1).toInt(), (tileY-105).toInt(), (tileX + 82).toInt(), (tileY + -35).toInt())
-                                    drawable.draw(canvas.nativeCanvas)
-                                }
+                                // Dibujar la imagen en el canvas
+                                drawable.setBounds((tileX + 2).toInt(), (tileY + 30).toInt(), (tileX + 85).toInt(), (tileY + 100).toInt())
+
+
+                                drawable.draw(canvas.nativeCanvas)
+
                             }
-                            else if(i==1 || i==4 ){
-                                //izq
-                                if (i==1){
-                                    val drawable = context.resources.getDrawable(R.drawable.rojo_carretera_1_izq, null)
+                            else if (i ==1){
+                                println("downleft")
+                                val drawable = context.resources.getDrawable(R.drawable.rojo_carretera_1_izq, null)
 
-                                    // Dibujar la imagen en el canvas
-                                    drawable.setBounds((tileX -1).toInt(), (tileY-105).toInt(), (tileX + 82).toInt(), (tileY + -35).toInt())
-                                    drawable.draw(canvas.nativeCanvas)
-                                }
-                                if (i==4){ //arriba derecha
-                                    val drawable = context.resources.getDrawable(R.drawable.rojo_carretera_1_izq, null)
-
-                                    // Dibujar la imagen en el canvas
-                                    drawable.setBounds((tileX -1).toInt(), (tileY-105).toInt(), (tileX + 82).toInt(), (tileY + -35).toInt())
-                                    drawable.draw(canvas.nativeCanvas)
-                                }
+                                // Dibujar la imagen en el canvas
+                                drawable.setBounds((tileX - 85).toInt(), (tileY + 30).toInt(), (tileX + 2).toInt(), (tileY + 100).toInt())
+                                drawable.draw(canvas.nativeCanvas)
                             }
-                            else if (i==2 || i==5) {
-                                //dcha
-                                if (i==2){
-                                    val drawable = context.resources.getDrawable(R.drawable.rojo_carretera_1_dcha, null)
 
-                                    // Dibujar la imagen en el canvas
-                                    drawable.setBounds((tileX -1).toInt(), (tileY-105).toInt(), (tileX + 82).toInt(), (tileY + -35).toInt())
-                                    drawable.draw(canvas.nativeCanvas)
-                                }
-                                if (i==4){
-                                    val drawable = context.resources.getDrawable(R.drawable.rojo_carretera_1_dcha, null)
+                            //izq
+                            else if (i ==2){
+                                println("left")
+                                val drawable = context.resources.getDrawable(R.drawable.rojo_carretera_1, null)
 
-                                    // Dibujar la imagen en el canvas
-                                    drawable.setBounds((tileX -1).toInt(), (tileY-105).toInt(), (tileX + 82).toInt(), (tileY + -35).toInt())
-                                    drawable.draw(canvas.nativeCanvas)
-                                }
+                                // Dibujar la imagen en el canvas
+                                drawable.setBounds((tileX - 92).toInt(), (tileY - 40).toInt(), (tileX - 65).toInt(), (tileY + 40).toInt())
+
+                                drawable.draw(canvas.nativeCanvas)
                             }
+                            else if (i ==3){
+                                println("topleft")
+                                val drawable = context.resources.getDrawable(R.drawable.rojo_carretera_1_dcha, null)
+
+                                // Dibujar la imagen en el canvas
+                                drawable.setBounds((tileX -1).toInt(), (tileY-105).toInt(), (tileX + 82).toInt(), (tileY + -35).toInt())
+                                drawable.draw(canvas.nativeCanvas)
+                            }
+
+
+                            //dcha
+                            else if (i ==4){
+                                println("topright")
+                                val drawable = context.resources.getDrawable(R.drawable.rojo_carretera_1_izq, null)
+
+                                // Dibujar la imagen en el canvas
+                                drawable.setBounds((tileX -1).toInt(), (tileY-105).toInt(), (tileX + 82).toInt(), (tileY + -35).toInt())
+                                drawable.draw(canvas.nativeCanvas)
+                            }
+                            else if (i==5){
+                                println("right")
+                                val drawable = context.resources.getDrawable(R.drawable.rojo_carretera_1, null)
+
+                                // Dibujar la imagen en el canvas
+                                drawable.setBounds((tileX +65).toInt(), (tileY-40).toInt(), (tileX + 92).toInt(), (tileY + 40).toInt())
+                                drawable.draw(canvas.nativeCanvas)
+                            }
+
                         }
 
                         break
@@ -1334,7 +1365,7 @@ fun getAristasCoord(centerX: Float, centerY: Float, radius: Int, id: String){
     // Devolver las aristas para cada hexágono -----------------------------
     val vertices = getHexagonVertices(centerX, centerY, radius)
 
-    println("id_hexagono: $id")
+    //println("id_hexagono: $id")
 
     for (i in vertices.indices) {
         var vertex1: Offset
@@ -1355,9 +1386,9 @@ fun getAristasCoord(centerX: Float, centerY: Float, radius: Int, id: String){
 
         //println("verticefake1: $vertex1")
         //println("verticefake1: $vertex2")
-        println("vertice1: ${Partida.CoordVertices[vertex1]}")
-        println("vertice2: ${Partida.CoordVertices[vertex2]}")
-        println("coord: ${getHexagonLineCoordinates(vertex1,vertex2)}")
+        //println("vertice1: ${Partida.CoordVertices[vertex1]}")
+        //println("vertice2: ${Partida.CoordVertices[vertex2]}")
+        //println("coord: ${getHexagonLineCoordinates(vertex1,vertex2)}")
 
         var ya = false
         for (c in getHexagonLineCoordinates(vertex1, vertex2)){ // se guardacada coordenada de una arista en su correspondiente id
