@@ -21,14 +21,14 @@ fun ScreenMain(){
     inicializarAristas()
     inicializarCoords()
 
-    NavHost(navController = navController, startDestination = /*Routes.Login.route*/ Routes.CatanBoard.route ) {
+    NavHost(navController = navController, startDestination = Routes.Login.route) {
 
         composable(Routes.Login.route) {
-            CatanBoard(navController = navController)
-
+            LoginPage(navController = navController)
         }
         composable(Routes.Home.route) {
-            HomePage(navController = navController)
+            var clase = MyViewModel()
+            clase.HomePage(navController = navController)
         }
         composable(Routes.Registro.route) {
             RegistroPage(navController = navController)

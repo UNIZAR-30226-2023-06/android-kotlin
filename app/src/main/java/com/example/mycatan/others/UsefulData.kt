@@ -14,7 +14,7 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 
 //Javi 192.168.1.39
-val ipBackend = "192.168.1.39"
+val ipBackend = "192.168.1.135"
 //loreto: "192.168.1.133       "192.168.1.139"    10.1.54.191"
 
 object Globals {
@@ -32,6 +32,7 @@ object Globals {
     lateinit var Personaje: String
     lateinit var Piezas: String
     lateinit var Mapa: String
+    lateinit var lobbyId: String
 }
 
 object Partida {

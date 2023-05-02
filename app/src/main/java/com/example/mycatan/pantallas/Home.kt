@@ -1,24 +1,27 @@
 package com.example.mycatan.pantallas
 
+import android.os.CountDownTimer
 import android.widget.Toast
-import androidx.compose.animation.*
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -28,6 +31,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -35,29 +39,60 @@ import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.mycatan.R
-import com.example.mycatan.dBaux.getNumAmigosPendiente
-import com.example.mycatan.dBaux.postSendRequestFriend
 import com.example.mycatan.others.Globals
 import com.example.mycatan.others.Routes
-import com.example.mycatan.pantallas.amigos.CustomDialog
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
+import com.example.mycatan.dBaux.*
 import com.example.mycatan.ui.theme.*
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import okhttp3.Route
 
 @OptIn(ExperimentalAnimationApi::class)
+class MyViewModel : ViewModel() {
 @Composable
 fun HomePage(navController: NavHostController) {
+    val context = LocalContext.current
     val buscarPartida =  remember { mutableStateOf(false) }
     val unirsePartida =  remember { mutableStateOf(false) }
+    val cancelarListo =  remember { mutableStateOf(false) }
     val pendiente by remember { mutableStateOf(getNumAmigosPendiente(Globals.Token)) }
+
+
+    /*val timer = object : CountDownTimer(60000, 1000) { // 60 segundos, 1 segundo por intervalo
+        override fun onTick(millisUntilFinished: Long) {
+            // Aquí puedes actualizar la UI con el tiempo restante
+        }
+
+        override fun onFinish() {
+            // Aquí se lanza la acción cuando se termina el temporizador
+            if (numOfReadyPlayers(Globals.lobbyId)){
+                println("La partida va a comenzar")
+                // Si hay 4 listos, se inicia la partida
+                // Quitar pop-up IGUAL NO HACE FALTA YA QUE SE REDIRIGE A LA PANTALLA DE JUEGO
+                // Redirigir a la pantalla de juego
+                navController.navigate(Routes.CatanBoard.route)
+            } else {
+                // Si se ha acabado el tiempo y no hay 4 listos, se cancela la partida
+                Toast.makeText(context, "Partida cancelada, vuelva a buscar partida", Toast.LENGTH_SHORT).show()
+
+            }
+        }
+    }*/
+
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
-                onClick = {  navController.navigate(Routes.Manual.route) },
-                backgroundColor = AzulOscuro,) {
+                onClick = { navController.navigate(Routes.Manual.route) },
+                backgroundColor = AzulOscuro,
+            ) {
                 /* FAB content */
                 Image(painter = painterResource(R.drawable.politicas),
                     contentDescription = "reglas",
-                modifier= Modifier.size(30.dp).padding(3.dp))
+                modifier= Modifier
+                    .size(30.dp)
+                    .padding(3.dp))
             }
         },
         bottomBar = {
@@ -152,10 +187,33 @@ fun HomePage(navController: NavHostController) {
                     UnirsePartida(value = "", setShowDialog = {
                         unirsePartida.value = it
                     }) {}
+                if(cancelarListo.value){
+                    CancelarListo(value = "", setShowDialog = { cancelarListo.value = it }, navController)
+                }
 
-                Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp),) {
+                Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp)) {
                     Button(
-                        onClick = { buscarPartida.value = true },
+                        onClick = {
+                            buscarPartida.value = true
+                            if(searchLobby(Globals.Token)){
+                                var hayCuatro = false
+                                // CUANDO HAY 4 JUGADORES BUSCANDO PARTIDA SACAR POP-UP CANCELAR LISTO
+                                viewModelScope.launch {
+                                    hayCuatro = buscarJugadores(buscarPartida.value).await()
+                                    if(hayCuatro){
+                                        println("HAY CUATRO JUGADORES")
+                                        buscarPartida.value = false
+                                        cancelarListo.value = true
+                                        //Hacemos un stop search para que los jugadores dejen de buscar, ya que ya han encontrado (ns si hace falta)
+                                        stopSearchingLobby(Globals.Token)
+                                    }
+
+                                }
+
+                            } else{
+                                Toast.makeText(context, "ERROR ya se esa buscando partida", Toast.LENGTH_SHORT).show()
+                            }
+                                  },
                         modifier = Modifier
                             .width(280.dp)
                             .height(60.dp),
@@ -176,9 +234,11 @@ fun HomePage(navController: NavHostController) {
                 }
 
                 Spacer(modifier = Modifier.height(20.dp))
-                Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp),) {
+                Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp)) {
                     Button(
-                        onClick = { unirsePartida.value = true },
+                        onClick = {
+                            unirsePartida.value = true
+                                  },
                         modifier = Modifier
                             .width(280.dp)
                             .height(60.dp),
@@ -199,7 +259,7 @@ fun HomePage(navController: NavHostController) {
                 }
 
                 Spacer(modifier = Modifier.height(20.dp))
-                Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp),) {
+                Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp)) {
                     Button(
                         onClick = { navController.navigate(Routes.CrearPartida.route) },
                         modifier = Modifier
@@ -243,12 +303,22 @@ fun HomePage(navController: NavHostController) {
     }
 
 }
+}
 
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview5() {
-    val navController = rememberNavController()
-    HomePage(navController = navController)
+suspend fun buscarJugadores(buscarPartida: Boolean): Deferred<Boolean> {
+    return withContext(Dispatchers.Default) {
+        var jugadoresEncontrados = false
+        while (!jugadoresEncontrados && buscarPartida) {
+            if(getLobbyFromPlayer(Globals.Token)){
+                jugadoresEncontrados=true
+                break
+            }
+            // Esperar entre 1 y 10 segundos aleatoriamente
+            //val tiempoEspera = (Math.random() * 10).toInt() + 1
+            delay(/*tiempoEspera*/1 * 1000L)
+        }
+        CompletableDeferred(jugadoresEncontrados)
+    }
 }
 
 @Composable
@@ -306,7 +376,8 @@ fun FotoPerfil( navController: NavHostController, foto: String , onCardClick: ()
 
     Card(
         modifier = Modifier
-            .clickable {navController.navigate(Routes.EditarPerfil.route)
+            .clickable {
+                navController.navigate(Routes.EditarPerfil.route)
             }
             .padding(10.dp)
             .fillMaxHeight(),
@@ -325,10 +396,9 @@ fun FotoPerfil( navController: NavHostController, foto: String , onCardClick: ()
 @Composable
 fun BuscarPartida(value: String, setShowDialog: (Boolean) -> Unit, setValue: (String) -> Unit) {
 
-    val txtFieldError = remember { mutableStateOf("") }
-    val txtField = remember { mutableStateOf(value) }
+    val context = LocalContext.current
 
-    Dialog(onDismissRequest = { setShowDialog(false) }) {
+    Dialog(onDismissRequest = { }) { // PARA QUE SOLO SE CIERRE CON LA X QUITAR ESTO JEJE
         Surface(
             shape = RoundedCornerShape(16.dp),
             color = AzulOscuro
@@ -359,7 +429,18 @@ fun BuscarPartida(value: String, setShowDialog: (Boolean) -> Unit, setValue: (St
                             modifier = Modifier
                                 .width(30.dp)
                                 .height(30.dp)
-                                .clickable { setShowDialog(false) }
+                                .clickable {
+                                    // CUANDO SE PULSE EL BOTÓN DE CANCELAR, SE DEBE CANCELAR LA BÚSQUEDA DE PARTIDA
+                                    setShowDialog(false)
+                                    // TODO: ANTES DE ESTO COMPROBAR SI ESTOY YA EN UN LOBBY, SI ESTOY, SACAR POP-UP DE LISTO
+
+                                    if (stopSearchingLobby(Globals.Token)) {
+                                        Toast.makeText(context, "Se ha cancelado la partida", Toast.LENGTH_SHORT,).show()
+                                    } else {
+                                        Toast.makeText(context, "ERROR No se ha podido cancelar la partida", Toast.LENGTH_SHORT).show()
+                                    }
+
+                                }
                         )
                     }
 
@@ -446,13 +527,7 @@ fun UnirsePartida(value: String, setShowDialog: (Boolean) -> Unit, setValue: (St
                     Spacer(modifier = Modifier.height(20.dp))
 
                     Button(
-                        onClick = {
-                            /*if(postSendRequestFriend( partida.value.text, Globals.Token )){
-                                Toast.makeText(context, "OK la peticion de amistad ha sido enviada", Toast.LENGTH_SHORT).show()
-                            } else{
-                                Toast.makeText(context, "ERROR la petición no ha sido enviada", Toast.LENGTH_SHORT).show()
-                            }*/
-                        },
+                        onClick = {},
                         shape = RoundedCornerShape(50.dp),
                         modifier = Modifier
                             .fillMaxWidth()
@@ -462,6 +537,120 @@ fun UnirsePartida(value: String, setShowDialog: (Boolean) -> Unit, setValue: (St
                     ) {
                         Text(text = "Unirse")
                     }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun CancelarListo(value: String, setShowDialog: (Boolean) -> Unit, navController: NavController) {
+    val partida = remember { mutableStateOf(TextFieldValue()) }
+    val context = LocalContext.current
+    val buscarPartida =  remember { mutableStateOf(false) }
+
+    if(buscarPartida.value)
+        BuscarPartida(value = "", setShowDialog = {
+            buscarPartida.value = it
+        }) {}
+
+    Dialog(onDismissRequest = {}) {
+        Surface(
+            shape = RoundedCornerShape(16.dp),
+            color = AzulOscuro
+        ) {
+            Box(
+                contentAlignment = Alignment.Center
+            ) {
+                Column(modifier = Modifier.padding(20.dp)) {
+
+                    Column(
+                        modifier = Modifier.fillMaxWidth() ,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "Se han encontrado más jugadores",
+                            color = Blanco,
+                            style = TextStyle(
+                                fontSize = 18.sp,
+                                fontFamily = FontFamily.Default,
+                                fontWeight = FontWeight.Bold,
+                                textAlign = TextAlign.Center
+
+                            )
+                        )
+                        Text(
+                            text = "¿Aceptas el desafio?",
+                            color = Blanco,
+                            style = TextStyle(
+                                fontSize = 18.sp,
+                                fontFamily = FontFamily.Default,
+                                fontWeight = FontWeight.Bold,
+                                textAlign = TextAlign.Center
+
+                            )
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Button(
+                            onClick = {
+                                // DECIDE UNIRSE A LA PARTIDA
+                                setPlayerReady(Globals.Token)
+                                var iniciaPartica = false
+                                while(!iniciaPartica){
+                                    //Si existe el lobby y hay 4 jugadores la partida comienza
+                                    if(getLobbyFromId(Globals.lobbyId)){
+                                        Thread.sleep(1000)
+                                        if(numOfReadyPlayers(Globals.Token)){
+                                            iniciaPartica = true
+                                            //Navegar a la pantalla de juego
+                                            navController.navigate(Routes.CatanBoard.route)
+                                        }
+                                    }else{
+                                        //Si no existe el lobby, vuelve a la cola
+                                        iniciaPartica = true
+                                        //Cerrar este pop-up
+                                        setShowDialog(false)
+                                        //TODO: Abrir pop-up de buscando partida y poner otra vez al jugador en busca de sala
+                                    }
+                                    Thread.sleep(1000)
+                                }
+
+                            },
+                            shape = RoundedCornerShape(50.dp),
+                            modifier = Modifier.weight(1f) // asignar el mismo peso relativo a ambos botones
+                            ,
+                            colors = ButtonDefaults.buttonColors(backgroundColor = Verde)
+
+                        ) {
+                            Text(text = "Aceptar",color = Blanco)
+                        }
+                        Spacer(modifier = Modifier.width(5.dp))
+                        Button(
+                            onClick = {
+                                setShowDialog(false)
+                                // BORRAR EL LOBBY SI LE DAN A LA X
+                                if(deleteLobby(Globals.lobbyId)){
+                                    Toast.makeText(context, "La partida se ha cancelado", Toast.LENGTH_SHORT).show()
+                                } else{
+                                    Toast.makeText(context, "ERROR error al borrar el lobby", Toast.LENGTH_SHORT).show()
+                                }
+                            },
+                            shape = RoundedCornerShape(50.dp),
+                            modifier = Modifier.weight(1f) ,
+                            colors = ButtonDefaults.buttonColors(backgroundColor = Rojo)
+
+                        ) {
+                            Text(text = "Rechazar", color = Blanco)
+                        }
+                    }
+
+
                 }
             }
         }
