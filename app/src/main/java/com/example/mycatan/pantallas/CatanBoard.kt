@@ -46,15 +46,17 @@ import com.example.mycatan.dBaux.changeProfilePicture
 import com.example.mycatan.others.*
 
 var clickedVertex: Offset? = null
+
+var jugador_0: Jugador? = null
+var jugador_1: Jugador? = null
+var jugador_2: Jugador? = null
+var jugador_3: Jugador? = null
+
 class Jugador(var yo: Boolean, var nombre: String, var color: String, var imagen: String, var puntos: Int, var piezas: String, var tablero: String)
 @Composable
 fun CatanBoard(navController: NavHostController) {
 
     // INICIALIZACIÓN DE LOS JUGADORES EN EL TABLERO -----------------------------------------
-    var jugador_0: Jugador? = null
-    var jugador_1: Jugador? = null
-    var jugador_2: Jugador? = null
-    var jugador_3: Jugador? = null
 
     if ( Globals.gameState.getString("player_0") != null){ // Primer jugador
         val jugador0 = Globals.gameState.getJSONObject("player_0")
@@ -66,7 +68,7 @@ fun CatanBoard(navController: NavHostController) {
             piezas = jugador0.getString("selected_pieces_skin"),
             tablero = jugador0.getString("selected_grid_skin")
         )
-        if (jugador_0.yo == true){
+        if (jugador_0!!.yo == true){
             Partida.Madera = jugador0.getJSONObject("hand").getString("wood")
             Partida.Ovejas = jugador0.getJSONObject("hand").getString("sheep")
             Partida.Trigo = jugador0.getJSONObject("hand").getString("wheat")
@@ -85,7 +87,7 @@ fun CatanBoard(navController: NavHostController) {
             piezas = jugador1.getString("selected_pieces_skin"),
             tablero = jugador1.getString("selected_grid_skin")
         )
-        if (jugador_1.yo == true){
+        if (jugador_1!!.yo == true){
             Partida.Madera = jugador1.getJSONObject("hand").getString("wood")
             Partida.Ovejas = jugador1.getJSONObject("hand").getString("sheep")
             Partida.Trigo = jugador1.getJSONObject("hand").getString("wheat")
@@ -104,7 +106,7 @@ fun CatanBoard(navController: NavHostController) {
             piezas = jugador2.getString("selected_pieces_skin"),
             tablero = jugador2.getString("selected_grid_skin")
         )
-        if (jugador_2.yo == true){
+        if (jugador_2!!.yo == true){
             Partida.Madera = jugador2.getJSONObject("hand").getString("wood")
             Partida.Ovejas = jugador2.getJSONObject("hand").getString("sheep")
             Partida.Trigo = jugador2.getJSONObject("hand").getString("wheat")
@@ -123,7 +125,7 @@ fun CatanBoard(navController: NavHostController) {
             piezas = jugador3.getString("selected_pieces_skin"),
             tablero = jugador3.getString("selected_grid_skin")
         )
-        if (jugador_3.yo == true){
+        if (jugador_3!!.yo == true){
             Partida.Madera = jugador3.getJSONObject("hand").getString("wood")
             Partida.Ovejas = jugador3.getJSONObject("hand").getString("sheep")
             Partida.Trigo = jugador3.getJSONObject("hand").getString("wheat")
@@ -260,14 +262,14 @@ fun CatanBoard(navController: NavHostController) {
                 ){
                     if (jugador_0 != null ){
                         // Pop-up de intercambio de elementos
-                        if(tradePlayer0.value && jugador_0.yo != true)
-                            showTrading(name = jugador_0.nombre, foto = jugador_0.imagen , setShowDialog = {tradePlayer0.value = it})
+                        if(tradePlayer0.value && jugador_0!!.yo != true)
+                            showTrading(name = jugador_0!!.nombre, foto = jugador_0!!.imagen , setShowDialog = {tradePlayer0.value = it})
                         // Cajita con la info del usuario
                         Box (
                             modifier = Modifier.fillMaxWidth()
                         )
                         {
-                            val colorEne = when (jugador_0.color) {
+                            val colorEne = when (jugador_0!!.color) {
                                 "RED" -> Rojo
                                 "BLUE" -> Azul
                                 "GREEN" -> Verde
@@ -275,12 +277,12 @@ fun CatanBoard(navController: NavHostController) {
                             }
                             dataJugador(player = 0 ,
                                 colorEne = colorEne,
-                                foto = jugador_0.imagen ,
-                                ptsV = jugador_0.puntos ,
+                                foto = jugador_0!!.imagen ,
+                                ptsV = jugador_0!!.puntos ,
                                 ejercito = false,
                                 carreteras = false,
                                 onCardClick = {
-                                    if(jugador_0.yo != true){
+                                    if(jugador_0!!.yo != true){
                                         tradePlayer0.value = true
                                     }
                                 })
@@ -292,14 +294,14 @@ fun CatanBoard(navController: NavHostController) {
                     Spacer(modifier = Modifier.height(5.dp))
 
                     if (jugador_1 != null ) {
-                        if(tradePlayer1.value && jugador_1.yo != true)
-                            showTrading(name = jugador_1.nombre, foto = jugador_1.imagen , setShowDialog = {tradePlayer1.value = it})
+                        if(tradePlayer1.value && jugador_1!!.yo != true)
+                            showTrading(name = jugador_1!!.nombre, foto = jugador_1!!.imagen , setShowDialog = {tradePlayer1.value = it})
                         // Cajita con la info del usuario
                         Box (
                             modifier = Modifier.fillMaxWidth()
                         )
                         {
-                            val colorEne = when (jugador_1.color) {
+                            val colorEne = when (jugador_1!!.color) {
                                 "RED" -> Rojo
                                 "BLUE" -> Azul
                                 "GREEN" -> Verde
@@ -307,12 +309,12 @@ fun CatanBoard(navController: NavHostController) {
                             }
                             dataJugador(player = 1,
                                 colorEne = colorEne,
-                                foto = jugador_1.imagen ,
-                                ptsV = jugador_1.puntos ,
+                                foto = jugador_1!!.imagen ,
+                                ptsV = jugador_1!!.puntos ,
                                 ejercito = false,
                                 carreteras = false,
                                 onCardClick = {
-                                    if(jugador_1.yo != true){
+                                    if(jugador_1!!.yo != true){
                                         tradePlayer1.value = true
                                     }
                                 })
@@ -324,14 +326,14 @@ fun CatanBoard(navController: NavHostController) {
 
                 Column(modifier = Modifier.weight(1f)){
                     if (jugador_2 != null ) {
-                        if(tradePlayer2.value && jugador_2.yo != true)
-                            showTrading(name = jugador_2.nombre, foto = jugador_2.imagen , setShowDialog = {tradePlayer2.value = it})
+                        if(tradePlayer2.value && jugador_2!!.yo != true)
+                            showTrading(name = jugador_2!!.nombre, foto = jugador_2!!.imagen , setShowDialog = {tradePlayer2.value = it})
                         // Cajita con la info del usuario
                         Box (
                             modifier = Modifier.fillMaxWidth()
                         )
                         {
-                            val colorEne = when (jugador_2.color) {
+                            val colorEne = when (jugador_2!!.color) {
                                 "RED" -> Rojo
                                 "BLUE" -> Azul
                                 "GREEN" -> Verde
@@ -339,12 +341,12 @@ fun CatanBoard(navController: NavHostController) {
                             }
                             dataJugador(player = 2 ,
                                 colorEne = colorEne,
-                                foto = jugador_2.imagen ,
-                                ptsV = jugador_2.puntos ,
+                                foto = jugador_2!!.imagen ,
+                                ptsV = jugador_2!!.puntos ,
                                 ejercito = false,
                                 carreteras = false,
                                 onCardClick = {
-                                    if(jugador_2.yo != true){
+                                    if(jugador_2!!.yo != true){
                                         tradePlayer2.value = true
                                     }
                                 })
@@ -355,14 +357,14 @@ fun CatanBoard(navController: NavHostController) {
 
                     Spacer(modifier = Modifier.height(5.dp))
                     if (jugador_3 != null) {
-                        if(tradePlayer3.value && jugador_3.yo != true)
-                            showTrading(name = jugador_3.nombre, foto = jugador_3.imagen , setShowDialog = {tradePlayer3.value = it})
+                        if(tradePlayer3.value && jugador_3!!.yo != true)
+                            showTrading(name = jugador_3!!.nombre, foto = jugador_3!!.imagen , setShowDialog = {tradePlayer3.value = it})
                         // Cajita con la info del usuario
                         Box (
                             modifier = Modifier.fillMaxWidth(),
                         )
                         {
-                            val colorEne = when (jugador_3.color) {
+                            val colorEne = when (jugador_3!!.color) {
                                 "RED" -> Rojo
                                 "BLUE" -> Azul
                                 "GREEN" -> Verde
@@ -370,12 +372,12 @@ fun CatanBoard(navController: NavHostController) {
                             }
                             dataJugador(player = 3 ,
                                 colorEne = colorEne,
-                                foto = jugador_3.imagen ,
-                                ptsV = jugador_3.puntos ,
+                                foto = jugador_3!!.imagen ,
+                                ptsV = jugador_3!!.puntos ,
                                 ejercito = false,
                                 carreteras = false,
                                 onCardClick = {
-                                    if(jugador_3.yo != true){
+                                    if(jugador_3!!.yo != true){
                                         tradePlayer3.value = true
                                     }
                                 })
@@ -511,7 +513,7 @@ fun incIntercambio( tipo : String, mainPlayer: Boolean){
                     count--
                 } },
             modifier = Modifier.size(25.dp)  ) {
-            Icon(Icons.Filled.KeyboardArrowDown,contentDescription = "Decrement", color = AzulOscuro)
+            Icon(Icons.Filled.KeyboardArrowDown,contentDescription = "Decrement")
         }
         Text(text = count.toString(), fontSize = 14.sp, color = AzulOscuro)
         IconButton(
@@ -1250,7 +1252,43 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                             //vertical
                             if (i == 0){
                                 println("downright")
-                                val drawable = context.resources.getDrawable(R.drawable.rojo_carretera_1_dcha, null)
+                                var colorEne = R.drawable.amarillo_carretera_1_dcha // valor predeterminado
+
+                                if (jugador_0!!.yo == true) {
+                                    colorEne = when (jugador_0!!.color) {
+                                        "RED" -> R.drawable.rojo_carretera_1_dcha
+                                        "BLUE" -> R.drawable.azul_carretera_1_dcha
+                                        "GREEN" -> R.drawable.verde_carretera_1_dcha
+                                        else -> R.drawable.amarillo_carretera_1_dcha
+                                    }
+                                }
+                                if (jugador_1!!.yo == true) {
+                                    colorEne = when (jugador_1!!.color) {
+                                        "RED" -> R.drawable.rojo_carretera_1_dcha
+                                        "BLUE" -> R.drawable.azul_carretera_1_dcha
+                                        "GREEN" -> R.drawable.verde_carretera_1_dcha
+                                        else -> R.drawable.amarillo_carretera_1_dcha
+                                    }
+                                }
+                                if (jugador_2!!.yo == true) {
+                                    colorEne = when (jugador_2!!.color) {
+                                        "RED" -> R.drawable.rojo_carretera_1_dcha
+                                        "BLUE" -> R.drawable.azul_carretera_1_dcha
+                                        "GREEN" -> R.drawable.verde_carretera_1_dcha
+                                        else -> R.drawable.amarillo_carretera_1_dcha
+                                    }
+                                }
+                                if (jugador_3!!.yo == true) {
+                                    colorEne = when (jugador_3!!.color) {
+                                        "RED" -> R.drawable.rojo_carretera_1_dcha
+                                        "BLUE" -> R.drawable.azul_carretera_1_dcha
+                                        "GREEN" -> R.drawable.verde_carretera_1_dcha
+                                        else -> R.drawable.amarillo_carretera_1_dcha
+                                    }
+                                }
+
+
+                                val drawable = context.resources.getDrawable(colorEne, null)
 
                                 // Dibujar la imagen en el canvas
                                 drawable.setBounds((tileX + 2).toInt(), (tileY + 30).toInt(), (tileX + 85).toInt(), (tileY + 100).toInt())
@@ -1261,7 +1299,41 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                             }
                             else if (i ==1){
                                 println("downleft")
-                                val drawable = context.resources.getDrawable(R.drawable.rojo_carretera_1_izq, null)
+                                var colorEne = R.drawable.amarillo_carretera_1_izq // valor predeterminado
+
+                                if (jugador_0!!.yo == true) {
+                                    colorEne = when (jugador_0!!.color) {
+                                        "RED" -> R.drawable.rojo_carretera_1_izq
+                                        "BLUE" -> R.drawable.azul_carretera_1_izq
+                                        "GREEN" -> R.drawable.verde_carretera_1_izq
+                                        else -> R.drawable.amarillo_carretera_1_izq
+                                    }
+                                }
+                                if (jugador_1!!.yo == true) {
+                                    colorEne = when (jugador_1!!.color) {
+                                        "RED" -> R.drawable.rojo_carretera_1_izq
+                                        "BLUE" -> R.drawable.azul_carretera_1_izq
+                                        "GREEN" -> R.drawable.verde_carretera_1_izq
+                                        else -> R.drawable.amarillo_carretera_1_izq
+                                    }
+                                }
+                                if (jugador_2!!.yo == true) {
+                                    colorEne = when (jugador_2!!.color) {
+                                        "RED" -> R.drawable.rojo_carretera_1_izq
+                                        "BLUE" -> R.drawable.azul_carretera_1_izq
+                                        "GREEN" -> R.drawable.verde_carretera_1_izq
+                                        else -> R.drawable.amarillo_carretera_1_izq
+                                    }
+                                }
+                                if (jugador_3!!.yo == true) {
+                                    colorEne = when (jugador_3!!.color) {
+                                        "RED" -> R.drawable.rojo_carretera_1_izq
+                                        "BLUE" -> R.drawable.azul_carretera_1_izq
+                                        "GREEN" -> R.drawable.verde_carretera_1_izq
+                                        else -> R.drawable.amarillo_carretera_1_izq
+                                    }
+                                }
+                                val drawable = context.resources.getDrawable(colorEne, null)
 
                                 // Dibujar la imagen en el canvas
                                 drawable.setBounds((tileX - 85).toInt(), (tileY + 30).toInt(), (tileX + 2).toInt(), (tileY + 100).toInt())
@@ -1271,7 +1343,41 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                             //izq
                             else if (i ==2){
                                 println("left")
-                                val drawable = context.resources.getDrawable(R.drawable.rojo_carretera_1, null)
+                                var colorEne = R.drawable.amarillo_carretera_1 // valor predeterminado
+
+                                if (jugador_0!!.yo == true) {
+                                    colorEne = when (jugador_0!!.color) {
+                                        "RED" -> R.drawable.rojo_carretera_1
+                                        "BLUE" -> R.drawable.azul_carretera_1
+                                        "GREEN" -> R.drawable.verde_carretera_1
+                                        else -> R.drawable.amarillo_carretera_1
+                                    }
+                                }
+                                if (jugador_1!!.yo == true) {
+                                    colorEne = when (jugador_1!!.color) {
+                                        "RED" -> R.drawable.rojo_carretera_1
+                                        "BLUE" -> R.drawable.azul_carretera_1
+                                        "GREEN" -> R.drawable.verde_carretera_1
+                                        else -> R.drawable.amarillo_carretera_1
+                                    }
+                                }
+                                if (jugador_2!!.yo == true) {
+                                    colorEne = when (jugador_2!!.color) {
+                                        "RED" -> R.drawable.rojo_carretera_1
+                                        "BLUE" -> R.drawable.azul_carretera_1
+                                        "GREEN" -> R.drawable.verde_carretera_1
+                                        else -> R.drawable.amarillo_carretera_1
+                                    }
+                                }
+                                if (jugador_3!!.yo == true) {
+                                    colorEne = when (jugador_3!!.color) {
+                                        "RED" -> R.drawable.rojo_carretera_1
+                                        "BLUE" -> R.drawable.azul_carretera_1
+                                        "GREEN" -> R.drawable.verde_carretera_1
+                                        else -> R.drawable.amarillo_carretera_1
+                                    }
+                                }
+                                val drawable = context.resources.getDrawable(colorEne, null)
 
                                 // Dibujar la imagen en el canvas
                                 drawable.setBounds((tileX - 92).toInt(), (tileY - 40).toInt(), (tileX - 65).toInt(), (tileY + 40).toInt())
@@ -1280,7 +1386,42 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                             }
                             else if (i ==3){
                                 println("topleft")
-                                val drawable = context.resources.getDrawable(R.drawable.rojo_carretera_1_dcha, null)
+                                var colorEne = R.drawable.amarillo_carretera_1_dcha // valor predeterminado
+
+                                if (jugador_0!!.yo == true) {
+                                    colorEne = when (jugador_0!!.color) {
+                                        "RED" -> R.drawable.rojo_carretera_1_dcha
+                                        "BLUE" -> R.drawable.azul_carretera_1_dcha
+                                        "GREEN" -> R.drawable.verde_carretera_1_dcha
+                                        else -> R.drawable.amarillo_carretera_1_dcha
+                                    }
+                                }
+                                if (jugador_1!!.yo == true) {
+                                    colorEne = when (jugador_1!!.color) {
+                                        "RED" -> R.drawable.rojo_carretera_1_dcha
+                                        "BLUE" -> R.drawable.azul_carretera_1_dcha
+                                        "GREEN" -> R.drawable.verde_carretera_1_dcha
+                                        else -> R.drawable.amarillo_carretera_1_dcha
+                                    }
+                                }
+                                if (jugador_2!!.yo == true) {
+                                    colorEne = when (jugador_2!!.color) {
+                                        "RED" -> R.drawable.rojo_carretera_1_dcha
+                                        "BLUE" -> R.drawable.azul_carretera_1_dcha
+                                        "GREEN" -> R.drawable.verde_carretera_1_dcha
+                                        else -> R.drawable.amarillo_carretera_1_dcha
+                                    }
+                                }
+                                if (jugador_3!!.yo == true) {
+                                    colorEne = when (jugador_3!!.color) {
+                                        "RED" -> R.drawable.rojo_carretera_1_dcha
+                                        "BLUE" -> R.drawable.azul_carretera_1_dcha
+                                        "GREEN" -> R.drawable.verde_carretera_1_dcha
+                                        else -> R.drawable.amarillo_carretera_1_dcha
+                                    }
+                                }
+
+                                val drawable = context.resources.getDrawable(colorEne, null)
 
                                 // Dibujar la imagen en el canvas
                                 drawable.setBounds((tileX - 85).toInt(), (tileY - 105).toInt(), (tileX - 1).toInt(), (tileY - 35).toInt())
@@ -1292,7 +1433,42 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                             //dcha
                             else if (i ==4){
                                 println("topright")
-                                val drawable = context.resources.getDrawable(R.drawable.rojo_carretera_1_izq, null)
+
+                                var colorEne = R.drawable.amarillo_carretera_1_izq // valor predeterminado
+
+                                if (jugador_0!!.yo == true) {
+                                    colorEne = when (jugador_0!!.color) {
+                                        "RED" -> R.drawable.rojo_carretera_1_izq
+                                        "BLUE" -> R.drawable.azul_carretera_1_izq
+                                        "GREEN" -> R.drawable.verde_carretera_1_izq
+                                        else -> R.drawable.amarillo_carretera_1_izq
+                                    }
+                                }
+                                if (jugador_1!!.yo == true) {
+                                    colorEne = when (jugador_1!!.color) {
+                                        "RED" -> R.drawable.rojo_carretera_1_izq
+                                        "BLUE" -> R.drawable.azul_carretera_1_izq
+                                        "GREEN" -> R.drawable.verde_carretera_1_izq
+                                        else -> R.drawable.amarillo_carretera_1_izq
+                                    }
+                                }
+                                if (jugador_2!!.yo == true) {
+                                    colorEne = when (jugador_2!!.color) {
+                                        "RED" -> R.drawable.rojo_carretera_1_izq
+                                        "BLUE" -> R.drawable.azul_carretera_1_izq
+                                        "GREEN" -> R.drawable.verde_carretera_1_izq
+                                        else -> R.drawable.amarillo_carretera_1_izq
+                                    }
+                                }
+                                if (jugador_3!!.yo == true) {
+                                    colorEne = when (jugador_3!!.color) {
+                                        "RED" -> R.drawable.rojo_carretera_1_izq
+                                        "BLUE" -> R.drawable.azul_carretera_1_izq
+                                        "GREEN" -> R.drawable.verde_carretera_1_izq
+                                        else -> R.drawable.amarillo_carretera_1_izq
+                                    }
+                                }
+                                val drawable = context.resources.getDrawable(colorEne, null)
 
                                 // Dibujar la imagen en el canvas
                                 drawable.setBounds((tileX -1).toInt(), (tileY-105).toInt(), (tileX + 82).toInt(), (tileY + -35).toInt())
@@ -1300,6 +1476,40 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                             }
                             else if (i==5){
                                 println("right")
+                                var colorEne = R.drawable.amarillo_carretera_1 // valor predeterminado
+
+                                if (jugador_0!!.yo == true) {
+                                    colorEne = when (jugador_0!!.color) {
+                                        "RED" -> R.drawable.rojo_carretera_1
+                                        "BLUE" -> R.drawable.azul_carretera_1
+                                        "GREEN" -> R.drawable.verde_carretera_1
+                                        else -> R.drawable.amarillo_carretera_1
+                                    }
+                                }
+                                if (jugador_1!!.yo == true) {
+                                    colorEne = when (jugador_1!!.color) {
+                                        "RED" -> R.drawable.rojo_carretera_1
+                                        "BLUE" -> R.drawable.azul_carretera_1
+                                        "GREEN" -> R.drawable.verde_carretera_1
+                                        else -> R.drawable.amarillo_carretera_1
+                                    }
+                                }
+                                if (jugador_2!!.yo == true) {
+                                    colorEne = when (jugador_2!!.color) {
+                                        "RED" -> R.drawable.rojo_carretera_1
+                                        "BLUE" -> R.drawable.azul_carretera_1
+                                        "GREEN" -> R.drawable.verde_carretera_1
+                                        else -> R.drawable.amarillo_carretera_1
+                                    }
+                                }
+                                if (jugador_3!!.yo == true) {
+                                    colorEne = when (jugador_3!!.color) {
+                                        "RED" -> R.drawable.rojo_carretera_1
+                                        "BLUE" -> R.drawable.azul_carretera_1
+                                        "GREEN" -> R.drawable.verde_carretera_1
+                                        else -> R.drawable.amarillo_carretera_1
+                                    }
+                                }
                                 val drawable = context.resources.getDrawable(R.drawable.rojo_carretera_1, null)
 
                                 // Dibujar la imagen en el canvas
