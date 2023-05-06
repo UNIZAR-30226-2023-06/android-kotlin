@@ -49,6 +49,7 @@ import com.example.mycatan.ui.theme.*
 import kotlinx.coroutines.*
 import okhttp3.Route
 
+var stopBuscar = false
 @OptIn(ExperimentalAnimationApi::class)
 class MyViewModel : ViewModel() {
 @Composable
@@ -308,7 +309,7 @@ fun HomePage(navController: NavHostController) {
 suspend fun buscarJugadores(buscarPartida: Boolean): Deferred<Boolean> {
     return withContext(Dispatchers.Default) {
         var jugadoresEncontrados = false
-        while (!jugadoresEncontrados && buscarPartida) {
+        while (!jugadoresEncontrados && buscarPartida && !stopBuscar) {
             if(getLobbyFromPlayer(Globals.Token)){
                 jugadoresEncontrados=true
                 break
@@ -432,8 +433,8 @@ fun BuscarPartida(value: String, setShowDialog: (Boolean) -> Unit, setValue: (St
                                 .clickable {
                                     // CUANDO SE PULSE EL BOTÓN DE CANCELAR, SE DEBE CANCELAR LA BÚSQUEDA DE PARTIDA
                                     setShowDialog(false)
-                                    // TODO: ANTES DE ESTO COMPROBAR SI ESTOY YA EN UN LOBBY, SI ESTOY, SACAR POP-UP DE LISTO
-
+                                    // INDICAMOS QUE YA NO QUEREMOS SEGUIR BUSCANDO LOBBY
+                                    stopBuscar = true
                                     if (stopSearchingLobby(Globals.Token)) {
                                         Toast.makeText(context, "Se ha cancelado la partida", Toast.LENGTH_SHORT,).show()
                                     } else {
@@ -608,6 +609,8 @@ fun CancelarListo(value: String, setShowDialog: (Boolean) -> Unit, navController
                                         Thread.sleep(1000)
                                         if(numOfReadyPlayers(Globals.Token)){
                                             iniciaPartica = true
+                                            //Recoger la información del lobby
+                                            getGameState(Globals.lobbyId)
                                             //Navegar a la pantalla de juego
                                             navController.navigate(Routes.CatanBoard.route)
                                         }

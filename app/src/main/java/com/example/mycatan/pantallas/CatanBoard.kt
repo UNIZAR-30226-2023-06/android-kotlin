@@ -46,35 +46,101 @@ import com.example.mycatan.dBaux.changeProfilePicture
 import com.example.mycatan.others.*
 
 var clickedVertex: Offset? = null
+class Jugador(var yo: Boolean, var nombre: String, var color: String, var imagen: String, var puntos: Int, var piezas: String, var tablero: String)
 @Composable
 fun CatanBoard(navController: NavHostController) {
 
-    Partida.Madera = "5"
-    Partida.Arcilla = "5"
-    Partida.Roca = "5"
-    Partida.Ovejas = "5"
-    Partida.Trigo = "5"
+    // INICIALIZACIÓN DE LOS JUGADORES EN EL TABLERO -----------------------------------------
+    var jugador_0: Jugador? = null
+    var jugador_1: Jugador? = null
+    var jugador_2: Jugador? = null
+    var jugador_3: Jugador? = null
 
+    if ( Globals.gameState.getString("player_0") != null){ // Primer jugador
+        val jugador0 = Globals.gameState.getJSONObject("player_0")
+        jugador_0 = Jugador (yo = jugador0.getString("id") == Globals.Id,
+            nombre = jugador0.getString("name"),
+            color = jugador0.getString("color"),
+            imagen = jugador0.getString("profile_pic"),
+            puntos = jugador0.getInt("victory_points"),
+            piezas = jugador0.getString("selected_pieces_skin"),
+            tablero = jugador0.getString("selected_grid_skin")
+        )
+        if (jugador_0.yo == true){
+            Partida.Madera = jugador0.getJSONObject("hand").getString("wood")
+            Partida.Ovejas = jugador0.getJSONObject("hand").getString("sheep")
+            Partida.Trigo = jugador0.getJSONObject("hand").getString("wheat")
+            Partida.Arcilla = jugador0.getJSONObject("hand").getString("brick")
+            Partida.Roca = jugador0.getJSONObject("hand").getString("rock")
+        }
+    }
+
+    if ( Globals.gameState.getString("player_1") != null){ // Segundo jugador
+        val jugador1 = Globals.gameState.getJSONObject("player_1")
+        jugador_1 = Jugador (yo = jugador1.getString("id") == Globals.Id,
+            nombre = jugador1.getString("name"),
+            color = jugador1.getString("color"),
+            imagen = jugador1.getString("profile_pic"),
+            puntos = jugador1.getInt("victory_points"),
+            piezas = jugador1.getString("selected_pieces_skin"),
+            tablero = jugador1.getString("selected_grid_skin")
+        )
+        if (jugador_1.yo == true){
+            Partida.Madera = jugador1.getJSONObject("hand").getString("wood")
+            Partida.Ovejas = jugador1.getJSONObject("hand").getString("sheep")
+            Partida.Trigo = jugador1.getJSONObject("hand").getString("wheat")
+            Partida.Arcilla = jugador1.getJSONObject("hand").getString("brick")
+            Partida.Roca = jugador1.getJSONObject("hand").getString("rock")
+        }
+    }
+
+    if ( Globals.gameState.getString("player_2") != null){ // Tercer jugador
+        val jugador2 = Globals.gameState.getJSONObject("player_2")
+        jugador_2 = Jugador (yo = jugador2.getString("id") == Globals.Id,
+            nombre = jugador2.getString("name"),
+            color = jugador2.getString("color"),
+            imagen = jugador2.getString("profile_pic"),
+            puntos = jugador2.getInt("victory_points"),
+            piezas = jugador2.getString("selected_pieces_skin"),
+            tablero = jugador2.getString("selected_grid_skin")
+        )
+        if (jugador_2.yo == true){
+            Partida.Madera = jugador2.getJSONObject("hand").getString("wood")
+            Partida.Ovejas = jugador2.getJSONObject("hand").getString("sheep")
+            Partida.Trigo = jugador2.getJSONObject("hand").getString("wheat")
+            Partida.Arcilla = jugador2.getJSONObject("hand").getString("brick")
+            Partida.Roca = jugador2.getJSONObject("hand").getString("rock")
+        }
+    }
+
+    if ( Globals.gameState.getString("player_3") != null){ // Tercer jugador
+        val jugador3 = Globals.gameState.getJSONObject("player_3")
+        jugador_3 = Jugador (yo = jugador3.getString("id") == Globals.Id,
+            nombre = jugador3.getString("name"),
+            color = jugador3.getString("color"),
+            imagen = jugador3.getString("profile_pic"),
+            puntos = jugador3.getInt("victory_points"),
+            piezas = jugador3.getString("selected_pieces_skin"),
+            tablero = jugador3.getString("selected_grid_skin")
+        )
+        if (jugador_3.yo == true){
+            Partida.Madera = jugador3.getJSONObject("hand").getString("wood")
+            Partida.Ovejas = jugador3.getJSONObject("hand").getString("sheep")
+            Partida.Trigo = jugador3.getJSONObject("hand").getString("wheat")
+            Partida.Arcilla = jugador3.getJSONObject("hand").getString("brick")
+            Partida.Roca = jugador3.getJSONObject("hand").getString("rock")
+        }
+    }
 
     val showTablaCostes =  remember { mutableStateOf(false) }
+
+    val tradePlayer0 =  remember { mutableStateOf(false) }
     val tradePlayer1 =  remember { mutableStateOf(false) }
     val tradePlayer2 =  remember { mutableStateOf(false) }
     val tradePlayer3 =  remember { mutableStateOf(false) }
 
     var showConstruir =  remember { mutableStateOf(false) }
     var verticeChosen = remember { mutableStateOf("nada") }
-
-
-    //Registro nombres de los jugadores
-    var namePlayer1 =  remember { mutableStateOf("player1") }
-    var namePlayer2 =  remember { mutableStateOf("player2") }
-    var namePlayer3 =  remember { mutableStateOf("player3") }
-
-    //Registro fotos de los jugadores
-    Globals.Personaje  = "0 " //temporal
-    val paint1 =  remember { mutableStateOf("1") }
-    val paint2 =  remember { mutableStateOf("3") }
-    val paint3 =  remember { mutableStateOf("2") }
 
 
 
@@ -180,46 +246,150 @@ fun CatanBoard(navController: NavHostController) {
                 showTablaCostes(setShowDialog = {
                     showTablaCostes.value = it
                 })
-            if(tradePlayer1.value)
-                showTrading(name = namePlayer1.value , foto = paint1.value , setShowDialog = {tradePlayer1.value = it})
-            if(tradePlayer2.value)
-                showTrading(name = namePlayer2.value , foto = paint2.value , setShowDialog = {tradePlayer2.value = it})
-            if(tradePlayer3.value)
-                showTrading(name = namePlayer3.value , foto = paint3.value , setShowDialog = {tradePlayer3.value = it})
+
+            // DIBUJANDO LAS CARDS DE LOS PLAYERS ----------------------------------------------
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Top
+            ) {
+                Column( modifier = Modifier.weight(1f)
+                ){
+                    if (jugador_0 != null ){
+                        // Pop-up de intercambio de elementos
+                        if(tradePlayer0.value && jugador_0.yo != true)
+                            showTrading(name = jugador_0.nombre, foto = jugador_0.imagen , setShowDialog = {tradePlayer0.value = it})
+                        // Cajita con la info del usuario
+                        Box (
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        {
+                            val colorEne = when (jugador_0.color) {
+                                "RED" -> Rojo
+                                "BLUE" -> Azul
+                                "GREEN" -> Verde
+                                else -> Amarillo
+                            }
+                            dataJugador(player = 0 ,
+                                colorEne = colorEne,
+                                foto = jugador_0.imagen ,
+                                ptsV = jugador_0.puntos ,
+                                ejercito = false,
+                                carreteras = false,
+                                onCardClick = {
+                                    if(jugador_0.yo != true){
+                                        tradePlayer0.value = true
+                                    }
+                                })
+
+                        }
+
+                    }
+
+                    Spacer(modifier = Modifier.height(5.dp))
+
+                    if (jugador_1 != null ) {
+                        if(tradePlayer1.value && jugador_1.yo != true)
+                            showTrading(name = jugador_1.nombre, foto = jugador_1.imagen , setShowDialog = {tradePlayer1.value = it})
+                        // Cajita con la info del usuario
+                        Box (
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        {
+                            val colorEne = when (jugador_1.color) {
+                                "RED" -> Rojo
+                                "BLUE" -> Azul
+                                "GREEN" -> Verde
+                                else -> Amarillo
+                            }
+                            dataJugador(player = 1,
+                                colorEne = colorEne,
+                                foto = jugador_1.imagen ,
+                                ptsV = jugador_1.puntos ,
+                                ejercito = false,
+                                carreteras = false,
+                                onCardClick = {
+                                    if(jugador_1.yo != true){
+                                        tradePlayer1.value = true
+                                    }
+                                })
+
+                        }
+
+                    }
+                }
+
+                Column(modifier = Modifier.weight(1f)){
+                    if (jugador_2 != null ) {
+                        if(tradePlayer2.value && jugador_2.yo != true)
+                            showTrading(name = jugador_2.nombre, foto = jugador_2.imagen , setShowDialog = {tradePlayer2.value = it})
+                        // Cajita con la info del usuario
+                        Box (
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        {
+                            val colorEne = when (jugador_2.color) {
+                                "RED" -> Rojo
+                                "BLUE" -> Azul
+                                "GREEN" -> Verde
+                                else -> Amarillo
+                            }
+                            dataJugador(player = 2 ,
+                                colorEne = colorEne,
+                                foto = jugador_2.imagen ,
+                                ptsV = jugador_2.puntos ,
+                                ejercito = false,
+                                carreteras = false,
+                                onCardClick = {
+                                    if(jugador_2.yo != true){
+                                        tradePlayer2.value = true
+                                    }
+                                })
+
+                        }
+
+                    }
+
+                    Spacer(modifier = Modifier.height(5.dp))
+                    if (jugador_3 != null) {
+                        if(tradePlayer3.value && jugador_3.yo != true)
+                            showTrading(name = jugador_3.nombre, foto = jugador_3.imagen , setShowDialog = {tradePlayer3.value = it})
+                        // Cajita con la info del usuario
+                        Box (
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                        {
+                            val colorEne = when (jugador_3.color) {
+                                "RED" -> Rojo
+                                "BLUE" -> Azul
+                                "GREEN" -> Verde
+                                else -> Amarillo
+                            }
+                            dataJugador(player = 3 ,
+                                colorEne = colorEne,
+                                foto = jugador_3.imagen ,
+                                ptsV = jugador_3.puntos ,
+                                ejercito = false,
+                                carreteras = false,
+                                onCardClick = {
+                                    if(jugador_3.yo != true){
+                                        tradePlayer3.value = true
+                                    }
+                                })
+
+                        }
+
+                    }
+                }
+
+
+            }
+
             if(showConstruir.value)
                 showConstruir(idVert = verticeChosen.value , setShowDialog = {showConstruir.value = it})
 
-            //Jugadores
-            Box (
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.TopStart
-            )
-            {
-                dataJugador(player = 1 ,colorEne = Verde, foto = paint1.value , ptsV = 5 , ejercito = false, carreteras = false, onCardClick = { tradePlayer1.value=true })
 
-            }
-
-            Box (
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.TopEnd
-            )
-            {
-                dataJugador(player = 2,colorEne = Rojo, foto = paint2.value, ptsV = 2, ejercito = false, carreteras = false, onCardClick = { tradePlayer2.value=true })
-
-            }
-
-            Box (
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(0.dp, 0.dp, 0.dp, 55.dp),
-                contentAlignment = Alignment.BottomEnd
-            )
-            {
-
-                dataJugador(player = 3 ,colorEne = Purple200, foto = paint3.value, ptsV = 3, ejercito = true, carreteras = false, onCardClick = { tradePlayer3.value=true })
-
-            }
-            //MI INFO
+            //INFORMACIÓN PROPIA DEL JUGADOR ( RECURSOS ) --------------------------------------------------
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -266,28 +436,6 @@ fun CatanBoard(navController: NavHostController) {
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(5.dp))
-
-                    //Chat
-                   /* Button(
-                        onClick = { navController.navigate(Routes.Chat.route)},
-                        modifier = Modifier
-                            .width(50.dp)
-                            .height(50.dp),
-                        shape = RoundedCornerShape(15.dp),
-                        colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
-
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Email,
-                            contentDescription = null,
-                            tint = Blanco
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(5.dp))*/
-
-                    dataJugador(player = 0 ,colorEne = Amarillo,foto = Globals.Personaje,  ptsV = 3, ejercito = false, carreteras = true, onCardClick = {})
                 }
             }
 
@@ -486,9 +634,9 @@ fun playerFoto(modifier: Modifier, foto: String){
     }
 }
 
-
+// DIALOG DE INTERCAMBIO DE RECURSOSO --------------------------------------------------------------
 @Composable
-fun showTrading(name :String ,foto: String, setShowDialog: (Boolean) -> Unit) {
+fun showTrading(name: String ,foto: String, setShowDialog: (Boolean) -> Unit) {
 
     val context = LocalContext.current
 

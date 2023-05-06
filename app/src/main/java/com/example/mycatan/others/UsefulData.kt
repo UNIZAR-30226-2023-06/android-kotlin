@@ -10,11 +10,14 @@ import androidx.compose.ui.graphics.Vertices
 import com.example.mycatan.pantallas.Tile
 import com.example.mycatan.pantallas.clickedVertex
 import com.example.mycatan.pantallas.getHexagonVertices
+import kotlinx.serialization.json.Json
+import org.json.JSONObject
 import kotlin.math.pow
 import kotlin.math.sqrt
+import kotlin.properties.Delegates
 
 //Javi 192.168.1.39
-val ipBackend = "192.168.1.135"
+val ipBackend = "192.168.1.143"
 //loreto: "192.168.1.133       "192.168.1.139"    10.1.54.191"
 
 object Globals {
@@ -33,6 +36,12 @@ object Globals {
     lateinit var Piezas: String
     lateinit var Mapa: String
     lateinit var lobbyId: String
+    // El JSON COMPLETO DEL JUEGO/LOBBY
+    // EJEMPLO, Si quieres coger información sobre los jugadores del lobby, haces:
+    // Globals.juego.getJSONObject("game").getJSONArray("jugadores")
+    lateinit var juego: JSONObject
+    lateinit var gameState: JSONObject
+
 }
 
 object Partida {
@@ -88,5 +97,58 @@ fun inicializarAristas() {
         Partida.Aristas[clave] = "nada"
     }
 }
+
+
+/*
+object Lobby {
+    lateinit var id: String
+    var is_full by Delegates.notNull<Boolean>()
+    var game_has_started by Delegates.notNull<Boolean>()
+    lateinit var max_Players: Number
+    lateinit var current_Players: Number
+    lateinit var game: Game
+    var hay_ladron by Delegates.notNull<Boolean>()
+    lateinit var max_tiempo_turno: Number
+    lateinit var elo: Number
+}
+
+object Mano {
+    lateinit var cartas_desarrollo: Array<Number>
+    lateinit var arcilla: Number
+    lateinit var madera: Number
+    lateinit var trigo: Number
+    lateinit var piedra: Number
+    lateinit var oveja: Number
+}
+
+object Jugadores {
+    lateinit var id: String
+    lateinit var puntos_victoria: Number
+    lateinit var color: Number
+    lateinit var mano: Mano
+    lateinit var caballeros_usados: Number
+    var tiene_bono_carreteras by Delegates.notNull<Boolean>()
+    var tiene_bono_caballeros by Delegates.notNull<Boolean>()
+    var esta_preparado by Delegates.notNull<Boolean>()
+    lateinit var elo: Number
+    var activo by Delegates.notNull<Boolean>()
+}
+
+object Board {
+    lateinit var board: Array<Number>
+
+}
+
+object Game {
+    lateinit var jugadores: Array<Jugadores>
+    lateinit var num_jugadores: Number
+    lateinit var num_jugadores_activos: Number
+    lateinit var turno: Number
+    lateinit var fase_turno: Number
+    lateinit var tiempo_turno: Number
+    lateinit var jugadores_seleccionados: Array<Number>
+    var hay_ladron by Delegates.notNull<Boolean>()
+    lateinit var board: Board
+}*/
 
 

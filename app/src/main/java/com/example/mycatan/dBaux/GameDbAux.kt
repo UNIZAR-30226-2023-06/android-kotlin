@@ -70,3 +70,56 @@ fun setPlayerReady( token: String ): Boolean {
     return result
 
 }
+
+/*
+    Da el estado de la partida del jugador
+    @param: token del jugador
+    @return: true si se esta buscando partida, false si ya esta en un lobby y no busca
+ */
+fun getGameState( idlobby: String ): Boolean {
+    var result = false
+    val latch = CountDownLatch(1)
+
+    val request = Request.Builder()
+        .url("http://$ipBackend:8000/game_phases/get_game_state?lobby_id=$idlobby")
+        .get()
+        .addHeader("accept", "application/json")
+        .addHeader("Content-Type", "application/x-www-form-urlencoded")
+        .build()
+
+    val client = OkHttpClient()
+
+    client.newCall(request).enqueue(object : Callback {
+        override fun onFailure(call: Call, e: IOException) {
+            println("ERROR al conectar con backend")
+            latch.countDown()
+        }
+
+        override fun onResponse(call: Call, response: Response) {
+            val respuesta = response.body?.string().toString()
+
+            println(respuesta)
+            //transform the string to json object
+            val json = JSONObject(respuesta)
+            //get the string from the response
+            val status = try {
+                json.getString("player_0")
+            } catch (e: JSONException) {
+                "error"
+            }
+
+            if (status == "error") {
+                println("Error al coger el status del juego")
+            } else {
+                println("Game started")
+                result = true
+                Globals.gameState = json
+                println("JSON DEL GAME STATUS ${Globals.gameState}")
+            }
+            latch.countDown()
+        }
+    })
+    latch.await()
+    return result
+
+}
