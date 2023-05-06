@@ -146,12 +146,13 @@ fun CatanBoard(navController: NavHostController) {
 
     // set up all transformation states
     var scale by remember { mutableStateOf(1f) }
-    var rotation by remember { mutableStateOf(0f) }
+    //var rotation by remember { mutableStateOf(0f) }
     var offset by remember { mutableStateOf(Offset.Zero) }
     val state = rememberTransformableState { zoomChange, offsetChange, rotationChange ->
         scale *= zoomChange
         offset += offsetChange
     }
+    // TODO: TRAER DEL BACKEND ESTA INFO DEL TABLERO
     val tiles = listOf(
         Tile("bosque", 5, thief = false , Pair(0, 0), id = "37"),
         Tile("cultivos", 2, thief = false ,Pair(1, 0), id = "59"),
@@ -175,6 +176,7 @@ fun CatanBoard(navController: NavHostController) {
 
     )
     Scaffold(
+        // BOTTOM BAR DE NAVEGACIÓN ----------------------------------------------------------------
         bottomBar = {
             BottomAppBar {
                 BottomNavigationItem(
@@ -228,7 +230,7 @@ fun CatanBoard(navController: NavHostController) {
                     .graphicsLayer(
                         scaleX = scale,
                         scaleY = scale,
-                        rotationZ = rotation,
+                        // rotationZ = rotation,
                         translationX = offset.x,
                         translationY = offset.y
                     )
@@ -242,6 +244,7 @@ fun CatanBoard(navController: NavHostController) {
                 TileGrid(tiles = tiles, chosenV = {verticeChosen.value = it}, onVerticeClick = {showConstruir.value = true} )
             }
 
+            // MOSTRAR LA TABLA DE COSTES ------------------------------------------------------
             if(showTablaCostes.value)
                 showTablaCostes(setShowDialog = {
                     showTablaCostes.value = it
@@ -508,9 +511,9 @@ fun incIntercambio( tipo : String, mainPlayer: Boolean){
                     count--
                 } },
             modifier = Modifier.size(25.dp)  ) {
-            Icon(Icons.Filled.KeyboardArrowDown,contentDescription = "Decrement",)
+            Icon(Icons.Filled.KeyboardArrowDown,contentDescription = "Decrement", color = AzulOscuro)
         }
-        Text(text = count.toString(), fontSize = 14.sp,)
+        Text(text = count.toString(), fontSize = 14.sp, color = AzulOscuro)
         IconButton(
             onClick = {
                 if (mainPlayer){
@@ -623,7 +626,6 @@ fun playerFoto(modifier: Modifier, foto: String){
 
     Card(
         modifier = modifier,
-
         shape = CircleShape,
         backgroundColor = Blanco,
     ){
@@ -637,8 +639,6 @@ fun playerFoto(modifier: Modifier, foto: String){
 // DIALOG DE INTERCAMBIO DE RECURSOSO --------------------------------------------------------------
 @Composable
 fun showTrading(name: String ,foto: String, setShowDialog: (Boolean) -> Unit) {
-
-    val context = LocalContext.current
 
     Dialog(onDismissRequest = { setShowDialog(false) }) {
         Surface(
