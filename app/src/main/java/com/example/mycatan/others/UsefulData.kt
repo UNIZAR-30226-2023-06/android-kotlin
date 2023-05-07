@@ -17,8 +17,8 @@ import kotlin.math.sqrt
 import kotlin.properties.Delegates
 
 //Javi 192.168.1.39
-val ipBackend = "192.168.1.143"
-//loreto: "192.168.1.133       "192.168.1.139"    10.1.54.191"
+val ipBackend = "192.168.1.39"
+//loreto: "192.168.1.133       "192.168.1.139"    10.1.54.191" "192.168.1.143"
 
 object Globals {
     lateinit var Token: String

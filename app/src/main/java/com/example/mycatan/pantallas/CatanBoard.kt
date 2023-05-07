@@ -72,7 +72,7 @@ fun CatanBoard(navController: NavHostController) {
             Partida.Madera = jugador0.getJSONObject("hand").getString("wood")
             Partida.Ovejas = jugador0.getJSONObject("hand").getString("sheep")
             Partida.Trigo = jugador0.getJSONObject("hand").getString("wheat")
-            Partida.Arcilla = jugador0.getJSONObject("hand").getString("brick")
+            Partida.Arcilla = jugador0.getJSONObject("hand").getString("clay")
             Partida.Roca = jugador0.getJSONObject("hand").getString("rock")
         }
     }
@@ -91,7 +91,7 @@ fun CatanBoard(navController: NavHostController) {
             Partida.Madera = jugador1.getJSONObject("hand").getString("wood")
             Partida.Ovejas = jugador1.getJSONObject("hand").getString("sheep")
             Partida.Trigo = jugador1.getJSONObject("hand").getString("wheat")
-            Partida.Arcilla = jugador1.getJSONObject("hand").getString("brick")
+            Partida.Arcilla = jugador1.getJSONObject("hand").getString("clay")
             Partida.Roca = jugador1.getJSONObject("hand").getString("rock")
         }
     }
@@ -110,7 +110,7 @@ fun CatanBoard(navController: NavHostController) {
             Partida.Madera = jugador2.getJSONObject("hand").getString("wood")
             Partida.Ovejas = jugador2.getJSONObject("hand").getString("sheep")
             Partida.Trigo = jugador2.getJSONObject("hand").getString("wheat")
-            Partida.Arcilla = jugador2.getJSONObject("hand").getString("brick")
+            Partida.Arcilla = jugador2.getJSONObject("hand").getString("clay")
             Partida.Roca = jugador2.getJSONObject("hand").getString("rock")
         }
     }
@@ -129,7 +129,7 @@ fun CatanBoard(navController: NavHostController) {
             Partida.Madera = jugador3.getJSONObject("hand").getString("wood")
             Partida.Ovejas = jugador3.getJSONObject("hand").getString("sheep")
             Partida.Trigo = jugador3.getJSONObject("hand").getString("wheat")
-            Partida.Arcilla = jugador3.getJSONObject("hand").getString("brick")
+            Partida.Arcilla = jugador3.getJSONObject("hand").getString("clay")
             Partida.Roca = jugador3.getJSONObject("hand").getString("rock")
         }
     }
