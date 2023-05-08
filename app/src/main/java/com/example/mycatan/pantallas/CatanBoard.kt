@@ -146,7 +146,9 @@ fun CatanBoard(navController: NavHostController) {
     val tradePlayer3 =  remember { mutableStateOf(false) }
 
     var showConstruir =  remember { mutableStateOf(false) }
+    var showCamino =  remember { mutableStateOf(false) }
     var verticeChosen = remember { mutableStateOf("nada") }
+    var aristaChosen = remember { mutableStateOf("nada") }
 
 
 
@@ -270,7 +272,7 @@ fun CatanBoard(navController: NavHostController) {
                 contentAlignment = Alignment.Center
             ) {
 
-                TileGrid(tiles = tiles, chosenV = {verticeChosen.value = it}, onVerticeClick = {showConstruir.value = true} )
+                TileGrid(tiles = tiles, chosenV = {verticeChosen.value = it}, onVerticeClick = {showConstruir.value = true}, chosenA = {aristaChosen.value = it}, onAristaClick = {showCamino.value = true} )
             }
 
             // MOSTRAR LA TABLA DE COSTES ------------------------------------------------------
@@ -425,6 +427,8 @@ fun CatanBoard(navController: NavHostController) {
 
             if(showConstruir.value)
                 showConstruir(idVert = verticeChosen.value , setShowDialog = {showConstruir.value = it})
+            if(showCamino.value)
+                construirCamino(idArista = aristaChosen.value , setShowDialog = {showCamino.value = it})
 
 
             //INFORMACIÓN PROPIA DEL JUGADOR ( RECURSOS ) --------------------------------------------------
@@ -954,7 +958,7 @@ class Tile(val terrain: Int, val number: Int, val thief: Boolean,val coordinates
 }
 
 @Composable
-fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () -> Unit) {
+fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () -> Unit, chosenA: (String) -> Unit, onAristaClick: () -> Unit) {
     val context = LocalContext.current
     val isUpdated = remember { mutableStateOf(true) }
     Canvas(modifier = Modifier
@@ -1060,8 +1064,17 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                                     detectClick = true
 
                                     var idCoord = Partida.CoordAristas[coordinate]
-                                    Partida.Aristas[idCoord.toString()] = "carretera"
-                                    println("arista clicada: ${Partida.CoordAristas[coordinate]}")
+
+                                    if (Partida.Aristas[idCoord.toString()] == "nada") {
+                                        println("aristaclicado: ${idCoord.toString()}")
+                                        chosenA(idCoord.toString())
+                                        onAristaClick()
+
+                                    }
+
+
+                                    //Partida.Aristas[idCoord.toString()] = "carretera"
+                                    //println("arista clicada: ${Partida.CoordAristas[coordinate]}")
                                 }
 
                             }
@@ -1878,6 +1891,11 @@ fun buildPoblado(){
     Partida.Arcilla = (Partida.Arcilla.toInt() -1).toString()
 }
 
+fun buildCamino(){
+    Partida.Madera = (Partida.Madera.toInt() -1).toString()
+    Partida.Arcilla = (Partida.Arcilla.toInt() -1).toString()
+}
+
 @Composable
 fun showConstruir( idVert: String, setShowDialog: (Boolean) -> Unit) {
     val partida = remember { mutableStateOf(TextFieldValue()) }
@@ -2138,7 +2156,7 @@ fun showConstruir( idVert: String, setShowDialog: (Boolean) -> Unit) {
 }
 
 @Composable
-fun construirCamino(value: String, setShowDialog: (Boolean) -> Unit) {
+fun construirCamino(idArista: String, setShowDialog: (Boolean) -> Unit) {
 
 
     Dialog(onDismissRequest = { setShowDialog(false) }) {
@@ -2149,10 +2167,9 @@ fun construirCamino(value: String, setShowDialog: (Boolean) -> Unit) {
             Box(
                 contentAlignment = Alignment.Center
             ) {
-                Column(modifier = Modifier.padding(20.dp)) {
+                Column(modifier = Modifier.padding(20.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
 
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -2177,6 +2194,75 @@ fun construirCamino(value: String, setShowDialog: (Boolean) -> Unit) {
                     }
 
                     Spacer(modifier = Modifier.height(20.dp))
+
+                    Image(painter = painterResource(id = R.drawable.rojo_carretera_1_izq), contentDescription = null, modifier = Modifier.size(50.dp))
+
+                    Spacer(modifier = Modifier.height(15.dp))
+
+                    Row(horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+                            Image(painter = painterResource(id = R.drawable.clay), contentDescription = null, modifier = Modifier.size(30.dp))
+                            Text(
+                                text = "1",
+                                color = Blanco,
+                                style = TextStyle(
+                                    fontSize = 18.sp,
+                                    fontFamily = FontFamily.Default,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            )
+                        }
+                        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+                            Image(painter = painterResource(id = R.drawable.wood), contentDescription = null, modifier = Modifier.size(30.dp))
+                            Text(
+                                text = "1",
+                                color = Blanco,
+                                style = TextStyle(
+                                    fontSize = 18.sp,
+                                    fontFamily = FontFamily.Default,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(15.dp))
+
+                    if(Partida.Arcilla.toInt()<=1 && Partida.Madera.toInt()<=1 ){
+                        Button(
+                            onClick = {
+                                Partida.Aristas[idArista] = "carretera"
+                                buildCamino()
+                                setShowDialog(false) },
+                            modifier = Modifier
+                                //.fillMaxWidth(0.5f)
+                                .width(150.dp)
+                                .height(50.dp),
+                            colors = ButtonDefaults.buttonColors(backgroundColor = Verde),
+                            shape = RoundedCornerShape(50.dp),
+                            border = BorderStroke(3.dp, AzulOscuro),
+
+                            ) {
+                            Text(
+                                text = "Construir",
+                                style = TextStyle(
+                                    color = AzulOscuro, fontWeight = FontWeight.Bold
+                                )
+                            )
+                        }
+                    }
+                    else{
+                        Text(
+                            text = "Sin Materiales",
+                            color = Color.Red,
+                            style = TextStyle(
+                                fontSize = 14.sp,
+                                fontFamily = FontFamily.Default,
+                                fontWeight = FontWeight.Bold
+                            ),
+                            textDecoration = TextDecoration.Underline
+                        )
+                    }
 
                 }
             }
