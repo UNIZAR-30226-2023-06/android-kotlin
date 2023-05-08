@@ -61,27 +61,6 @@ fun HomePage(navController: NavHostController) {
     val pendiente by remember { mutableStateOf(getNumAmigosPendiente(Globals.Token)) }
 
 
-    /*val timer = object : CountDownTimer(60000, 1000) { // 60 segundos, 1 segundo por intervalo
-        override fun onTick(millisUntilFinished: Long) {
-            // Aquí puedes actualizar la UI con el tiempo restante
-        }
-
-        override fun onFinish() {
-            // Aquí se lanza la acción cuando se termina el temporizador
-            if (numOfReadyPlayers(Globals.lobbyId)){
-                println("La partida va a comenzar")
-                // Si hay 4 listos, se inicia la partida
-                // Quitar pop-up IGUAL NO HACE FALTA YA QUE SE REDIRIGE A LA PANTALLA DE JUEGO
-                // Redirigir a la pantalla de juego
-                navController.navigate(Routes.CatanBoard.route)
-            } else {
-                // Si se ha acabado el tiempo y no hay 4 listos, se cancela la partida
-                Toast.makeText(context, "Partida cancelada, vuelva a buscar partida", Toast.LENGTH_SHORT).show()
-
-            }
-        }
-    }*/
-
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(

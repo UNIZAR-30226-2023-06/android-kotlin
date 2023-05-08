@@ -1,5 +1,14 @@
 package com.example.mycatan.others
 
+/*val timer = object : CountDownTimer(60000, 1000) { // 60 segundos, 1 segundo por intervalo
+        override fun onTick(millisUntilFinished: Long) {
+            // Aquí puedes actualizar la UI con el tiempo restante
+        }
+
+        override fun onFinish() {
+
+        }
+    }*/
 
 fun turnos(turn_phase: String, playerTurn: String, turn_time: Int){
     // TODO: Hacer un if para cada fase ya que en cada uno se haran acciones diferentes
