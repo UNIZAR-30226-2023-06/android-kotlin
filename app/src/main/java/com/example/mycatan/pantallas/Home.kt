@@ -54,6 +54,9 @@ var stopBuscar = false
 class MyViewModel : ViewModel() {
 @Composable
 fun HomePage(navController: NavHostController) {
+
+
+
     val context = LocalContext.current
     val buscarPartida =  remember { mutableStateOf(false) }
     val unirsePartida =  remember { mutableStateOf(false) }

@@ -629,32 +629,40 @@ fun intercambioRecurso(id: String, mainPlayer: Boolean) {
 fun playerFoto(modifier: Modifier, foto: String){
 
     var painterID : Painter
+    var fotoX = "default"
     //Estoes muy cutre pero no se hacerlo mejor
-    if(foto=="0"){
+
+    if(foto.length==1){
+        fotoX = foto
+    } else if (foto != "default"){
+        fotoX = foto.substring(4)
+    }
+
+    if(fotoX=="0"){
         painterID = painterResource(R.drawable.skin1)
     }
-    else if(foto=="1"){
+    else if(fotoX=="1"){
         painterID = painterResource(R.drawable.skin2)
     }
-    else if(foto=="2"){
+    else if(fotoX=="2"){
         painterID = painterResource(R.drawable.skin3)
     }
-    else if(foto=="3"){
+    else if(fotoX=="3"){
         painterID = painterResource(R.drawable.skin4)
     }
-    else if(foto=="4"){
+    else if(fotoX=="4"){
         painterID = painterResource(R.drawable.skin5)
     }
-    else if(foto=="5"){
+    else if(fotoX=="5"){
         painterID = painterResource(R.drawable.skin6)
     }
-    else if(foto=="6"){
+    else if(fotoX=="6"){
         painterID = painterResource(R.drawable.skin7)
     }
-    else if(foto=="7"){
+    else if(fotoX=="7"){
         painterID = painterResource(R.drawable.skin8)
     }
-    else if (foto=="default")
+    else if (fotoX=="default")
     {
         painterID = painterResource(R.drawable.skin1)
     }
@@ -2228,7 +2236,7 @@ fun construirCamino(idArista: String, setShowDialog: (Boolean) -> Unit) {
 
                     Spacer(modifier = Modifier.height(15.dp))
 
-                    if(Partida.Arcilla.toInt()<=1 && Partida.Madera.toInt()<=1 ){
+                    if(Partida.Arcilla.toInt()>=1 && Partida.Madera.toInt()>=1 ){
                         Button(
                             onClick = {
                                 Partida.Aristas[idArista] = "carretera"
