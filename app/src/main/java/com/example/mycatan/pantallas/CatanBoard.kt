@@ -44,6 +44,7 @@ import androidx.compose.ui.window.Dialog
 import com.example.mycatan.R
 import com.example.mycatan.dBaux.changeProfilePicture
 import com.example.mycatan.others.*
+import org.json.JSONArray
 
 var clickedVertex: Offset? = null
 
@@ -52,11 +53,14 @@ var jugador_1: Jugador? = null
 var jugador_2: Jugador? = null
 var jugador_3: Jugador? = null
 
+var jugadores: JSONArray? = null
+
 class Jugador(var yo: Boolean, var nombre: String, var color: String, var imagen: String, var puntos: Int, var piezas: String, var tablero: String)
 @Composable
 fun CatanBoard(navController: NavHostController) {
 
     // INICIALIZACIÓN DE LOS JUGADORES EN EL TABLERO -----------------------------------------
+
 
     if ( Globals.gameState.getString("player_0") != null){ // Primer jugador
         val jugador0 = Globals.gameState.getJSONObject("player_0")
@@ -154,29 +158,52 @@ fun CatanBoard(navController: NavHostController) {
         scale *= zoomChange
         offset += offsetChange
     }
-    // TODO: TRAER DEL BACKEND ESTA INFO DEL TABLERO
-    val tiles = listOf(
-        Tile("bosque", 5, thief = false , Pair(0, 0), id = "37"),
-        Tile("cultivos", 2, thief = false ,Pair(1, 0), id = "59"),
-        Tile("montaña", 9, thief = false ,Pair(2, 0), id = "7B"),
-        Tile("montaña", 8, thief = false ,Pair(-1, 1), id = "35"),
-        Tile("cultivos", 3, thief = false ,Pair(0, 1), id = "57"),
-        Tile("montaña", 10, thief = false ,Pair(1, 1), id = "79"),
-        Tile("bosque", 6, thief = false ,Pair(2, 1), id = "9B"),
-        Tile("montaña", 12, thief = false ,Pair(-2, 2), id = "33"),
-        Tile("mina", 11, thief = false ,Pair(-1, 2), id = "55"),
-        Tile("campo", 4, thief = false ,Pair(0, 2), id = "77"),
-        Tile("montaña", 8, thief = false ,Pair(1, 2), id = "99"),
-        Tile("mina", 10, thief = false ,Pair(2, 2), id = "BB"),
-        Tile("bosque", 9, thief = false ,Pair(-2, 3), id = "53"),
-        Tile("bosque", 4, thief = false ,Pair(-1, 3), id = "75"),
-        Tile("campo", 5, thief = false ,Pair(0, 3), id = "97"),
-        Tile("montaña", 10, thief = false ,Pair(1, 3), id = "B9"),
-        Tile("desierto", 11, thief = true ,Pair(-2, 4), id = "73"),
-        Tile("bosque", 3, thief = false ,Pair(-1, 4), id = "95"),
-        Tile("montaña", 6, thief = false ,Pair(0, 4), id = "B7")
 
-    )
+    val hexagonos = Globals.gameState.getJSONObject("board").getJSONObject("tiles")
+
+    println("Ladrón: ${Globals.gameState.getBoolean("thief_enabled")} y posición: ${Globals.gameState.getInt("thief_position")}")
+
+    var thief = Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 55
+    val tile37 = Tile(hexagonos.getJSONArray("55")[1] as Int, hexagonos.getJSONArray("55")[0] as Int, thief = thief , Pair(0, 0), id = "37")
+    thief = Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 89
+    val tile59 = Tile(hexagonos.getJSONArray("89")[1] as Int, hexagonos.getJSONArray("89")[0] as Int, thief = thief , Pair(1, 0), id = "59")
+    thief = Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 123
+    val tile7B = Tile(hexagonos.getJSONArray("123")[1] as Int, hexagonos.getJSONArray("123")[0] as Int, thief = thief , Pair(2, 0), id = "7B")
+    thief = Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 53
+    val tile35 = Tile(hexagonos.getJSONArray("53")[1] as Int, hexagonos.getJSONArray("53")[0] as Int, thief = thief , Pair(-1, 1), id = "35")
+    thief = Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 87
+    val tile57 = Tile(hexagonos.getJSONArray("87")[1] as Int, hexagonos.getJSONArray("87")[0] as Int, thief = thief , Pair(0, 1), id = "57")
+    thief = Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 121
+    val tile79 = Tile(hexagonos.getJSONArray("121")[1] as Int, hexagonos.getJSONArray("121")[0] as Int, thief = thief , Pair(1, 1), id = "79")
+    thief = Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 155
+    val tile9B = Tile(hexagonos.getJSONArray("155")[1] as Int, hexagonos.getJSONArray("155")[0] as Int, thief = thief , Pair(2, 1), id = "9B")
+    thief = Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 51
+    val tile33 = Tile(hexagonos.getJSONArray("51")[1] as Int, hexagonos.getJSONArray("51")[0] as Int, thief = thief , Pair(-2, 2), id = "33")
+    thief = Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 85
+    val tile55 = Tile(hexagonos.getJSONArray("85")[1] as Int, hexagonos.getJSONArray("85")[0] as Int, thief = thief , Pair(-1, 2), id = "55")
+    thief = Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 119
+    val tile77 = Tile(hexagonos.getJSONArray("119")[1] as Int, hexagonos.getJSONArray("119")[0] as Int, thief = thief , Pair(0, 2), id = "77")
+    thief = Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 153
+    val tile99 = Tile(hexagonos.getJSONArray("153")[1] as Int, hexagonos.getJSONArray("153")[0] as Int, thief = thief , Pair(1, 2), id = "99")
+    thief = Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 187
+    val tileBB = Tile(hexagonos.getJSONArray("187")[1] as Int, hexagonos.getJSONArray("187")[0] as Int, thief = thief , Pair(2, 2), id = "BB")
+    thief = Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 83
+    val tile53 = Tile(hexagonos.getJSONArray("83")[1] as Int, hexagonos.getJSONArray("83")[0] as Int, thief = thief , Pair(-2, 3), id = "53")
+    thief = Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 117
+    val tile75 = Tile(hexagonos.getJSONArray("117")[1] as Int, hexagonos.getJSONArray("117")[0] as Int, thief = thief , Pair(-1, 3), id = "75")
+    thief = Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 151
+    val tile97 = Tile(hexagonos.getJSONArray("151")[1] as Int, hexagonos.getJSONArray("151")[0] as Int, thief = thief , Pair(0, 3), id = "97")
+    thief = Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 185
+    val tileB9 = Tile(hexagonos.getJSONArray("185")[1] as Int, hexagonos.getJSONArray("185")[0] as Int, thief = thief , Pair(1, 3), id = "B9")
+    thief = Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 115
+    val tile73 = Tile(hexagonos.getJSONArray("115")[1] as Int, hexagonos.getJSONArray("115")[0] as Int, thief = thief , Pair(-2, 4), id = "73")
+    thief = Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 149
+    val tile95 = Tile(hexagonos.getJSONArray("149")[1] as Int, hexagonos.getJSONArray("149")[0] as Int, thief = thief , Pair(-1, 4), id = "95")
+    thief = Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 183
+    val tileB7 = Tile(hexagonos.getJSONArray("183")[1] as Int, hexagonos.getJSONArray("183")[0] as Int, thief = thief , Pair(0, 4), id = "B7")
+
+    val tiles = listOf(tile37,tile59,tile7B,tile35,tile57,tile79,tile9B,tile33,tile55,tile77,tile99,tileBB,tile53,tile75,tile97,tileB9,tile73,tile95,tileB7)
+
     Scaffold(
         // BOTTOM BAR DE NAVEGACIÓN ----------------------------------------------------------------
         bottomBar = {
@@ -275,7 +302,8 @@ fun CatanBoard(navController: NavHostController) {
                                 "GREEN" -> Verde
                                 else -> Amarillo
                             }
-                            dataJugador(player = 0 ,
+                            val player = if (jugador_0!!.yo) { 0 } else{ 5 }
+                            dataJugador(player = player ,
                                 colorEne = colorEne,
                                 foto = jugador_0!!.imagen ,
                                 ptsV = jugador_0!!.puntos ,
@@ -307,7 +335,10 @@ fun CatanBoard(navController: NavHostController) {
                                 "GREEN" -> Verde
                                 else -> Amarillo
                             }
-                            dataJugador(player = 1,
+
+                            val player = if (jugador_1!!.yo) { 0 } else{ 1 }
+
+                            dataJugador(player = player,
                                 colorEne = colorEne,
                                 foto = jugador_1!!.imagen ,
                                 ptsV = jugador_1!!.puntos ,
@@ -339,7 +370,8 @@ fun CatanBoard(navController: NavHostController) {
                                 "GREEN" -> Verde
                                 else -> Amarillo
                             }
-                            dataJugador(player = 2 ,
+                            val player = if (jugador_2!!.yo) { 0 } else{ 2 }
+                            dataJugador(player = player ,
                                 colorEne = colorEne,
                                 foto = jugador_2!!.imagen ,
                                 ptsV = jugador_2!!.puntos ,
@@ -370,7 +402,8 @@ fun CatanBoard(navController: NavHostController) {
                                 "GREEN" -> Verde
                                 else -> Amarillo
                             }
-                            dataJugador(player = 3 ,
+                            val player = if (jugador_3!!.yo) { 0 } else{ 3 }
+                            dataJugador(player = player ,
                                 colorEne = colorEne,
                                 foto = jugador_3!!.imagen ,
                                 ptsV = jugador_3!!.puntos ,
@@ -403,7 +436,7 @@ fun CatanBoard(navController: NavHostController) {
             ) {
                 Column(horizontalAlignment = Alignment.Start) {
 
-
+                    // TODO: AÑADIR INFO SOBRE LAS CARTAS QUE TIENE (POP-UP) Y LAS CONTRUCCIONES QUE LLEVA(ESTO SE PUEDE EVITAR SI NO CABE, QUE LAS CUENTE)
                     Column(
                         modifier = Modifier
                             .background(
@@ -908,7 +941,7 @@ fun dataJugador(player: Int, colorEne: Color, ptsV: Int, foto: String, ejercito:
 }
 
 
-class Tile(val terrain: String, val number: Int, val thief: Boolean,val coordinates: Pair<Int, Int>, val id: String){
+class Tile(val terrain: Int, val number: Int, val thief: Boolean,val coordinates: Pair<Int, Int>, val id: String){
     // Calculo lista de vertices de cada hexagono para hacerlos clicables y dibujarlos con el canvas
     val vertices = listOf(
         Pair(coordinates.first, coordinates.second - 1),
@@ -1113,7 +1146,7 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                 style = Stroke(2f)
             )
             //Poner numero
-            if (tile.number > 0) {
+            if (tile.number >= 0) {
                 drawIntoCanvas { canvas ->
                     val paint = Paint().apply {
                         color = Color.Black.toArgb()
@@ -1121,7 +1154,7 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                         textAlign = Paint.Align.CENTER
                     }
 
-                    if(tile.terrain == "campo"){
+                    if(tile.terrain == 1){
                         // Obtener el Drawable de la imagen desde el contexto
                         val drawable = context.resources.getDrawable(R.drawable.sheephexagon, null)
 
@@ -1130,7 +1163,7 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                         drawable.draw(canvas.nativeCanvas)
                     }
 
-                    if(tile.terrain == "montaña"){
+                    if(tile.terrain == 4){
                         // Obtener el Drawable de la imagen desde el contexto
                         val drawable = context.resources.getDrawable(R.drawable.rockhexagon, null)
 
@@ -1139,7 +1172,7 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                         drawable.draw(canvas.nativeCanvas)
                     }
 
-                    if(tile.terrain == "desierto"){
+                    if(tile.terrain == 6){
                         // Obtener el Drawable de la imagen desde el contexto
                         val drawable = context.resources.getDrawable(R.drawable.deserthexagon, null)
 
@@ -1148,7 +1181,7 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                         drawable.draw(canvas.nativeCanvas)
                     }
 
-                    if(tile.terrain == "cultivos"){
+                    if(tile.terrain == 5){
                         // Obtener el Drawable de la imagen desde el contexto
                         val drawable = context.resources.getDrawable(R.drawable.trigohexagon, null)
 
@@ -1157,7 +1190,7 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                         drawable.draw(canvas.nativeCanvas)
                     }
 
-                    if(tile.terrain == "mina"){
+                    if(tile.terrain == 2){
                         // Obtener el Drawable de la imagen desde el contexto
                         val drawable = context.resources.getDrawable(R.drawable.clayhexagon, null)
 
@@ -1166,7 +1199,7 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                         drawable.draw(canvas.nativeCanvas)
                     }
 
-                    if(tile.terrain == "bosque"){
+                    if(tile.terrain == 3){
                         // Obtener el Drawable de la imagen desde el contexto
                         val drawable = context.resources.getDrawable(R.drawable.woodhexagon, null)
 
@@ -1175,7 +1208,7 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                         drawable.draw(canvas.nativeCanvas)
                     }
 
-                    if (tile.thief){
+                    if (tile.terrain == 6){
 
                         val drawable = context.resources.getDrawable(R.drawable.thief, null)
 
@@ -1186,7 +1219,7 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
 
 
                     var colorNumber = Color.Black
-                    if (tile.terrain != "desierto"){
+                    if (tile.terrain != 6){
 
                         // Dibuja el círculo blanco
                         paint.apply {
@@ -1232,7 +1265,7 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
 
 
 
-
+                // TODO: ANTES DE CONSTRUIR GET-LEGAL-EDGES PARA VER SI SE PUEDE CONSTRUIR EN LA ARISTA
                 for (c in getHexagonLineCoordinates(vertex1, vertex2)){ // se guardacada coordenada de una arista en su correspondiente id
 
 
@@ -1510,7 +1543,7 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                                         else -> R.drawable.amarillo_carretera_1
                                     }
                                 }
-                                val drawable = context.resources.getDrawable(R.drawable.rojo_carretera_1, null)
+                                val drawable = context.resources.getDrawable(colorEne, null)
 
                                 // Dibujar la imagen en el canvas
                                 drawable.setBounds((tileX +65).toInt(), (tileY-40).toInt(), (tileX + 92).toInt(), (tileY + 40).toInt())
@@ -1528,6 +1561,7 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
 
             // Dibujar círculos clicables en cada vértice
 
+            // TODO: ANTES DE CONSTRUIR GET-LEGAL-NODES PARA VER SI SE PUEDE CONSTRUIR EN UN VERTICE
             for (vertex in getHexagonVertices(tileX, tileY, hexRadius)) {
                 val color = if (vertex == clickedVertex) {
                     Color.Blue
@@ -1541,11 +1575,45 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                         radius = 6f,
                         color = color,
                     )
-
+                    // COLOCACION CASA CIUDAD DE CADA JUGADOR -----------------------------------------------
                     val idVert = Partida.CoordVertices[vertex]
                     if (Partida.Vertices[idVert.toString()] == "poblado"){
+                        var colorEne = R.drawable.rojo_poblado_1 // valor predeterminado
 
-                        val drawable = context.resources.getDrawable(R.drawable.rojo_poblado_1, null)
+                        if (jugador_0!!.yo == true) {
+                            colorEne = when (jugador_0!!.color) {
+                                "RED" -> R.drawable.rojo_poblado_1
+                                "BLUE" -> R.drawable.azul_poblado_1
+                                "GREEN" -> R.drawable.verde_poblado_1
+                                else -> R.drawable.amarillo_poblado_1
+                            }
+                        }
+                        if (jugador_1!!.yo == true) {
+                            colorEne = when (jugador_1!!.color) {
+                                "RED" -> R.drawable.rojo_poblado_1
+                                "BLUE" -> R.drawable.azul_poblado_1
+                                "GREEN" -> R.drawable.verde_poblado_1
+                                else -> R.drawable.amarillo_poblado_1
+                            }
+                        }
+                        if (jugador_2!!.yo == true) {
+                            colorEne = when (jugador_2!!.color) {
+                                "RED" -> R.drawable.rojo_poblado_1
+                                "BLUE" -> R.drawable.azul_poblado_1
+                                "GREEN" -> R.drawable.verde_poblado_1
+                                else -> R.drawable.amarillo_poblado_1
+                            }
+                        }
+                        if (jugador_3!!.yo == true) {
+                            colorEne = when (jugador_3!!.color) {
+                                "RED" -> R.drawable.rojo_poblado_1
+                                "BLUE" -> R.drawable.azul_poblado_1
+                                "GREEN" -> R.drawable.verde_poblado_1
+                                else -> R.drawable.amarillo_poblado_1
+                            }
+                        }
+
+                        val drawable = context.resources.getDrawable(colorEne, null)
 
                         val x = vertex.x // coordenada x
                         val y = vertex.y // coordenada y
@@ -1554,7 +1622,42 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                     }
                     if (Partida.Vertices[idVert.toString()] == "ciudad"){
 
-                        val drawable = context.resources.getDrawable(R.drawable.rojo_ciudad_1, null)
+                        var colorEne = R.drawable.rojo_ciudad_1 // valor predeterminado
+
+                        if (jugador_0!!.yo == true) {
+                            colorEne = when (jugador_0!!.color) {
+                                "RED" -> R.drawable.rojo_ciudad_1
+                                "BLUE" -> R.drawable.azul_ciudad_1
+                                "GREEN" -> R.drawable.verde_ciudad_1
+                                else -> R.drawable.amarillo_ciudad_1
+                            }
+                        }
+                        if (jugador_1!!.yo == true) {
+                            colorEne = when (jugador_1!!.color) {
+                                "RED" -> R.drawable.rojo_ciudad_1
+                                "BLUE" -> R.drawable.azul_ciudad_1
+                                "GREEN" -> R.drawable.verde_ciudad_1
+                                else -> R.drawable.amarillo_ciudad_1
+                            }
+                        }
+                        if (jugador_2!!.yo == true) {
+                            colorEne = when (jugador_2!!.color) {
+                                "RED" -> R.drawable.rojo_ciudad_1
+                                "BLUE" -> R.drawable.azul_ciudad_1
+                                "GREEN" -> R.drawable.verde_ciudad_1
+                                else -> R.drawable.amarillo_ciudad_1
+                            }
+                        }
+                        if (jugador_3!!.yo == true) {
+                            colorEne = when (jugador_3!!.color) {
+                                "RED" -> R.drawable.rojo_ciudad_1
+                                "BLUE" -> R.drawable.azul_ciudad_1
+                                "GREEN" -> R.drawable.verde_ciudad_1
+                                else -> R.drawable.amarillo_ciudad_1
+                            }
+                        }
+
+                        val drawable = context.resources.getDrawable(colorEne, null)
 
                         val x = vertex.x // coordenada x
                         val y = vertex.y // coordenada y
@@ -1742,11 +1845,11 @@ fun getAristasCoord(centerX: Float, centerY: Float, radius: Int, id: String){
         //println(getHexagonLineCoordinates(x1,x2))
 
 
-        println("verticefake1: $vertex1")
+        /*println("verticefake1: $vertex1")
         println("verticefake1: $vertex2")
         println("vertice1: ${Partida.CoordVertices[vertex1]}")
         println("vertice2: ${Partida.CoordVertices[vertex2]}")
-        println("coord: ${getHexagonLineCoordinates(vertex1,vertex2)}")
+        println("coord: ${getHexagonLineCoordinates(vertex1,vertex2)}")*/
 
         var ya = false
         for (c in getHexagonLineCoordinates(vertex1, vertex2)){ // se guardacada coordenada de una arista en su correspondiente id
