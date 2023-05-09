@@ -1,5 +1,10 @@
 package com.example.mycatan.others
 
+import com.example.mycatan.dBaux.getGameState
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+
 /*val timer = object : CountDownTimer(60000, 1000) { // 60 segundos, 1 segundo por intervalo
         override fun onTick(millisUntilFinished: Long) {
             // Aquí puedes actualizar la UI con el tiempo restante
@@ -9,6 +14,19 @@ package com.example.mycatan.others
 
         }
     }*/
+
+fun CoroutineScope.waitForPlayerTurn(id: String) = launch {
+    while (Globals.gameState.getString("player_turn")!= id) {
+        getGameState(Globals.lobbyId)
+        delay(1000) // esperar un segundo antes de volver a llamar a getGameState
+    }
+    // una vez que el turno es del jugador local, hacer algo aquí
+}
+//donde se necesite esperar:
+//viewModelScope.waitForPlayerTurn(Globals.Id)
+
+
+
 
 fun turnos(turn_phase: String, playerTurn: String, turn_time: Int){
     // TODO: Hacer un if para cada fase ya que en cada uno se haran acciones diferentes

@@ -43,7 +43,9 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.window.Dialog
 import com.example.mycatan.R
 import com.example.mycatan.dBaux.changeProfilePicture
+import com.example.mycatan.dBaux.stopSearchingLobby
 import com.example.mycatan.others.*
+import kotlinx.coroutines.delay
 import org.json.JSONArray
 
 var clickedVertex: Offset? = null
@@ -149,6 +151,8 @@ fun CatanBoard(navController: NavHostController) {
     var showCamino =  remember { mutableStateOf(false) }
     var verticeChosen = remember { mutableStateOf("nada") }
     var aristaChosen = remember { mutableStateOf("nada") }
+
+    var showpopUpnewTurno =  remember { mutableStateOf(false) }
 
 
 
@@ -429,6 +433,11 @@ fun CatanBoard(navController: NavHostController) {
                 showConstruir(idVert = verticeChosen.value , setShowDialog = {showConstruir.value = it})
             if(showCamino.value)
                 construirCamino(idArista = aristaChosen.value , setShowDialog = {showCamino.value = it})
+            if(showpopUpnewTurno.value){
+                //TODO: LLAMAR A LA FUNCION CUANDO SE DEBE Y CON LOS PARAMETROS CORRECTOS
+                //popUpNewTurno(playerName = , setShowDialog = )
+            }
+
 
 
             //INFORMACIÓN PROPIA DEL JUGADOR ( RECURSOS ) --------------------------------------------------
@@ -2278,6 +2287,63 @@ fun construirCamino(idArista: String, setShowDialog: (Boolean) -> Unit) {
     }
 }
 
+@Composable
+fun popUpNewTurno(playerName : String, setShowDialog: (Boolean) -> Unit) {
+
+    val context = LocalContext.current
+
+    Dialog(onDismissRequest = { }) { // PARA QUE SOLO SE CIERRE CON LA X QUITAR ESTO JEJE
+        Surface(
+            shape = RoundedCornerShape(16.dp),
+            color = AzulOscuro
+        ) {
+            Box(
+                contentAlignment = Alignment.Center
+            ) {
+                Column(modifier = Modifier.padding(20.dp)) {
+
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "Turno de $playerName",
+                            color = Blanco,
+                            style = TextStyle(
+                                fontSize = 30.sp,
+                                fontFamily = FontFamily.Default,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+
+                        Text(
+                            text = "Obtencion de recursos",
+                            color = Blanco,
+                            style = TextStyle(
+                                fontSize = 30.sp,
+                                fontFamily = FontFamily.Default,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+
+                        //TODO : AQUI IRA UN BOTON PARA TIRAR LOS DAODS
+
+                    }
+
+                }
+            }
+        }
+
+        //maybe no funca
+        LaunchedEffect(setShowDialog) {
+            delay(1000) // espera 1 segundo
+            setShowDialog(false) // llama a setShowDialog con false
+        }
+
+
+    }
+}
 /*@Preview
 @Composable
 fun PreviewTileGrid() {
