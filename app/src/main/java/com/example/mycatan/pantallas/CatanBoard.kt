@@ -1,5 +1,6 @@
 package com.example.mycatan.pantallas
 
+import android.annotation.SuppressLint
 import android.graphics.*
 import android.graphics.Paint
 import android.widget.Toast
@@ -41,11 +42,14 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.mycatan.R
 import com.example.mycatan.dBaux.changeProfilePicture
 import com.example.mycatan.dBaux.stopSearchingLobby
 import com.example.mycatan.others.*
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.json.JSONArray
 
 var clickedVertex: Offset? = null
@@ -58,184 +62,350 @@ var jugador_3: Jugador? = null
 var jugadores: JSONArray? = null
 
 class Jugador(var yo: Boolean, var nombre: String, var color: String, var imagen: String, var puntos: Int, var piezas: String, var tablero: String)
-@Composable
-fun CatanBoard(navController: NavHostController) {
 
-    // INICIALIZACIÓN DE LOS JUGADORES EN EL TABLERO -----------------------------------------
+class CatanViewModel : ViewModel() {
+    @SuppressLint("CoroutineCreationDuringComposition")
+    @Composable
+    fun CatanBoard(navController: NavHostController) {
+
+        // INICIALIZACIÓN DE LOS JUGADORES EN EL TABLERO -----------------------------------------
 
 
-    if ( Globals.gameState.getString("player_0") != null){ // Primer jugador
-        val jugador0 = Globals.gameState.getJSONObject("player_0")
-        jugador_0 = Jugador (yo = jugador0.getString("id") == Globals.Id,
-            nombre = jugador0.getString("name"),
-            color = jugador0.getString("color"),
-            imagen = jugador0.getString("profile_pic"),
-            puntos = jugador0.getInt("victory_points"),
-            piezas = jugador0.getString("selected_pieces_skin"),
-            tablero = jugador0.getString("selected_grid_skin")
-        )
-        if (jugador_0!!.yo == true){
-            Partida.Madera = jugador0.getJSONObject("hand").getString("wood")
-            Partida.Ovejas = jugador0.getJSONObject("hand").getString("sheep")
-            Partida.Trigo = jugador0.getJSONObject("hand").getString("wheat")
-            Partida.Arcilla = jugador0.getJSONObject("hand").getString("clay")
-            Partida.Roca = jugador0.getJSONObject("hand").getString("rock")
+        if (Globals.gameState.getString("player_0") != null) { // Primer jugador
+            val jugador0 = Globals.gameState.getJSONObject("player_0")
+            jugador_0 = Jugador(
+                yo = jugador0.getString("id") == Globals.Id,
+                nombre = jugador0.getString("name"),
+                color = jugador0.getString("color"),
+                imagen = jugador0.getString("profile_pic"),
+                puntos = jugador0.getInt("victory_points"),
+                piezas = jugador0.getString("selected_pieces_skin"),
+                tablero = jugador0.getString("selected_grid_skin")
+            )
+            if (jugador_0!!.yo == true) {
+                Partida.Madera = jugador0.getJSONObject("hand").getString("wood")
+                Partida.Ovejas = jugador0.getJSONObject("hand").getString("sheep")
+                Partida.Trigo = jugador0.getJSONObject("hand").getString("wheat")
+                Partida.Arcilla = jugador0.getJSONObject("hand").getString("clay")
+                Partida.Roca = jugador0.getJSONObject("hand").getString("rock")
+            }
         }
-    }
 
-    if ( Globals.gameState.getString("player_1") != null){ // Segundo jugador
-        val jugador1 = Globals.gameState.getJSONObject("player_1")
-        jugador_1 = Jugador (yo = jugador1.getString("id") == Globals.Id,
-            nombre = jugador1.getString("name"),
-            color = jugador1.getString("color"),
-            imagen = jugador1.getString("profile_pic"),
-            puntos = jugador1.getInt("victory_points"),
-            piezas = jugador1.getString("selected_pieces_skin"),
-            tablero = jugador1.getString("selected_grid_skin")
-        )
-        if (jugador_1!!.yo == true){
-            Partida.Madera = jugador1.getJSONObject("hand").getString("wood")
-            Partida.Ovejas = jugador1.getJSONObject("hand").getString("sheep")
-            Partida.Trigo = jugador1.getJSONObject("hand").getString("wheat")
-            Partida.Arcilla = jugador1.getJSONObject("hand").getString("clay")
-            Partida.Roca = jugador1.getJSONObject("hand").getString("rock")
+        if (Globals.gameState.getString("player_1") != null) { // Segundo jugador
+            val jugador1 = Globals.gameState.getJSONObject("player_1")
+            jugador_1 = Jugador(
+                yo = jugador1.getString("id") == Globals.Id,
+                nombre = jugador1.getString("name"),
+                color = jugador1.getString("color"),
+                imagen = jugador1.getString("profile_pic"),
+                puntos = jugador1.getInt("victory_points"),
+                piezas = jugador1.getString("selected_pieces_skin"),
+                tablero = jugador1.getString("selected_grid_skin")
+            )
+            if (jugador_1!!.yo == true) {
+                Partida.Madera = jugador1.getJSONObject("hand").getString("wood")
+                Partida.Ovejas = jugador1.getJSONObject("hand").getString("sheep")
+                Partida.Trigo = jugador1.getJSONObject("hand").getString("wheat")
+                Partida.Arcilla = jugador1.getJSONObject("hand").getString("clay")
+                Partida.Roca = jugador1.getJSONObject("hand").getString("rock")
+            }
         }
-    }
 
-    if ( Globals.gameState.getString("player_2") != null){ // Tercer jugador
-        val jugador2 = Globals.gameState.getJSONObject("player_2")
-        jugador_2 = Jugador (yo = jugador2.getString("id") == Globals.Id,
-            nombre = jugador2.getString("name"),
-            color = jugador2.getString("color"),
-            imagen = jugador2.getString("profile_pic"),
-            puntos = jugador2.getInt("victory_points"),
-            piezas = jugador2.getString("selected_pieces_skin"),
-            tablero = jugador2.getString("selected_grid_skin")
-        )
-        if (jugador_2!!.yo == true){
-            Partida.Madera = jugador2.getJSONObject("hand").getString("wood")
-            Partida.Ovejas = jugador2.getJSONObject("hand").getString("sheep")
-            Partida.Trigo = jugador2.getJSONObject("hand").getString("wheat")
-            Partida.Arcilla = jugador2.getJSONObject("hand").getString("clay")
-            Partida.Roca = jugador2.getJSONObject("hand").getString("rock")
+        if (Globals.gameState.getString("player_2") != null) { // Tercer jugador
+            val jugador2 = Globals.gameState.getJSONObject("player_2")
+            jugador_2 = Jugador(
+                yo = jugador2.getString("id") == Globals.Id,
+                nombre = jugador2.getString("name"),
+                color = jugador2.getString("color"),
+                imagen = jugador2.getString("profile_pic"),
+                puntos = jugador2.getInt("victory_points"),
+                piezas = jugador2.getString("selected_pieces_skin"),
+                tablero = jugador2.getString("selected_grid_skin")
+            )
+            if (jugador_2!!.yo == true) {
+                Partida.Madera = jugador2.getJSONObject("hand").getString("wood")
+                Partida.Ovejas = jugador2.getJSONObject("hand").getString("sheep")
+                Partida.Trigo = jugador2.getJSONObject("hand").getString("wheat")
+                Partida.Arcilla = jugador2.getJSONObject("hand").getString("clay")
+                Partida.Roca = jugador2.getJSONObject("hand").getString("rock")
+            }
         }
-    }
 
-    if ( Globals.gameState.getString("player_3") != null){ // Tercer jugador
-        val jugador3 = Globals.gameState.getJSONObject("player_3")
-        jugador_3 = Jugador (yo = jugador3.getString("id") == Globals.Id,
-            nombre = jugador3.getString("name"),
-            color = jugador3.getString("color"),
-            imagen = jugador3.getString("profile_pic"),
-            puntos = jugador3.getInt("victory_points"),
-            piezas = jugador3.getString("selected_pieces_skin"),
-            tablero = jugador3.getString("selected_grid_skin")
-        )
-        if (jugador_3!!.yo == true){
-            Partida.Madera = jugador3.getJSONObject("hand").getString("wood")
-            Partida.Ovejas = jugador3.getJSONObject("hand").getString("sheep")
-            Partida.Trigo = jugador3.getJSONObject("hand").getString("wheat")
-            Partida.Arcilla = jugador3.getJSONObject("hand").getString("clay")
-            Partida.Roca = jugador3.getJSONObject("hand").getString("rock")
+        if (Globals.gameState.getString("player_3") != null) { // Tercer jugador
+            val jugador3 = Globals.gameState.getJSONObject("player_3")
+            jugador_3 = Jugador(
+                yo = jugador3.getString("id") == Globals.Id,
+                nombre = jugador3.getString("name"),
+                color = jugador3.getString("color"),
+                imagen = jugador3.getString("profile_pic"),
+                puntos = jugador3.getInt("victory_points"),
+                piezas = jugador3.getString("selected_pieces_skin"),
+                tablero = jugador3.getString("selected_grid_skin")
+            )
+            if (jugador_3!!.yo == true) {
+                Partida.Madera = jugador3.getJSONObject("hand").getString("wood")
+                Partida.Ovejas = jugador3.getJSONObject("hand").getString("sheep")
+                Partida.Trigo = jugador3.getJSONObject("hand").getString("wheat")
+                Partida.Arcilla = jugador3.getJSONObject("hand").getString("clay")
+                Partida.Roca = jugador3.getJSONObject("hand").getString("rock")
+            }
         }
-    }
 
-    val showTablaCostes =  remember { mutableStateOf(false) }
+        val showTablaCostes = remember { mutableStateOf(false) }
 
-    val tradePlayer0 =  remember { mutableStateOf(false) }
-    val tradePlayer1 =  remember { mutableStateOf(false) }
-    val tradePlayer2 =  remember { mutableStateOf(false) }
-    val tradePlayer3 =  remember { mutableStateOf(false) }
+        val tradePlayer0 = remember { mutableStateOf(false) }
+        val tradePlayer1 = remember { mutableStateOf(false) }
+        val tradePlayer2 = remember { mutableStateOf(false) }
+        val tradePlayer3 = remember { mutableStateOf(false) }
 
-    var showConstruir =  remember { mutableStateOf(false) }
-    var showCamino =  remember { mutableStateOf(false) }
-    var verticeChosen = remember { mutableStateOf("nada") }
-    var aristaChosen = remember { mutableStateOf("nada") }
+        var showConstruir = remember { mutableStateOf(false) }
+        var showCamino = remember { mutableStateOf(false) }
+        var verticeChosen = remember { mutableStateOf("nada") }
+        var aristaChosen = remember { mutableStateOf("nada") }
 
-    var showpopUpnewTurno =  remember { mutableStateOf(false) }
+        var showpopUpnewTurno = remember { mutableStateOf(false) }
+        var nuevoTurnoPhase = remember { mutableStateOf(false) }
 
 
+        // set up all transformation states
+        var scale by remember { mutableStateOf(1f) }
+        //var rotation by remember { mutableStateOf(0f) }
+        var offset by remember { mutableStateOf(Offset.Zero) }
+        val state = rememberTransformableState { zoomChange, offsetChange, rotationChange ->
+            scale *= zoomChange
+            offset += offsetChange
+        }
 
-    // set up all transformation states
-    var scale by remember { mutableStateOf(1f) }
-    //var rotation by remember { mutableStateOf(0f) }
-    var offset by remember { mutableStateOf(Offset.Zero) }
-    val state = rememberTransformableState { zoomChange, offsetChange, rotationChange ->
-        scale *= zoomChange
-        offset += offsetChange
-    }
+        val hexagonos = Globals.gameState.getJSONObject("board").getJSONObject("tiles")
 
-    val hexagonos = Globals.gameState.getJSONObject("board").getJSONObject("tiles")
-
-    println("Ladrón: ${Globals.gameState.getBoolean("thief_enabled")} y posición: ${Globals.gameState.getInt("thief_position")}")
-
-    var thief = Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 55
-    val tile37 = Tile(hexagonos.getJSONArray("55")[1] as Int, hexagonos.getJSONArray("55")[0] as Int, thief = thief , Pair(0, 0), id = "37")
-    thief = Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 89
-    val tile59 = Tile(hexagonos.getJSONArray("89")[1] as Int, hexagonos.getJSONArray("89")[0] as Int, thief = thief , Pair(1, 0), id = "59")
-    thief = Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 123
-    val tile7B = Tile(hexagonos.getJSONArray("123")[1] as Int, hexagonos.getJSONArray("123")[0] as Int, thief = thief , Pair(2, 0), id = "7B")
-    thief = Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 53
-    val tile35 = Tile(hexagonos.getJSONArray("53")[1] as Int, hexagonos.getJSONArray("53")[0] as Int, thief = thief , Pair(-1, 1), id = "35")
-    thief = Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 87
-    val tile57 = Tile(hexagonos.getJSONArray("87")[1] as Int, hexagonos.getJSONArray("87")[0] as Int, thief = thief , Pair(0, 1), id = "57")
-    thief = Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 121
-    val tile79 = Tile(hexagonos.getJSONArray("121")[1] as Int, hexagonos.getJSONArray("121")[0] as Int, thief = thief , Pair(1, 1), id = "79")
-    thief = Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 155
-    val tile9B = Tile(hexagonos.getJSONArray("155")[1] as Int, hexagonos.getJSONArray("155")[0] as Int, thief = thief , Pair(2, 1), id = "9B")
-    thief = Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 51
-    val tile33 = Tile(hexagonos.getJSONArray("51")[1] as Int, hexagonos.getJSONArray("51")[0] as Int, thief = thief , Pair(-2, 2), id = "33")
-    thief = Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 85
-    val tile55 = Tile(hexagonos.getJSONArray("85")[1] as Int, hexagonos.getJSONArray("85")[0] as Int, thief = thief , Pair(-1, 2), id = "55")
-    thief = Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 119
-    val tile77 = Tile(hexagonos.getJSONArray("119")[1] as Int, hexagonos.getJSONArray("119")[0] as Int, thief = thief , Pair(0, 2), id = "77")
-    thief = Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 153
-    val tile99 = Tile(hexagonos.getJSONArray("153")[1] as Int, hexagonos.getJSONArray("153")[0] as Int, thief = thief , Pair(1, 2), id = "99")
-    thief = Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 187
-    val tileBB = Tile(hexagonos.getJSONArray("187")[1] as Int, hexagonos.getJSONArray("187")[0] as Int, thief = thief , Pair(2, 2), id = "BB")
-    thief = Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 83
-    val tile53 = Tile(hexagonos.getJSONArray("83")[1] as Int, hexagonos.getJSONArray("83")[0] as Int, thief = thief , Pair(-2, 3), id = "53")
-    thief = Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 117
-    val tile75 = Tile(hexagonos.getJSONArray("117")[1] as Int, hexagonos.getJSONArray("117")[0] as Int, thief = thief , Pair(-1, 3), id = "75")
-    thief = Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 151
-    val tile97 = Tile(hexagonos.getJSONArray("151")[1] as Int, hexagonos.getJSONArray("151")[0] as Int, thief = thief , Pair(0, 3), id = "97")
-    thief = Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 185
-    val tileB9 = Tile(hexagonos.getJSONArray("185")[1] as Int, hexagonos.getJSONArray("185")[0] as Int, thief = thief , Pair(1, 3), id = "B9")
-    thief = Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 115
-    val tile73 = Tile(hexagonos.getJSONArray("115")[1] as Int, hexagonos.getJSONArray("115")[0] as Int, thief = thief , Pair(-2, 4), id = "73")
-    thief = Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 149
-    val tile95 = Tile(hexagonos.getJSONArray("149")[1] as Int, hexagonos.getJSONArray("149")[0] as Int, thief = thief , Pair(-1, 4), id = "95")
-    thief = Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 183
-    val tileB7 = Tile(hexagonos.getJSONArray("183")[1] as Int, hexagonos.getJSONArray("183")[0] as Int, thief = thief , Pair(0, 4), id = "B7")
-
-    val tiles = listOf(tile37,tile59,tile7B,tile35,tile57,tile79,tile9B,tile33,tile55,tile77,tile99,tileBB,tile53,tile75,tile97,tileB9,tile73,tile95,tileB7)
-
-    Scaffold(
-        // BOTTOM BAR DE NAVEGACIÓN ----------------------------------------------------------------
-        bottomBar = {
-            BottomAppBar {
-                BottomNavigationItem(
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Default.Place,
-                            contentDescription = null,
-                            tint = Blanco,
-                        )
-                    },
-                    selected = true,
-                    onClick = {
-                        navController.navigate(Routes.CatanBoard.route)
-                    }
+        println(
+            "Ladrón: ${Globals.gameState.getBoolean("thief_enabled")} y posición: ${
+                Globals.gameState.getInt(
+                    "thief_position"
                 )
-                BottomNavigationItem(
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Default.Email,
-                            contentDescription = null,
-                            tint = Blanco,
-                            modifier = Modifier.padding(5.dp)
-                        )
-                        /*if (pendiente.toInt() > 0) { SI HAY MENSAJES
+            }"
+        )
+
+        var thief =
+            Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 55
+        val tile37 = Tile(
+            hexagonos.getJSONArray("55")[1] as Int,
+            hexagonos.getJSONArray("55")[0] as Int,
+            thief = thief,
+            Pair(0, 0),
+            id = "37"
+        )
+        thief =
+            Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 89
+        val tile59 = Tile(
+            hexagonos.getJSONArray("89")[1] as Int,
+            hexagonos.getJSONArray("89")[0] as Int,
+            thief = thief,
+            Pair(1, 0),
+            id = "59"
+        )
+        thief =
+            Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 123
+        val tile7B = Tile(
+            hexagonos.getJSONArray("123")[1] as Int,
+            hexagonos.getJSONArray("123")[0] as Int,
+            thief = thief,
+            Pair(2, 0),
+            id = "7B"
+        )
+        thief =
+            Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 53
+        val tile35 = Tile(
+            hexagonos.getJSONArray("53")[1] as Int,
+            hexagonos.getJSONArray("53")[0] as Int,
+            thief = thief,
+            Pair(-1, 1),
+            id = "35"
+        )
+        thief =
+            Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 87
+        val tile57 = Tile(
+            hexagonos.getJSONArray("87")[1] as Int,
+            hexagonos.getJSONArray("87")[0] as Int,
+            thief = thief,
+            Pair(0, 1),
+            id = "57"
+        )
+        thief =
+            Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 121
+        val tile79 = Tile(
+            hexagonos.getJSONArray("121")[1] as Int,
+            hexagonos.getJSONArray("121")[0] as Int,
+            thief = thief,
+            Pair(1, 1),
+            id = "79"
+        )
+        thief =
+            Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 155
+        val tile9B = Tile(
+            hexagonos.getJSONArray("155")[1] as Int,
+            hexagonos.getJSONArray("155")[0] as Int,
+            thief = thief,
+            Pair(2, 1),
+            id = "9B"
+        )
+        thief =
+            Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 51
+        val tile33 = Tile(
+            hexagonos.getJSONArray("51")[1] as Int,
+            hexagonos.getJSONArray("51")[0] as Int,
+            thief = thief,
+            Pair(-2, 2),
+            id = "33"
+        )
+        thief =
+            Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 85
+        val tile55 = Tile(
+            hexagonos.getJSONArray("85")[1] as Int,
+            hexagonos.getJSONArray("85")[0] as Int,
+            thief = thief,
+            Pair(-1, 2),
+            id = "55"
+        )
+        thief =
+            Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 119
+        val tile77 = Tile(
+            hexagonos.getJSONArray("119")[1] as Int,
+            hexagonos.getJSONArray("119")[0] as Int,
+            thief = thief,
+            Pair(0, 2),
+            id = "77"
+        )
+        thief =
+            Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 153
+        val tile99 = Tile(
+            hexagonos.getJSONArray("153")[1] as Int,
+            hexagonos.getJSONArray("153")[0] as Int,
+            thief = thief,
+            Pair(1, 2),
+            id = "99"
+        )
+        thief =
+            Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 187
+        val tileBB = Tile(
+            hexagonos.getJSONArray("187")[1] as Int,
+            hexagonos.getJSONArray("187")[0] as Int,
+            thief = thief,
+            Pair(2, 2),
+            id = "BB"
+        )
+        thief =
+            Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 83
+        val tile53 = Tile(
+            hexagonos.getJSONArray("83")[1] as Int,
+            hexagonos.getJSONArray("83")[0] as Int,
+            thief = thief,
+            Pair(-2, 3),
+            id = "53"
+        )
+        thief =
+            Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 117
+        val tile75 = Tile(
+            hexagonos.getJSONArray("117")[1] as Int,
+            hexagonos.getJSONArray("117")[0] as Int,
+            thief = thief,
+            Pair(-1, 3),
+            id = "75"
+        )
+        thief =
+            Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 151
+        val tile97 = Tile(
+            hexagonos.getJSONArray("151")[1] as Int,
+            hexagonos.getJSONArray("151")[0] as Int,
+            thief = thief,
+            Pair(0, 3),
+            id = "97"
+        )
+        thief =
+            Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 185
+        val tileB9 = Tile(
+            hexagonos.getJSONArray("185")[1] as Int,
+            hexagonos.getJSONArray("185")[0] as Int,
+            thief = thief,
+            Pair(1, 3),
+            id = "B9"
+        )
+        thief =
+            Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 115
+        val tile73 = Tile(
+            hexagonos.getJSONArray("115")[1] as Int,
+            hexagonos.getJSONArray("115")[0] as Int,
+            thief = thief,
+            Pair(-2, 4),
+            id = "73"
+        )
+        thief =
+            Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 149
+        val tile95 = Tile(
+            hexagonos.getJSONArray("149")[1] as Int,
+            hexagonos.getJSONArray("149")[0] as Int,
+            thief = thief,
+            Pair(-1, 4),
+            id = "95"
+        )
+        thief =
+            Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == 183
+        val tileB7 = Tile(
+            hexagonos.getJSONArray("183")[1] as Int,
+            hexagonos.getJSONArray("183")[0] as Int,
+            thief = thief,
+            Pair(0, 4),
+            id = "B7"
+        )
+
+        val tiles = listOf(
+            tile37,
+            tile59,
+            tile7B,
+            tile35,
+            tile57,
+            tile79,
+            tile9B,
+            tile33,
+            tile55,
+            tile77,
+            tile99,
+            tileBB,
+            tile53,
+            tile75,
+            tile97,
+            tileB9,
+            tile73,
+            tile95,
+            tileB7
+        )
+
+        Scaffold(
+            // BOTTOM BAR DE NAVEGACIÓN ----------------------------------------------------------------
+            bottomBar = {
+                BottomAppBar {
+                    BottomNavigationItem(
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Default.Place,
+                                contentDescription = null,
+                                tint = Blanco,
+                            )
+                        },
+                        selected = true,
+                        onClick = {
+                            navController.navigate(Routes.CatanBoard.route)
+                        }
+                    )
+                    BottomNavigationItem(
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Default.Email,
+                                contentDescription = null,
+                                tint = Blanco,
+                                modifier = Modifier.padding(5.dp)
+                            )
+                            /*if (pendiente.toInt() > 0) { SI HAY MENSAJES
                             Badge(
                                 backgroundColor = Color.Red,
                                 contentColor = Color.White
@@ -243,253 +413,312 @@ fun CatanBoard(navController: NavHostController) {
                                 Text(text = pendiente)
                             }
                         }*/
-                    },
-                    selected = false,
-                    onClick = {
-                        navController.navigate(Routes.Chat.route)
-                    }
+                        },
+                        selected = false,
+                        onClick = {
+                            navController.navigate(Routes.Chat.route)
+                        }
 
-                )
-
-            }
-        },
-    ) {
-        Box(
-            modifier = Modifier
-                .background(AzulClaro)
-                .padding(5.dp)
-                .fillMaxSize()
-        ){
-            Box(
-                modifier = Modifier
-                    .graphicsLayer(
-                        scaleX = scale,
-                        scaleY = scale,
-                        // rotationZ = rotation,
-                        translationX = offset.x,
-                        translationY = offset.y
                     )
-                    // add transformable to listen to multitouch transformation events
-                    // after offset
-                    .transformable(state = state)
-                    .fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
 
-                TileGrid(tiles = tiles, chosenV = {verticeChosen.value = it}, onVerticeClick = {showConstruir.value = true}, chosenA = {aristaChosen.value = it}, onAristaClick = {showCamino.value = true} )
-            }
-
-            // MOSTRAR LA TABLA DE COSTES ------------------------------------------------------
-            if(showTablaCostes.value)
-                showTablaCostes(setShowDialog = {
-                    showTablaCostes.value = it
-                })
-
-            // DIBUJANDO LAS CARDS DE LOS PLAYERS ----------------------------------------------
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Top
-            ) {
-                Column( modifier = Modifier.weight(1f)
-                ){
-                    if (jugador_0 != null ){
-                        // Pop-up de intercambio de elementos
-                        if(tradePlayer0.value && jugador_0!!.yo != true)
-                            showTrading(name = jugador_0!!.nombre, foto = jugador_0!!.imagen , setShowDialog = {tradePlayer0.value = it})
-                        // Cajita con la info del usuario
-                        Box (
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                        {
-                            val colorEne = when (jugador_0!!.color) {
-                                "RED" -> Rojo
-                                "BLUE" -> Azul
-                                "GREEN" -> Verde
-                                else -> Amarillo
-                            }
-                            val player = if (jugador_0!!.yo) { 0 } else{ 5 }
-                            dataJugador(player = player ,
-                                colorEne = colorEne,
-                                foto = jugador_0!!.imagen ,
-                                ptsV = jugador_0!!.puntos ,
-                                ejercito = false,
-                                carreteras = false,
-                                onCardClick = {
-                                    if(jugador_0!!.yo != true){
-                                        tradePlayer0.value = true
-                                    }
-                                })
-
-                        }
-
-                    }
-
-                    Spacer(modifier = Modifier.height(5.dp))
-
-                    if (jugador_1 != null ) {
-                        if(tradePlayer1.value && jugador_1!!.yo != true)
-                            showTrading(name = jugador_1!!.nombre, foto = jugador_1!!.imagen , setShowDialog = {tradePlayer1.value = it})
-                        // Cajita con la info del usuario
-                        Box (
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                        {
-                            val colorEne = when (jugador_1!!.color) {
-                                "RED" -> Rojo
-                                "BLUE" -> Azul
-                                "GREEN" -> Verde
-                                else -> Amarillo
-                            }
-
-                            val player = if (jugador_1!!.yo) { 0 } else{ 1 }
-
-                            dataJugador(player = player,
-                                colorEne = colorEne,
-                                foto = jugador_1!!.imagen ,
-                                ptsV = jugador_1!!.puntos ,
-                                ejercito = false,
-                                carreteras = false,
-                                onCardClick = {
-                                    if(jugador_1!!.yo != true){
-                                        tradePlayer1.value = true
-                                    }
-                                })
-
-                        }
-
-                    }
                 }
-
-                Column(modifier = Modifier.weight(1f)){
-                    if (jugador_2 != null ) {
-                        if(tradePlayer2.value && jugador_2!!.yo != true)
-                            showTrading(name = jugador_2!!.nombre, foto = jugador_2!!.imagen , setShowDialog = {tradePlayer2.value = it})
-                        // Cajita con la info del usuario
-                        Box (
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                        {
-                            val colorEne = when (jugador_2!!.color) {
-                                "RED" -> Rojo
-                                "BLUE" -> Azul
-                                "GREEN" -> Verde
-                                else -> Amarillo
-                            }
-                            val player = if (jugador_2!!.yo) { 0 } else{ 2 }
-                            dataJugador(player = player ,
-                                colorEne = colorEne,
-                                foto = jugador_2!!.imagen ,
-                                ptsV = jugador_2!!.puntos ,
-                                ejercito = false,
-                                carreteras = false,
-                                onCardClick = {
-                                    if(jugador_2!!.yo != true){
-                                        tradePlayer2.value = true
-                                    }
-                                })
-
-                        }
-
-                    }
-
-                    Spacer(modifier = Modifier.height(5.dp))
-                    if (jugador_3 != null) {
-                        if(tradePlayer3.value && jugador_3!!.yo != true)
-                            showTrading(name = jugador_3!!.nombre, foto = jugador_3!!.imagen , setShowDialog = {tradePlayer3.value = it})
-                        // Cajita con la info del usuario
-                        Box (
-                            modifier = Modifier.fillMaxWidth(),
-                        )
-                        {
-                            val colorEne = when (jugador_3!!.color) {
-                                "RED" -> Rojo
-                                "BLUE" -> Azul
-                                "GREEN" -> Verde
-                                else -> Amarillo
-                            }
-                            val player = if (jugador_3!!.yo) { 0 } else{ 3 }
-                            dataJugador(player = player ,
-                                colorEne = colorEne,
-                                foto = jugador_3!!.imagen ,
-                                ptsV = jugador_3!!.puntos ,
-                                ejercito = false,
-                                carreteras = false,
-                                onCardClick = {
-                                    if(jugador_3!!.yo != true){
-                                        tradePlayer3.value = true
-                                    }
-                                })
-
-                        }
-
-                    }
-                }
-
-
-            }
-
-            if(showConstruir.value)
-                showConstruir(idVert = verticeChosen.value , setShowDialog = {showConstruir.value = it})
-            if(showCamino.value)
-                construirCamino(idArista = aristaChosen.value , setShowDialog = {showCamino.value = it})
-            if(showpopUpnewTurno.value){
-                //TODO: LLAMAR A LA FUNCION CUANDO SE DEBE Y CON LOS PARAMETROS CORRECTOS
-                //popUpNewTurno(playerName = , setShowDialog = )
-            }
-
-
-
-            //INFORMACIÓN PROPIA DEL JUGADOR ( RECURSOS ) --------------------------------------------------
+            },
+        ) {
             Box(
                 modifier = Modifier
+                    .background(AzulClaro)
+                    .padding(5.dp)
                     .fillMaxSize()
-                    .padding(0.dp, 0.dp, 0.dp, 55.dp),
-                contentAlignment = Alignment.BottomStart
             ) {
-                Column(horizontalAlignment = Alignment.Start) {
-
-                    // TODO: AÑADIR INFO SOBRE LAS CARTAS QUE TIENE (POP-UP) Y LAS CONTRUCCIONES QUE LLEVA(ESTO SE PUEDE EVITAR SI NO CABE, QUE LAS CUENTE)
-                    Column(
-                        modifier = Modifier
-                            .background(
-                                color = TransparenteBlanco,
-                                shape = RoundedCornerShape(15.dp)
-                            )
-                            .padding(vertical = 5.dp, horizontal = 2.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-
-                        dataRecurso(id = "oveja", cantidad = Partida.Ovejas.toInt())
-                        dataRecurso(id = "arcilla", cantidad = Partida.Arcilla.toInt())
-                        dataRecurso(id = "madera", cantidad = Partida.Madera.toInt())
-                        dataRecurso(id = "trigo", cantidad = Partida.Trigo.toInt())
-                        dataRecurso(id = "roca", cantidad = Partida.Roca.toInt())
-                    }
-
-                    Spacer(modifier = Modifier.height(5.dp))
-
-                    //Tabla costes
-                    Button(
-                        onClick = { showTablaCostes.value = true},
-                        modifier = Modifier
-                            .width(50.dp)
-                            .height(50.dp),
-                        shape = RoundedCornerShape(15.dp),
-                        colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
-
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.hammer),
-                            contentDescription = null,
-                            tint = Blanco
+                Box(
+                    modifier = Modifier
+                        .graphicsLayer(
+                            scaleX = scale,
+                            scaleY = scale,
+                            // rotationZ = rotation,
+                            translationX = offset.x,
+                            translationY = offset.y
                         )
+                        // add transformable to listen to multitouch transformation events
+                        // after offset
+                        .transformable(state = state)
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+
+                    TileGrid(
+                        tiles = tiles,
+                        chosenV = { verticeChosen.value = it },
+                        onVerticeClick = { showConstruir.value = true },
+                        chosenA = { aristaChosen.value = it },
+                        onAristaClick = { showCamino.value = true })
+                }
+
+                // MOSTRAR LA TABLA DE COSTES ------------------------------------------------------
+                if (showTablaCostes.value)
+                    showTablaCostes(setShowDialog = {
+                        showTablaCostes.value = it
+                    })
+
+                // DIBUJANDO LAS CARDS DE LOS PLAYERS ----------------------------------------------
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.Top
+                ) {
+                    Column(
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        if (jugador_0 != null) {
+                            // Pop-up de intercambio de elementos
+                            if (tradePlayer0.value && jugador_0!!.yo != true)
+                                showTrading(
+                                    name = jugador_0!!.nombre,
+                                    foto = jugador_0!!.imagen,
+                                    setShowDialog = { tradePlayer0.value = it })
+                            // Cajita con la info del usuario
+                            Box(
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            {
+                                val colorEne = when (jugador_0!!.color) {
+                                    "RED" -> Rojo
+                                    "BLUE" -> Azul
+                                    "GREEN" -> Verde
+                                    else -> Amarillo
+                                }
+                                val player = if (jugador_0!!.yo) {
+                                    0
+                                } else {
+                                    5
+                                }
+                                dataJugador(player = player,
+                                    colorEne = colorEne,
+                                    foto = jugador_0!!.imagen,
+                                    ptsV = jugador_0!!.puntos,
+                                    ejercito = false,
+                                    carreteras = false,
+                                    onCardClick = {
+                                        if (jugador_0!!.yo != true) {
+                                            tradePlayer0.value = true
+                                        }
+                                    })
+
+                            }
+
+                        }
+
+                        Spacer(modifier = Modifier.height(5.dp))
+
+                        if (jugador_1 != null) {
+                            if (tradePlayer1.value && jugador_1!!.yo != true)
+                                showTrading(
+                                    name = jugador_1!!.nombre,
+                                    foto = jugador_1!!.imagen,
+                                    setShowDialog = { tradePlayer1.value = it })
+                            // Cajita con la info del usuario
+                            Box(
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            {
+                                val colorEne = when (jugador_1!!.color) {
+                                    "RED" -> Rojo
+                                    "BLUE" -> Azul
+                                    "GREEN" -> Verde
+                                    else -> Amarillo
+                                }
+
+                                val player = if (jugador_1!!.yo) {
+                                    0
+                                } else {
+                                    1
+                                }
+
+                                dataJugador(player = player,
+                                    colorEne = colorEne,
+                                    foto = jugador_1!!.imagen,
+                                    ptsV = jugador_1!!.puntos,
+                                    ejercito = false,
+                                    carreteras = false,
+                                    onCardClick = {
+                                        if (jugador_1!!.yo != true) {
+                                            tradePlayer1.value = true
+                                        }
+                                    })
+
+                            }
+
+                        }
                     }
+
+                    Column(modifier = Modifier.weight(1f)) {
+                        if (jugador_2 != null) {
+                            if (tradePlayer2.value && jugador_2!!.yo != true)
+                                showTrading(
+                                    name = jugador_2!!.nombre,
+                                    foto = jugador_2!!.imagen,
+                                    setShowDialog = { tradePlayer2.value = it })
+                            // Cajita con la info del usuario
+                            Box(
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            {
+                                val colorEne = when (jugador_2!!.color) {
+                                    "RED" -> Rojo
+                                    "BLUE" -> Azul
+                                    "GREEN" -> Verde
+                                    else -> Amarillo
+                                }
+                                val player = if (jugador_2!!.yo) {
+                                    0
+                                } else {
+                                    2
+                                }
+                                dataJugador(player = player,
+                                    colorEne = colorEne,
+                                    foto = jugador_2!!.imagen,
+                                    ptsV = jugador_2!!.puntos,
+                                    ejercito = false,
+                                    carreteras = false,
+                                    onCardClick = {
+                                        if (jugador_2!!.yo != true) {
+                                            tradePlayer2.value = true
+                                        }
+                                    })
+
+                            }
+
+                        }
+
+                        Spacer(modifier = Modifier.height(5.dp))
+                        if (jugador_3 != null) {
+                            if (tradePlayer3.value && jugador_3!!.yo != true)
+                                showTrading(
+                                    name = jugador_3!!.nombre,
+                                    foto = jugador_3!!.imagen,
+                                    setShowDialog = { tradePlayer3.value = it })
+                            // Cajita con la info del usuario
+                            Box(
+                                modifier = Modifier.fillMaxWidth(),
+                            )
+                            {
+                                val colorEne = when (jugador_3!!.color) {
+                                    "RED" -> Rojo
+                                    "BLUE" -> Azul
+                                    "GREEN" -> Verde
+                                    else -> Amarillo
+                                }
+                                val player = if (jugador_3!!.yo) {
+                                    0
+                                } else {
+                                    3
+                                }
+                                dataJugador(player = player,
+                                    colorEne = colorEne,
+                                    foto = jugador_3!!.imagen,
+                                    ptsV = jugador_3!!.puntos,
+                                    ejercito = false,
+                                    carreteras = false,
+                                    onCardClick = {
+                                        if (jugador_3!!.yo != true) {
+                                            tradePlayer3.value = true
+                                        }
+                                    })
+
+                            }
+
+                        }
+                    }
+
 
                 }
-            }
 
+                if (showConstruir.value)
+                    showConstruir(
+                        idVert = verticeChosen.value,
+                        setShowDialog = { showConstruir.value = it })
+                if (showCamino.value)
+                    construirCamino(
+                        idArista = aristaChosen.value,
+                        setShowDialog = { showCamino.value = it })
+                if (showpopUpnewTurno.value) {
+                    //TODO: LLAMAR A LA FUNCION CUANDO SE DEBE Y CON LOS PARAMETROS CORRECTOS
+                    //popUpNewTurno(playerName = , setShowDialog = )
+                }
+
+                viewModelScope.launch {
+                    nuevoTurnoPhase.value = esperarTurno().await()
+                }
+                // TODO: SALE EL PRIMER POP-UP PERO SE QUEDA PARPADEANDO :)
+                if (nuevoTurnoPhase.value && Globals.gameState.getString("turn_phase") == "INITIAL_TURN1") {
+                    // MOSTRAR POP-UP (O ALGO ASI) CON ALGO DEL ESTILO: "ES TU TURNO, COLOCA UNA CARRETERA Y UN PUEBLO"
+                    nuevoTurnoPhase1(setShowDialog = { nuevoTurnoPhase.value = it })
+                    // GET del tablero si no eres el primero
+                    // Colocar pueblo y carretera
+                    // POST del tablero con las modificaciones que has hecho
+                    // Pasar turno al siguiente jugador
+                }
+                if (nuevoTurnoPhase.value && Globals.gameState.getString("turn_phase") == "INITIAL_TURN2") {
+                    // MOSTRAR POP-UP: "ES TU TURNO OTRA VEZ, COLOCA UNA CARRETERA Y UN PUEBLO DE NUEVO"
+                    nuevoTurnoPhase2(setShowDialog = { nuevoTurnoPhase.value = it })
+                    // Get del tablero
+                    // Colocar pueblo y carretera
+                    // POST del tablero con las modificaciones que has hecho
+                    // Pasar turno al siguiente jugador -  Advance phase
+                }
+
+
+                //INFORMACIÓN PROPIA DEL JUGADOR ( RECURSOS ) --------------------------------------------------
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(0.dp, 0.dp, 0.dp, 55.dp),
+                    contentAlignment = Alignment.BottomStart
+                ) {
+                    Column(horizontalAlignment = Alignment.Start) {
+
+                        // TODO: AÑADIR INFO SOBRE LAS CARTAS QUE TIENE (POP-UP) Y LAS CONTRUCCIONES QUE LLEVA(ESTO SE PUEDE EVITAR SI NO CABE, QUE LAS CUENTE)
+                        Column(
+                            modifier = Modifier
+                                .background(
+                                    color = TransparenteBlanco,
+                                    shape = RoundedCornerShape(15.dp)
+                                )
+                                .padding(vertical = 5.dp, horizontal = 2.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+
+                            dataRecurso(id = "oveja", cantidad = Partida.Ovejas.toInt())
+                            dataRecurso(id = "arcilla", cantidad = Partida.Arcilla.toInt())
+                            dataRecurso(id = "madera", cantidad = Partida.Madera.toInt())
+                            dataRecurso(id = "trigo", cantidad = Partida.Trigo.toInt())
+                            dataRecurso(id = "roca", cantidad = Partida.Roca.toInt())
+                        }
+
+                        Spacer(modifier = Modifier.height(5.dp))
+
+                        //Tabla costes
+                        Button(
+                            onClick = { showTablaCostes.value = true },
+                            modifier = Modifier
+                                .width(50.dp)
+                                .height(50.dp),
+                            shape = RoundedCornerShape(15.dp),
+                            colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
+
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.hammer),
+                                contentDescription = null,
+                                tint = Blanco
+                            )
+                        }
+
+                    }
+                }
+
+            }
         }
     }
 }
@@ -2047,7 +2276,7 @@ fun showConstruir( idVert: String, setShowDialog: (Boolean) -> Unit) {
 
                             Spacer(modifier = Modifier.height(15.dp))
 
-                            if(Partida.Trigo.toInt()>=1 && Partida.Madera.toInt()>=1 && Partida.Ovejas.toInt()>=1 && Partida.Arcilla.toInt()>=1 ){
+                            if(Partida.Trigo.toInt()>=1 && Partida.Madera.toInt()>=1 && Partida.Ovejas.toInt()>=1 && Partida.Arcilla.toInt()>=1 && Globals.gameState.getString("player_turn")== Globals.Id){
                                 Button(
                                     onClick = {
                                         Partida.Vertices[idVert] = "poblado"
@@ -2072,7 +2301,7 @@ fun showConstruir( idVert: String, setShowDialog: (Boolean) -> Unit) {
                             }
                             else{
                                 Text(
-                                    text = "Sin Materiales",
+                                    text = "Sin Materiales o no es tu turno",
                                     color = Color.Red,
                                     style = TextStyle(
                                         fontSize = 14.sp,
@@ -2122,7 +2351,7 @@ fun showConstruir( idVert: String, setShowDialog: (Boolean) -> Unit) {
 
                             Spacer(modifier = Modifier.height(15.dp))
 
-                            if(Partida.Trigo.toInt()>=2 && Partida.Roca.toInt()>=3 ){
+                            if(Partida.Trigo.toInt()>=2 && Partida.Roca.toInt()>=3 && Globals.gameState.getString("player_turn")== Globals.Id){
                                 Button(
                                     onClick = {
                                         Partida.Vertices[idVert] = "ciudad"
@@ -2147,7 +2376,7 @@ fun showConstruir( idVert: String, setShowDialog: (Boolean) -> Unit) {
                             }
                             else{
                                 Text(
-                                    text = "Sin Materiales",
+                                    text = "Sin Materiales o no es tu turno",
                                     color = Color.Red,
                                     style = TextStyle(
                                         fontSize = 14.sp,
@@ -2245,7 +2474,7 @@ fun construirCamino(idArista: String, setShowDialog: (Boolean) -> Unit) {
 
                     Spacer(modifier = Modifier.height(15.dp))
 
-                    if(Partida.Arcilla.toInt()>=1 && Partida.Madera.toInt()>=1 ){
+                    if(Partida.Arcilla.toInt()>=1 && Partida.Madera.toInt()>=1 && Globals.gameState.getString("player_turn")== Globals.Id){
                         Button(
                             onClick = {
                                 Partida.Aristas[idArista] = "carretera"
@@ -2270,7 +2499,7 @@ fun construirCamino(idArista: String, setShowDialog: (Boolean) -> Unit) {
                     }
                     else{
                         Text(
-                            text = "Sin Materiales",
+                            text = "Sin Materiales o no es tu turno",
                             color = Color.Red,
                             style = TextStyle(
                                 fontSize = 14.sp,
@@ -2344,9 +2573,113 @@ fun popUpNewTurno(playerName : String, setShowDialog: (Boolean) -> Unit) {
 
     }
 }
-/*@Preview
+
 @Composable
-fun PreviewTileGrid() {
-    val tiles = listOf(Tile("bosque", 5, Pair(0, 0)), Tile("lago", 10, Pair(1, 0)), Tile("montaña", 3, Pair(2, 0)))
-    TileGrid(tiles)
-}*/
+fun nuevoTurnoPhase1(setShowDialog: (Boolean) -> Unit) {
+
+    Dialog(onDismissRequest = { }) { // PARA QUE SOLO SE CIERRE CON LA X QUITAR ESTO JEJE
+        Surface(
+            shape = RoundedCornerShape(16.dp),
+            color = AzulOscuro
+        ) {
+            Box(
+                contentAlignment = Alignment.Center
+            ) {
+                Column(modifier = Modifier.padding(20.dp)) {
+
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "Es tu turno",
+                            color = Blanco,
+                            style = TextStyle(
+                                fontSize = 30.sp,
+                                fontFamily = FontFamily.Default,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+
+                        Text(
+                            text = "Coloca 1 casa y 1 camino",
+                            color = Blanco,
+                            style = TextStyle(
+                                fontSize = 15.sp,
+                                fontFamily = FontFamily.Default,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+
+                    }
+
+                }
+            }
+        }
+
+        //maybe no funca
+        LaunchedEffect(setShowDialog) {
+            delay(1000) // espera 1 segundo
+            setShowDialog(false) // llama a setShowDialog con false
+        }
+
+
+    }
+}
+
+@Composable
+fun nuevoTurnoPhase2(setShowDialog: (Boolean) -> Unit) {
+
+    Dialog(onDismissRequest = { }) { // PARA QUE SOLO SE CIERRE CON LA X QUITAR ESTO JEJE
+        Surface(
+            shape = RoundedCornerShape(16.dp),
+            color = AzulOscuro
+        ) {
+            Box(
+                contentAlignment = Alignment.Center
+            ) {
+                Column(modifier = Modifier.padding(20.dp)) {
+
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "Vuelve a ser tu turno",
+                            color = Blanco,
+                            style = TextStyle(
+                                fontSize = 30.sp,
+                                fontFamily = FontFamily.Default,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+
+                        Text(
+                            text = "Coloca 1 casa y 1 camino de nuevo",
+                            color = Blanco,
+                            style = TextStyle(
+                                fontSize = 15.sp,
+                                fontFamily = FontFamily.Default,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+
+                    }
+
+                }
+            }
+        }
+
+        //maybe no funca
+        LaunchedEffect(setShowDialog) {
+            delay(1000) // espera 1 segundo
+            setShowDialog(false) // llama a setShowDialog con false
+        }
+
+
+    }
+}
+
+

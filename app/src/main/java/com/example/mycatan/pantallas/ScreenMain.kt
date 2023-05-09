@@ -43,7 +43,8 @@ fun ScreenMain(){
             SplashScreen(navController = navController)
         }
         composable(Routes.CatanBoard.route) {
-            CatanBoard(navController = navController)
+            var clase = CatanViewModel()
+            clase.CatanBoard(navController = navController)
         }
         composable(Routes.AmigosTodos.route) {
             AmigosTodosPage(navController = navController)
