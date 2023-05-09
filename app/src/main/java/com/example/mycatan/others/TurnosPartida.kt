@@ -40,7 +40,7 @@ suspend fun esperarTurno(): Deferred<Boolean> {
             // Llamamos a la funcion que relaciona el estado de la partida con las acciones que se pueden hacer
             // Si no somos el jugador que tiene el turno, no se nos permite hacer nada, saldrá pop-up de esperar
             // Se deberia bloquear la construccion si no es tu turno
-            turnos(Globals.gameState.getString("turn_phase"), Globals.gameState.getString("player_turn"), Globals.gameState.getInt("turn_time"))
+            //turnos(Globals.gameState.getString("turn_phase"), Globals.gameState.getString("player_turn"), Globals.gameState.getInt("turn_time"))
 
         }
         CompletableDeferred(miTurno)
