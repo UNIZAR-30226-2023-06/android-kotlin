@@ -27,13 +27,24 @@ fun CoroutineScope.waitForPlayerTurn(id: String) = launch {
 //viewModelScope.waitForPlayerTurn(Globals.Id)
 
 suspend fun esperarTurno(): Deferred<Boolean> {
+
     return withContext(Dispatchers.Default) {
         var miTurno= false
 
         while (!miTurno) {
-            if(Globals.gameState.getString("player_turn")== Globals.Id){
+            if(Globals.gameState.getString("player_turn") != Globals.lastPlayer || Globals.gameState.getString("turn_phase")!= Globals.lastFase){
+
+                if(Globals.gameState.getString("player_turn") != Globals.lastPlayer){
+                    Globals.lastPlayer = Globals.gameState.getString("player_turn")
+                }
+
+                if (Globals.gameState.getString("turn_phase")!= Globals.lastFase){
+                    Globals.lastFase = Globals.gameState.getString("turn_phase")
+                }
+
                 miTurno= true
             } else{
+                miTurno= false
                 getGameState(Globals.lobbyId)
                 delay(1000) // esperar un segundo antes de volver a llamar a getGameState
             }

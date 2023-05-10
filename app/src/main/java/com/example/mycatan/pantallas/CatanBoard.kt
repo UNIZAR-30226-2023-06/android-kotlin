@@ -46,6 +46,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mycatan.R
 import com.example.mycatan.dBaux.changeProfilePicture
+import com.example.mycatan.dBaux.firstPhaseBuildVillage
 import com.example.mycatan.dBaux.stopSearchingLobby
 import com.example.mycatan.others.*
 import kotlinx.coroutines.delay
@@ -165,6 +166,7 @@ class CatanViewModel : ViewModel() {
 
         var showpopUpnewTurno = remember { mutableStateOf(false) }
         var nuevoTurnoPhase = remember { mutableStateOf(false) }
+        var firstTime = remember { mutableStateOf(true) }
 
 
         // set up all transformation states
@@ -192,7 +194,7 @@ class CatanViewModel : ViewModel() {
             hexagonos.getJSONArray("55")[1] as Int,
             hexagonos.getJSONArray("55")[0] as Int,
             thief = thief,
-            Pair(0, 0),
+            Pair(1, 0),
             id = "37"
         )
         thief =
@@ -201,7 +203,7 @@ class CatanViewModel : ViewModel() {
             hexagonos.getJSONArray("89")[1] as Int,
             hexagonos.getJSONArray("89")[0] as Int,
             thief = thief,
-            Pair(1, 0),
+            Pair(2, 0),
             id = "59"
         )
         thief =
@@ -210,7 +212,7 @@ class CatanViewModel : ViewModel() {
             hexagonos.getJSONArray("123")[1] as Int,
             hexagonos.getJSONArray("123")[0] as Int,
             thief = thief,
-            Pair(2, 0),
+            Pair(3, 0),
             id = "7B"
         )
         thief =
@@ -219,7 +221,7 @@ class CatanViewModel : ViewModel() {
             hexagonos.getJSONArray("53")[1] as Int,
             hexagonos.getJSONArray("53")[0] as Int,
             thief = thief,
-            Pair(-1, 1),
+            Pair(0, 1),
             id = "35"
         )
         thief =
@@ -228,7 +230,7 @@ class CatanViewModel : ViewModel() {
             hexagonos.getJSONArray("87")[1] as Int,
             hexagonos.getJSONArray("87")[0] as Int,
             thief = thief,
-            Pair(0, 1),
+            Pair(1, 1),
             id = "57"
         )
         thief =
@@ -237,7 +239,7 @@ class CatanViewModel : ViewModel() {
             hexagonos.getJSONArray("121")[1] as Int,
             hexagonos.getJSONArray("121")[0] as Int,
             thief = thief,
-            Pair(1, 1),
+            Pair(2, 1),
             id = "79"
         )
         thief =
@@ -246,7 +248,7 @@ class CatanViewModel : ViewModel() {
             hexagonos.getJSONArray("155")[1] as Int,
             hexagonos.getJSONArray("155")[0] as Int,
             thief = thief,
-            Pair(2, 1),
+            Pair(3, 1),
             id = "9B"
         )
         thief =
@@ -255,7 +257,7 @@ class CatanViewModel : ViewModel() {
             hexagonos.getJSONArray("51")[1] as Int,
             hexagonos.getJSONArray("51")[0] as Int,
             thief = thief,
-            Pair(-2, 2),
+            Pair(-1, 2),
             id = "33"
         )
         thief =
@@ -264,7 +266,7 @@ class CatanViewModel : ViewModel() {
             hexagonos.getJSONArray("85")[1] as Int,
             hexagonos.getJSONArray("85")[0] as Int,
             thief = thief,
-            Pair(-1, 2),
+            Pair(0, 2),
             id = "55"
         )
         thief =
@@ -273,7 +275,7 @@ class CatanViewModel : ViewModel() {
             hexagonos.getJSONArray("119")[1] as Int,
             hexagonos.getJSONArray("119")[0] as Int,
             thief = thief,
-            Pair(0, 2),
+            Pair(1, 2),
             id = "77"
         )
         thief =
@@ -282,7 +284,7 @@ class CatanViewModel : ViewModel() {
             hexagonos.getJSONArray("153")[1] as Int,
             hexagonos.getJSONArray("153")[0] as Int,
             thief = thief,
-            Pair(1, 2),
+            Pair(2, 2),
             id = "99"
         )
         thief =
@@ -291,7 +293,7 @@ class CatanViewModel : ViewModel() {
             hexagonos.getJSONArray("187")[1] as Int,
             hexagonos.getJSONArray("187")[0] as Int,
             thief = thief,
-            Pair(2, 2),
+            Pair(3, 2),
             id = "BB"
         )
         thief =
@@ -300,7 +302,7 @@ class CatanViewModel : ViewModel() {
             hexagonos.getJSONArray("83")[1] as Int,
             hexagonos.getJSONArray("83")[0] as Int,
             thief = thief,
-            Pair(-2, 3),
+            Pair(-1, 3),
             id = "53"
         )
         thief =
@@ -309,7 +311,7 @@ class CatanViewModel : ViewModel() {
             hexagonos.getJSONArray("117")[1] as Int,
             hexagonos.getJSONArray("117")[0] as Int,
             thief = thief,
-            Pair(-1, 3),
+            Pair(0, 3),
             id = "75"
         )
         thief =
@@ -318,7 +320,7 @@ class CatanViewModel : ViewModel() {
             hexagonos.getJSONArray("151")[1] as Int,
             hexagonos.getJSONArray("151")[0] as Int,
             thief = thief,
-            Pair(0, 3),
+            Pair(1, 3),
             id = "97"
         )
         thief =
@@ -327,7 +329,7 @@ class CatanViewModel : ViewModel() {
             hexagonos.getJSONArray("185")[1] as Int,
             hexagonos.getJSONArray("185")[0] as Int,
             thief = thief,
-            Pair(1, 3),
+            Pair(2, 3),
             id = "B9"
         )
         thief =
@@ -336,7 +338,7 @@ class CatanViewModel : ViewModel() {
             hexagonos.getJSONArray("115")[1] as Int,
             hexagonos.getJSONArray("115")[0] as Int,
             thief = thief,
-            Pair(-2, 4),
+            Pair(-1, 4),
             id = "73"
         )
         thief =
@@ -345,7 +347,7 @@ class CatanViewModel : ViewModel() {
             hexagonos.getJSONArray("149")[1] as Int,
             hexagonos.getJSONArray("149")[0] as Int,
             thief = thief,
-            Pair(-1, 4),
+            Pair(0, 4),
             id = "95"
         )
         thief =
@@ -354,7 +356,7 @@ class CatanViewModel : ViewModel() {
             hexagonos.getJSONArray("183")[1] as Int,
             hexagonos.getJSONArray("183")[0] as Int,
             thief = thief,
-            Pair(0, 4),
+            Pair(1, 4),
             id = "B7"
         )
 
@@ -646,14 +648,19 @@ class CatanViewModel : ViewModel() {
                     //popUpNewTurno(playerName = , setShowDialog = )
                 }
 
+
+
                 viewModelScope.launch {
+                    //esperarTurno( onNewTurno = { nuevoTurnoPhase.value = true }).await()
                     nuevoTurnoPhase.value = esperarTurno().await()
                     println(nuevoTurnoPhase.value)
                 }
+
                 // TODO: SALE EL PRIMER POP-UP PERO SE QUEDA PARPADEANDO :)
-                if (nuevoTurnoPhase.value && Globals.gameState.getString("turn_phase") == "INITIAL_TURN1") {
+               if (nuevoTurnoPhase.value && Globals.gameState.getString("turn_phase") == "INITIAL_TURN1") {
                     // MOSTRAR POP-UP (O ALGO ASI) CON ALGO DEL ESTILO: "ES TU TURNO, COLOCA UNA CARRETERA Y UN PUEBLO"
-                    nuevoTurnoPhase1(setShowDialog = { nuevoTurnoPhase.value = it })
+                    println("HOLAAAA")
+                    nuevoTurnoPhase1(playerName = Globals.gameState.getString("player_turn"), setShowDialog = { nuevoTurnoPhase.value = it })
                     // GET del tablero si no eres el primero
                     // Colocar pueblo y carretera
                     // POST del tablero con las modificaciones que has hecho
@@ -2288,7 +2295,13 @@ fun showConstruir( idVert: String, setShowDialog: (Boolean) -> Unit) {
                                 Button(
                                     onClick = {
                                         Partida.Vertices[idVert] = "poblado"
-                                        buildPoblado()
+                                        if (Globals.gameState.getString("turn_phase") == "INITIAL_TURN1" || Globals.gameState.getString("turn_phase") == "INITIAL_TURN2"){
+                                            val decimal = Integer.parseInt(idVert, 16) // convertir a decimal
+                                            println(decimal) // imprimir el resultado
+                                            firstPhaseBuildVillage(decimal.toString())
+                                        }else {
+                                            buildPoblado()
+                                        }
                                         setShowDialog(false) },
                                     modifier = Modifier
                                         //.fillMaxWidth(0.5f)
@@ -2582,7 +2595,7 @@ fun popUpNewTurno(playerName : String, setShowDialog: (Boolean) -> Unit) {
 
         //maybe no funca
         LaunchedEffect(setShowDialog) {
-            delay(1000) // espera 1 segundo
+            delay(2000) // espera 1 segundo
             setShowDialog(false) // llama a setShowDialog con false
         }
 
@@ -2591,7 +2604,9 @@ fun popUpNewTurno(playerName : String, setShowDialog: (Boolean) -> Unit) {
 }
 
 @Composable
-fun nuevoTurnoPhase1(setShowDialog: (Boolean) -> Unit) {
+fun nuevoTurnoPhase1(playerName : String, setShowDialog: (Boolean) -> Unit) {
+
+
 
     Dialog(onDismissRequest = { setShowDialog(false)}) { // PARA QUE SOLO SE CIERRE CON LA X QUITAR ESTO JEJE
         Surface(
@@ -2609,7 +2624,7 @@ fun nuevoTurnoPhase1(setShowDialog: (Boolean) -> Unit) {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "Es tu turno",
+                            text = "Es turno de $playerName",
                             color = Blanco,
                             style = TextStyle(
                                 fontSize = 30.sp,
@@ -2635,10 +2650,10 @@ fun nuevoTurnoPhase1(setShowDialog: (Boolean) -> Unit) {
         }
 
         //maybe no funca
-        /*LaunchedEffect(setShowDialog) {
-            delay(1000) // espera 1 segundo
+        LaunchedEffect(setShowDialog) {
+            delay(2000) // espera 1 segundo
             setShowDialog(false) // llama a setShowDialog con false
-        }*/
+        }
 
 
     }
@@ -2690,7 +2705,7 @@ fun nuevoTurnoPhase2(setShowDialog: (Boolean) -> Unit) {
 
         //maybe no funca
         LaunchedEffect(setShowDialog) {
-            delay(1000) // espera 1 segundo
+            delay(2000) // espera 1 segundo
             setShowDialog(false) // llama a setShowDialog con false
         }
 

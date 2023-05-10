@@ -111,10 +111,10 @@ fun getGameState( idlobby: String ): Boolean {
             if (status == "error") {
                 println("Error al coger el status del juego")
             } else {
-                println("Game started")
+                //println("Game started")
                 result = true
                 Globals.gameState = json
-                println("JSON DEL GAME STATUS ${Globals.gameState}")
+               // println("JSON DEL GAME STATUS ${Globals.gameState}")
             }
             latch.countDown()
         }
@@ -123,3 +123,58 @@ fun getGameState( idlobby: String ): Boolean {
     return result
 
 }
+
+/*
+    Da el estado de la partida del jugador
+    @param: token del jugador
+    @return: true si se esta buscando partida, false si ya esta en un lobby y no busca
+ */
+fun firstPhaseBuildVillage( nodo: String): Boolean {
+    var result = false
+    val latch = CountDownLatch(1)
+
+    val mediaType = "application/x-www-form-urlencoded".toMediaTypeOrNull()
+    val body = RequestBody.create(
+        mediaType,
+        ""
+    )
+
+    val request = Request.Builder()
+        .url("http://$ipBackend:8000/build-village?node=$nodo")
+        .post(body)
+        .addHeader("accept", "application/json")
+        .addHeader("Authorization", "Bearer ${Globals.Token}")
+        .addHeader("Content-Type", "application/x-www-form-urlencoded")
+        .build()
+
+    val client = OkHttpClient()
+
+    client.newCall(request).enqueue(object : Callback {
+        override fun onFailure(call: Call, e: IOException) {
+            println("ERROR al conectar con backend")
+            latch.countDown()
+        }
+
+        override fun onResponse(call: Call, response: Response) {
+            val respuesta = response.body?.string().toString()
+
+            println(respuesta)
+            //transform the string to json object
+            val json = JSONObject(respuesta)
+            //get the string from the response
+            val status = json.getString("detail")
+            
+            if (status == "Village built") {
+                println("Poblado construido")
+            } else {
+                println("Error, no se ha podido construir el poblado ")
+
+            }
+            latch.countDown()
+        }
+    })
+    latch.await()
+    return result
+}
+
+

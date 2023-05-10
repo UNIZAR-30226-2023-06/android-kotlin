@@ -1,5 +1,6 @@
 package com.example.mycatan.others
 
+import android.media.AsyncPlayer
 import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -17,7 +18,7 @@ import kotlin.math.sqrt
 import kotlin.properties.Delegates
 
 //Javi 192.168.1.39
-val ipBackend = "192.168.1.135"
+val ipBackend = "192.168.1.39"
 //loreto: "192.168.1.133       "192.168.1.139"    10.1.54.191" "192.168.1.143" "192.168.1.135"
 
 object Globals {
@@ -41,6 +42,8 @@ object Globals {
     // Globals.juego.getJSONObject("game").getJSONArray("jugadores")
     lateinit var juego: JSONObject
     lateinit var gameState: JSONObject
+    var lastPlayer = "nada"
+    var lastFase = "nada"
 
 }
 
