@@ -648,6 +648,7 @@ class CatanViewModel : ViewModel() {
 
                 viewModelScope.launch {
                     nuevoTurnoPhase.value = esperarTurno().await()
+                    println(nuevoTurnoPhase.value)
                 }
                 // TODO: SALE EL PRIMER POP-UP PERO SE QUEDA PARPADEANDO :)
                 if (nuevoTurnoPhase.value && Globals.gameState.getString("turn_phase") == "INITIAL_TURN1") {
@@ -2276,7 +2277,14 @@ fun showConstruir( idVert: String, setShowDialog: (Boolean) -> Unit) {
 
                             Spacer(modifier = Modifier.height(15.dp))
 
-                            if(Partida.Trigo.toInt()>=1 && Partida.Madera.toInt()>=1 && Partida.Ovejas.toInt()>=1 && Partida.Arcilla.toInt()>=1 && Globals.gameState.getString("player_turn")== Globals.Id){
+                            // Solo se puede contruir en 3 ocasiones
+                            // 1º Es tu turno y tienes los recursos
+                            // 2º Es tu turno y estas en la fase inicial 1
+                            // 3º Es tu turno y estas en la fase inicial 2
+
+                            if( (Partida.Trigo.toInt()>=1 && Partida.Madera.toInt()>=1 && Partida.Ovejas.toInt()>=1 && Partida.Arcilla.toInt()>=1 && Globals.gameState.getString("player_turn")== Globals.Id)
+                                || (Globals.gameState.getString("player_turn")== Globals.Id
+                                        && (Globals.gameState.getString("turn_phase") == "INITIAL_TURN1" || Globals.gameState.getString("turn_phase") == "INITIAL_TURN2"))){
                                 Button(
                                     onClick = {
                                         Partida.Vertices[idVert] = "poblado"
@@ -2351,6 +2359,7 @@ fun showConstruir( idVert: String, setShowDialog: (Boolean) -> Unit) {
 
                             Spacer(modifier = Modifier.height(15.dp))
 
+                            // En la fase 1 y 2 solo se contruiyen poblados y caminos, asik vamos a ignorar las ciudades
                             if(Partida.Trigo.toInt()>=2 && Partida.Roca.toInt()>=3 && Globals.gameState.getString("player_turn")== Globals.Id){
                                 Button(
                                     onClick = {
@@ -2474,7 +2483,14 @@ fun construirCamino(idArista: String, setShowDialog: (Boolean) -> Unit) {
 
                     Spacer(modifier = Modifier.height(15.dp))
 
-                    if(Partida.Arcilla.toInt()>=1 && Partida.Madera.toInt()>=1 && Globals.gameState.getString("player_turn")== Globals.Id){
+                    // Solo se puede contruir en 3 ocasiones
+                    // 1º Es tu turno y tienes los recursos
+                    // 2º Es tu turno y estas en la fase inicial 1
+                    // 3º Es tu turno y estas en la fase inicial 2
+
+                    if((Partida.Arcilla.toInt()>=1 && Partida.Madera.toInt()>=1 && Globals.gameState.getString("player_turn")== Globals.Id)
+                            || (Globals.gameState.getString("player_turn")== Globals.Id
+                            && (Globals.gameState.getString("turn_phase") == "INITIAL_TURN1" || Globals.gameState.getString("turn_phase") == "INITIAL_TURN2"))){
                         Button(
                             onClick = {
                                 Partida.Aristas[idArista] = "carretera"
@@ -2577,7 +2593,7 @@ fun popUpNewTurno(playerName : String, setShowDialog: (Boolean) -> Unit) {
 @Composable
 fun nuevoTurnoPhase1(setShowDialog: (Boolean) -> Unit) {
 
-    Dialog(onDismissRequest = { }) { // PARA QUE SOLO SE CIERRE CON LA X QUITAR ESTO JEJE
+    Dialog(onDismissRequest = { setShowDialog(false)}) { // PARA QUE SOLO SE CIERRE CON LA X QUITAR ESTO JEJE
         Surface(
             shape = RoundedCornerShape(16.dp),
             color = AzulOscuro
@@ -2619,10 +2635,10 @@ fun nuevoTurnoPhase1(setShowDialog: (Boolean) -> Unit) {
         }
 
         //maybe no funca
-        LaunchedEffect(setShowDialog) {
+        /*LaunchedEffect(setShowDialog) {
             delay(1000) // espera 1 segundo
             setShowDialog(false) // llama a setShowDialog con false
-        }
+        }*/
 
 
     }
