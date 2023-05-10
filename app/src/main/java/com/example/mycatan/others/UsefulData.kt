@@ -63,6 +63,7 @@ object Partida {
     var casaINIdisp =  mutableStateOf(false)
     var caminoINIdisp =  mutableStateOf(false)
     var nodosLegales = mutableListOf<String>("0")
+    var edgesLegales = mutableListOf<String>("0")
     var iniciadasAristas = false
     val listUpRight = listOf<String>("38", "5A", "7C", "36","58", "7A", "9C", "34", "56", "78", "9A", "BC", "54", "76", "98", "BA", "74", "96", "B8")
     val listDownRight = listOf<String>("47", "69", "8B", "45","67", "89", "AB", "43", "65", "87", "A9", "CB", "63", "85", "A7", "C9", "83", "A5", "C7")

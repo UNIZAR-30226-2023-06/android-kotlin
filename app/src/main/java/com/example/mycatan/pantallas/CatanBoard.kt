@@ -45,10 +45,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mycatan.R
-import com.example.mycatan.dBaux.changeProfilePicture
-import com.example.mycatan.dBaux.firstPhaseBuildVillage
-import com.example.mycatan.dBaux.getlegalNodesINI
-import com.example.mycatan.dBaux.stopSearchingLobby
+import com.example.mycatan.dBaux.*
 import com.example.mycatan.others.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -667,6 +664,7 @@ class CatanViewModel : ViewModel() {
                     // MOSTRAR POP-UP (O ALGO ASI) CON ALGO DEL ESTILO: "ES TU TURNO, COLOCA UNA CARRETERA Y UN PUEBLO"
 
                     getlegalNodesINI(Partida.miColor)
+                    getlegalEdges(Partida.miColor)
                     Partida.casaINIdisp.value = true
                     Partida.caminoINIdisp.value = true
                     nuevoTurnoPhase1(playerName = Globals.gameState.getString("player_turn_name"), setShowDialog = { nuevoTurnoPhase.value = it })
@@ -1295,8 +1293,7 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
 
                                 var idCoordHex = idCoord?.toInt(16).toString()
 
-                                println("nodoooooooooooooo:   $idCoordHex")
-                                println(Partida.nodosLegales)
+
                                 if (Partida.nodosLegales.contains(idCoordHex)){
 
                                     println( "legal")
@@ -1344,12 +1341,25 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
 
                                     var idCoord = Partida.CoordAristas[coordinate]
 
-                                    if (Partida.Aristas[idCoord.toString()] == "nada") {
-                                        println("aristaclicado: ${idCoord.toString()}")
-                                        chosenA(idCoord.toString())
-                                        onAristaClick()
+                                    var idCoordHex = idCoord?.toInt(16).toString()
+
+                                    if (Partida.edgesLegales.contains(idCoordHex)){
+
+                                        if (Partida.Aristas[idCoord.toString()] == "nada") {
+                                            println("aristaclicado: ${idCoord.toString()}")
+                                            chosenA(idCoord.toString())
+                                            onAristaClick()
+
+                                        }
 
                                     }
+                                    else {
+                                        Toast
+                                            .makeText(context, "not legal", Toast.LENGTH_SHORT)
+                                            .show()
+                                    }
+
+
 
 
                                     //Partida.Aristas[idCoord.toString()] = "carretera"
@@ -2326,6 +2336,8 @@ fun showConstruir( idVert: String, setShowDialog: (Boolean) -> Unit) {
                                             val decimal = Integer.parseInt(idVert, 16) // convertir a decimal
                                             firstPhaseBuildVillage(decimal.toString())
                                             Partida.casaINIdisp.value= false
+                                            //se actualizan los edges legales al poner una  casa
+                                            getlegalEdges(Partida.miColor)
 
                                         }else {
                                             buildPoblado()
@@ -2529,13 +2541,23 @@ fun construirCamino(idArista: String, setShowDialog: (Boolean) -> Unit) {
                     // 2º Es tu turno y estas en la fase inicial 1
                     // 3º Es tu turno y estas en la fase inicial 2
 
-                    if((Partida.Arcilla.toInt()>=1 && Partida.Madera.toInt()>=1 && Globals.gameState.getString("player_turn")== Globals.Id)
+                    if( Partida.caminoINIdisp.value
+                        && ((Partida.Arcilla.toInt()>=1 && Partida.Madera.toInt()>=1 && Globals.gameState.getString("player_turn")== Globals.Id)
                             || (Globals.gameState.getString("player_turn")== Globals.Id
-                            && (Globals.gameState.getString("turn_phase") == "INITIAL_TURN1" || Globals.gameState.getString("turn_phase") == "INITIAL_TURN2"))){
+                            && (Globals.gameState.getString("turn_phase") == "INITIAL_TURN1" || Globals.gameState.getString("turn_phase") == "INITIAL_TURN2")))
+                    ){
                         Button(
                             onClick = {
                                 Partida.Aristas[idArista] = "carretera"
-                                buildCamino()
+                                if (Globals.gameState.getString("turn_phase") == "INITIAL_TURN1" || Globals.gameState.getString("turn_phase") == "INITIAL_TURN2"){
+                                    val decimal = Integer.parseInt(idArista, 16) // convertir a decimal
+                                    firstPhaseBuildRoad(decimal.toString())
+                                    Partida.caminoINIdisp.value= false
+
+                                }else {
+                                    buildCamino()
+                                }
+
                                 setShowDialog(false) },
                             modifier = Modifier
                                 //.fillMaxWidth(0.5f)

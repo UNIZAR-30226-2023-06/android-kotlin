@@ -178,6 +178,53 @@ fun firstPhaseBuildVillage( nodo: String): Boolean {
     return result
 }
 
+fun firstPhaseBuildRoad( edge: String): Boolean {
+    var result = false
+    val latch = CountDownLatch(1)
+
+    val mediaType = "application/x-www-form-urlencoded".toMediaTypeOrNull()
+    val body = RequestBody.create(
+        mediaType,
+        ""
+    )
+
+    val request = Request.Builder()
+        .url("http://$ipBackend:8000/build-road?edge=$edge")
+        .post(body)
+        .addHeader("accept", "application/json")
+        .addHeader("Authorization", "Bearer ${Globals.Token}")
+        .addHeader("Content-Type", "application/x-www-form-urlencoded")
+        .build()
+
+    val client = OkHttpClient()
+
+    client.newCall(request).enqueue(object : Callback {
+        override fun onFailure(call: Call, e: IOException) {
+            println("ERROR al conectar con backend")
+            latch.countDown()
+        }
+
+        override fun onResponse(call: Call, response: Response) {
+            val respuesta = response.body?.string().toString()
+
+            println(respuesta)
+            //transform the string to json object
+            val json = JSONObject(respuesta)
+            //get the string from the response
+            val status = json.getString("detail")
+
+            if (status == "Road built") {
+                println("Poblado construido")
+            } else {
+                println("Error, no se ha podido construir el poblado ")
+
+            }
+            latch.countDown()
+        }
+    })
+    latch.await()
+    return result
+}
 //TODO: analogo para las aristas
 
 
@@ -218,6 +265,47 @@ fun getlegalNodesINI( color: String ): Boolean {
                 val value = jsonArray.getInt(i)
                 //println(value)
                 Partida.nodosLegales.add(value.toString())
+            }
+            latch.countDown()
+        }
+    })
+    latch.await()
+    return result
+}
+
+fun getlegalEdges( color: String ): Boolean {
+    var result = false
+    val latch = CountDownLatch(1)
+
+    val request = Request.Builder()
+        .url("http://$ipBackend:8000/get-legal-building-edges?lobby_id=${Globals.lobbyId}&color=$color")
+        .get()
+        .addHeader("accept", "application/json")
+        .addHeader("Authorization", "Bearer ${Globals.Token}")
+        .addHeader("Content-Type", "application/x-www-form-urlencoded")
+        .build()
+
+    val client = OkHttpClient()
+
+    client.newCall(request).enqueue(object : Callback {
+        override fun onFailure(call: Call, e: IOException) {
+            println("ERROR al conectar con backend")
+            latch.countDown()
+        }
+
+        override fun onResponse(call: Call, response: Response) {
+            val respuesta = response.body?.string().toString()
+
+            println(respuesta)
+            //transform the string to json array
+            val jsonArray = JSONArray(respuesta)
+
+            //Se reemplaza la lista de nodos legales con la actual
+            Partida.edgesLegales.clear()
+            for (i in 0 until jsonArray.length()) {
+                val value = jsonArray.getInt(i)
+                //println(value)
+                Partida.edgesLegales.add(value.toString())
             }
             latch.countDown()
         }
