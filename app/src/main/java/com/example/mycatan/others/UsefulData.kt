@@ -7,10 +7,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Vertices
 import com.example.mycatan.pantallas.Tile
 import com.example.mycatan.pantallas.clickedVertex
 import com.example.mycatan.pantallas.getHexagonVertices
+import com.example.mycatan.ui.theme.Blanco
 import kotlinx.serialization.json.Json
 import org.json.JSONObject
 import kotlin.math.pow
@@ -57,6 +59,10 @@ object Partida {
     lateinit var Aristas: HashMap<String,String>
     lateinit var CoordVertices: HashMap<Offset, String>
     lateinit var CoordAristas: HashMap<Offset, String>
+    lateinit var miColor : String
+    var casaINIdisp =  mutableStateOf(false)
+    var caminoINIdisp =  mutableStateOf(false)
+    var nodosLegales = mutableListOf<String>("0")
     var iniciadasAristas = false
     val listUpRight = listOf<String>("38", "5A", "7C", "36","58", "7A", "9C", "34", "56", "78", "9A", "BC", "54", "76", "98", "BA", "74", "96", "B8")
     val listDownRight = listOf<String>("47", "69", "8B", "45","67", "89", "AB", "43", "65", "87", "A9", "CB", "63", "85", "A7", "C9", "83", "A5", "C7")

@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import com.auth0.jwt.JWT
 import com.example.mycatan.others.Globals
+import com.example.mycatan.others.Partida
 import com.example.mycatan.others.ipBackend
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -177,4 +178,52 @@ fun firstPhaseBuildVillage( nodo: String): Boolean {
     return result
 }
 
+//TODO: analogo para las aristas
+
+
+
+
+
+
+fun getlegalNodesINI( color: String ): Boolean {
+    var result = false
+    val latch = CountDownLatch(1)
+
+    val request = Request.Builder()
+        .url("http://$ipBackend:8000/get-legal-building-nodes?lobby_id=${Globals.lobbyId}&color=$color")
+        .get()
+        .addHeader("accept", "application/json")
+        .addHeader("Authorization", "Bearer ${Globals.Token}")
+        .addHeader("Content-Type", "application/x-www-form-urlencoded")
+        .build()
+
+    val client = OkHttpClient()
+
+    client.newCall(request).enqueue(object : Callback {
+        override fun onFailure(call: Call, e: IOException) {
+            println("ERROR al conectar con backend")
+            latch.countDown()
+        }
+
+        override fun onResponse(call: Call, response: Response) {
+            val respuesta = response.body?.string().toString()
+
+            println(respuesta)
+            //transform the string to json array
+            val jsonArray = JSONArray(respuesta)
+
+            //Se reemplaza la lista de nodos legales con la actual
+            Partida.nodosLegales.clear()
+            for (i in 0 until jsonArray.length()) {
+                val value = jsonArray.getInt(i)
+                //println(value)
+                Partida.nodosLegales.add(value.toString())
+            }
+            latch.countDown()
+        }
+    })
+    latch.await()
+    return result
+
+}
 

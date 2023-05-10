@@ -47,6 +47,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.mycatan.R
 import com.example.mycatan.dBaux.changeProfilePicture
 import com.example.mycatan.dBaux.firstPhaseBuildVillage
+import com.example.mycatan.dBaux.getlegalNodesINI
 import com.example.mycatan.dBaux.stopSearchingLobby
 import com.example.mycatan.others.*
 import kotlinx.coroutines.delay
@@ -84,6 +85,7 @@ class CatanViewModel : ViewModel() {
                 tablero = jugador0.getString("selected_grid_skin")
             )
             if (jugador_0!!.yo == true) {
+                Partida.miColor = jugador_0!!.color
                 Partida.Madera = jugador0.getJSONObject("hand").getString("wood")
                 Partida.Ovejas = jugador0.getJSONObject("hand").getString("sheep")
                 Partida.Trigo = jugador0.getJSONObject("hand").getString("wheat")
@@ -104,6 +106,7 @@ class CatanViewModel : ViewModel() {
                 tablero = jugador1.getString("selected_grid_skin")
             )
             if (jugador_1!!.yo == true) {
+                Partida.miColor = jugador_1!!.color
                 Partida.Madera = jugador1.getJSONObject("hand").getString("wood")
                 Partida.Ovejas = jugador1.getJSONObject("hand").getString("sheep")
                 Partida.Trigo = jugador1.getJSONObject("hand").getString("wheat")
@@ -124,6 +127,7 @@ class CatanViewModel : ViewModel() {
                 tablero = jugador2.getString("selected_grid_skin")
             )
             if (jugador_2!!.yo == true) {
+                Partida.miColor = jugador_2!!.color
                 Partida.Madera = jugador2.getJSONObject("hand").getString("wood")
                 Partida.Ovejas = jugador2.getJSONObject("hand").getString("sheep")
                 Partida.Trigo = jugador2.getJSONObject("hand").getString("wheat")
@@ -144,6 +148,7 @@ class CatanViewModel : ViewModel() {
                 tablero = jugador3.getString("selected_grid_skin")
             )
             if (jugador_3!!.yo == true) {
+                Partida.miColor = jugador_3!!.color
                 Partida.Madera = jugador3.getJSONObject("hand").getString("wood")
                 Partida.Ovejas = jugador3.getJSONObject("hand").getString("sheep")
                 Partida.Trigo = jugador3.getJSONObject("hand").getString("wheat")
@@ -167,6 +172,7 @@ class CatanViewModel : ViewModel() {
         var showpopUpnewTurno = remember { mutableStateOf(false) }
         var nuevoTurnoPhase = remember { mutableStateOf(false) }
         var firstTime = remember { mutableStateOf(true) }
+
 
 
         // set up all transformation states
@@ -656,11 +662,14 @@ class CatanViewModel : ViewModel() {
                     println(nuevoTurnoPhase.value)
                 }
 
-                // TODO: SALE EL PRIMER POP-UP PERO SE QUEDA PARPADEANDO :)
+
                if (nuevoTurnoPhase.value && Globals.gameState.getString("turn_phase") == "INITIAL_TURN1") {
                     // MOSTRAR POP-UP (O ALGO ASI) CON ALGO DEL ESTILO: "ES TU TURNO, COLOCA UNA CARRETERA Y UN PUEBLO"
-                    println("HOLAAAA")
-                    nuevoTurnoPhase1(playerName = Globals.gameState.getString("player_turn"), setShowDialog = { nuevoTurnoPhase.value = it })
+
+                    getlegalNodesINI(Partida.miColor)
+                    Partida.casaINIdisp.value = true
+                    Partida.caminoINIdisp.value = true
+                    nuevoTurnoPhase1(playerName = Globals.gameState.getString("player_turn_name"), setShowDialog = { nuevoTurnoPhase.value = it })
                     // GET del tablero si no eres el primero
                     // Colocar pueblo y carretera
                     // POST del tablero con las modificaciones que has hecho
@@ -1284,13 +1293,29 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                                 // Aquí puedes agregar el código para manejar el evento de clic en el círculo
                                 var idCoord = Partida.CoordVertices[vertex]
 
-                                if (Partida.Vertices[idCoord.toString()] == "nada") {
-                                    println("verticeclicado: ${idCoord.toString()}")
-                                    chosenV(idCoord.toString())
-                                    onVerticeClick()
+                                var idCoordHex = idCoord?.toInt(16).toString()
 
-                                    clickedVertex = vertex
+                                println("nodoooooooooooooo:   $idCoordHex")
+                                println(Partida.nodosLegales)
+                                if (Partida.nodosLegales.contains(idCoordHex)){
+
+                                    println( "legal")
+
+                                    if (Partida.Vertices[idCoord.toString()] == "nada") {
+                                        println("verticeclicado: ${idCoord.toString()}")
+                                        chosenV(idCoord.toString())
+                                        onVerticeClick()
+
+                                        clickedVertex = vertex
+                                    }
+
                                 }
+                                else {
+                                    Toast
+                                        .makeText(context, "not legal", Toast.LENGTH_SHORT)
+                                        .show()
+                                }
+
 
                                 break
                             }
@@ -2093,7 +2118,7 @@ fun getAristasCoord(centerX: Float, centerY: Float, radius: Int, id: String){
     // Devolver las aristas para cada hexágono -----------------------------
     val vertices = getHexagonVertices(centerX, centerY, radius)
 
-    println("id_hexagono: $id")
+    //println("id_hexagono: $id")
 
     for (i in vertices.indices) {
         var vertex1: Offset
@@ -2289,16 +2314,19 @@ fun showConstruir( idVert: String, setShowDialog: (Boolean) -> Unit) {
                             // 2º Es tu turno y estas en la fase inicial 1
                             // 3º Es tu turno y estas en la fase inicial 2
 
-                            if( (Partida.Trigo.toInt()>=1 && Partida.Madera.toInt()>=1 && Partida.Ovejas.toInt()>=1 && Partida.Arcilla.toInt()>=1 && Globals.gameState.getString("player_turn")== Globals.Id)
+                            if( Partida.casaINIdisp.value
+                                && ((Partida.Trigo.toInt()>=1 && Partida.Madera.toInt()>=1 && Partida.Ovejas.toInt()>=1 && Partida.Arcilla.toInt()>=1 && Globals.gameState.getString("player_turn")== Globals.Id)
                                 || (Globals.gameState.getString("player_turn")== Globals.Id
-                                        && (Globals.gameState.getString("turn_phase") == "INITIAL_TURN1" || Globals.gameState.getString("turn_phase") == "INITIAL_TURN2"))){
+                                        && (Globals.gameState.getString("turn_phase") == "INITIAL_TURN1" || Globals.gameState.getString("turn_phase") == "INITIAL_TURN2")))
+                            ){
                                 Button(
                                     onClick = {
                                         Partida.Vertices[idVert] = "poblado"
                                         if (Globals.gameState.getString("turn_phase") == "INITIAL_TURN1" || Globals.gameState.getString("turn_phase") == "INITIAL_TURN2"){
                                             val decimal = Integer.parseInt(idVert, 16) // convertir a decimal
-                                            println(decimal) // imprimir el resultado
                                             firstPhaseBuildVillage(decimal.toString())
+                                            Partida.casaINIdisp.value= false
+
                                         }else {
                                             buildPoblado()
                                         }
