@@ -330,7 +330,7 @@ fun getLobbyFromPlayer( token: String): Boolean {
                         //TODO: AQUI SE DEBERIAN COGER TODOS LOS DATOS DEL TABLERO Y DE LOS JUGADORES
                         Globals.lobbyId = json.getString("id")
                         Globals.juego = json
-                        println("JSON DEL GAME STATUS ${Globals.juego}")
+                        //println("JSON DEL GAME STATUS ${Globals.juego}")
                     }
                 } else {
                     println("PLAYER YA ESTÁ EN UN LOBBY O ERROR AL BUSCARLO")

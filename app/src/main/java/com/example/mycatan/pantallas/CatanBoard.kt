@@ -1567,14 +1567,27 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
 
 
 
-                // TODO: ANTES DE CONSTRUIR GET-LEGAL-EDGES PARA VER SI SE PUEDE CONSTRUIR EN LA ARISTA
-                for (c in getHexagonLineCoordinates(vertex1, vertex2)){ // se guardacada coordenada de una arista en su correspondiente id
+
+                for (c in getHexagonLineCoordinates(vertex1, vertex2)){ // se guarda cada coordenada de una arista en su correspondiente id
 
 
 
                     var temp1 = Partida.CoordAristas[c]
 
-                    if (Partida.Aristas[temp1.toString()] == "carretera" && aristasPintadas[temp1.toString()] =="not painted"){
+                    val decimal = Integer.parseInt(temp1, 16) // convertir a decimal
+
+                    // SI UNA ARISTA/EDGE ES DISTINTA DE NULL, SE PINTA ( YA QUE SE SUPONE QUE ALGUIEN HA COLOCADO ALGO AHI )
+                    if (
+
+                        (Partida.Aristas[temp1.toString()] == "carretera" && aristasPintadas[temp1.toString()] =="not painted") ||
+                        (Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) != "null"
+                        && aristasPintadas[temp1.toString()] =="not painted")
+
+
+
+                    ){
+
+                        println("EL NUMERO DE LA ARISTA(JUGADOR) ${Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString())}")
 
                         aristasPintadas[temp1.toString()] = "painted"
 
@@ -1589,7 +1602,7 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                                 println("downright")
                                 var colorEne = R.drawable.amarillo_carretera_1_dcha // valor predeterminado
 
-                                if (jugador_0!!.yo == true) {
+                                if (jugador_0!!.yo == true && (Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) == "null")) {
                                     colorEne = when (jugador_0!!.color) {
                                         "RED" -> R.drawable.rojo_carretera_1_dcha
                                         "BLUE" -> R.drawable.azul_carretera_1_dcha
@@ -1597,7 +1610,7 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                                         else -> R.drawable.amarillo_carretera_1_dcha
                                     }
                                 }
-                                if (jugador_1!!.yo == true) {
+                                if (jugador_1!!.yo == true && Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) == "null") {
                                     colorEne = when (jugador_1!!.color) {
                                         "RED" -> R.drawable.rojo_carretera_1_dcha
                                         "BLUE" -> R.drawable.azul_carretera_1_dcha
@@ -1605,7 +1618,7 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                                         else -> R.drawable.amarillo_carretera_1_dcha
                                     }
                                 }
-                                if (jugador_2!!.yo == true) {
+                                if (jugador_2!!.yo == true && Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) == "null" ) {
                                     colorEne = when (jugador_2!!.color) {
                                         "RED" -> R.drawable.rojo_carretera_1_dcha
                                         "BLUE" -> R.drawable.azul_carretera_1_dcha
@@ -1613,13 +1626,25 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                                         else -> R.drawable.amarillo_carretera_1_dcha
                                     }
                                 }
-                                if (jugador_3!!.yo == true) {
+                                if (jugador_3!!.yo && Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) == "null") {
                                     colorEne = when (jugador_3!!.color) {
                                         "RED" -> R.drawable.rojo_carretera_1_dcha
                                         "BLUE" -> R.drawable.azul_carretera_1_dcha
                                         "GREEN" -> R.drawable.verde_carretera_1_dcha
                                         else -> R.drawable.amarillo_carretera_1_dcha
                                     }
+                                }
+                                if (Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) != "null" && Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) == "1") {
+                                    colorEne = R.drawable.rojo_carretera_1_dcha
+                                }
+                                if (Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) != "null" && Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) == "2") {
+                                    colorEne = R.drawable.azul_carretera_1_dcha
+                                }
+                                if (Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) != "null" && Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) == "3") {
+                                    colorEne = R.drawable.verde_carretera_1_dcha
+                                }
+                                if (Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) != "null" && Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) == "4") {
+                                    colorEne = R.drawable.amarillo_carretera_1_dcha
                                 }
 
 
@@ -1636,7 +1661,7 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                                 println("downleft")
                                 var colorEne = R.drawable.amarillo_carretera_1_izq // valor predeterminado
 
-                                if (jugador_0!!.yo == true) {
+                                if (jugador_0!!.yo == true && (Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) == "null")) {
                                     colorEne = when (jugador_0!!.color) {
                                         "RED" -> R.drawable.rojo_carretera_1_izq
                                         "BLUE" -> R.drawable.azul_carretera_1_izq
@@ -1644,7 +1669,7 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                                         else -> R.drawable.amarillo_carretera_1_izq
                                     }
                                 }
-                                if (jugador_1!!.yo == true) {
+                                if (jugador_1!!.yo == true && (Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) == "null")) {
                                     colorEne = when (jugador_1!!.color) {
                                         "RED" -> R.drawable.rojo_carretera_1_izq
                                         "BLUE" -> R.drawable.azul_carretera_1_izq
@@ -1652,7 +1677,7 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                                         else -> R.drawable.amarillo_carretera_1_izq
                                     }
                                 }
-                                if (jugador_2!!.yo == true) {
+                                if (jugador_2!!.yo == true && (Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) == "null")) {
                                     colorEne = when (jugador_2!!.color) {
                                         "RED" -> R.drawable.rojo_carretera_1_izq
                                         "BLUE" -> R.drawable.azul_carretera_1_izq
@@ -1660,13 +1685,26 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                                         else -> R.drawable.amarillo_carretera_1_izq
                                     }
                                 }
-                                if (jugador_3!!.yo == true) {
+                                if (jugador_3!!.yo == true && (Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) == "null")) {
                                     colorEne = when (jugador_3!!.color) {
                                         "RED" -> R.drawable.rojo_carretera_1_izq
                                         "BLUE" -> R.drawable.azul_carretera_1_izq
                                         "GREEN" -> R.drawable.verde_carretera_1_izq
                                         else -> R.drawable.amarillo_carretera_1_izq
                                     }
+                                }
+
+                                if (Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) != "null" && Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) == "1") {
+                                    colorEne = R.drawable.rojo_carretera_1_izq
+                                }
+                                if (Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) != "null" && Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) == "2") {
+                                    colorEne = R.drawable.azul_carretera_1_izq
+                                }
+                                if (Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) != "null" && Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) == "3") {
+                                    colorEne = R.drawable.verde_carretera_1_izq
+                                }
+                                if (Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) != "null" && Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) == "4") {
+                                    colorEne = R.drawable.amarillo_carretera_1_izq
                                 }
                                 val drawable = context.resources.getDrawable(colorEne, null)
 
@@ -1680,7 +1718,7 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                                 println("left")
                                 var colorEne = R.drawable.amarillo_carretera_1 // valor predeterminado
 
-                                if (jugador_0!!.yo == true) {
+                                if (jugador_0!!.yo == true && (Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) == "null")) {
                                     colorEne = when (jugador_0!!.color) {
                                         "RED" -> R.drawable.rojo_carretera_1
                                         "BLUE" -> R.drawable.azul_carretera_1
@@ -1688,7 +1726,7 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                                         else -> R.drawable.amarillo_carretera_1
                                     }
                                 }
-                                if (jugador_1!!.yo == true) {
+                                if (jugador_1!!.yo == true && (Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) == "null")) {
                                     colorEne = when (jugador_1!!.color) {
                                         "RED" -> R.drawable.rojo_carretera_1
                                         "BLUE" -> R.drawable.azul_carretera_1
@@ -1696,7 +1734,7 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                                         else -> R.drawable.amarillo_carretera_1
                                     }
                                 }
-                                if (jugador_2!!.yo == true) {
+                                if (jugador_2!!.yo == true && (Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) == "null")) {
                                     colorEne = when (jugador_2!!.color) {
                                         "RED" -> R.drawable.rojo_carretera_1
                                         "BLUE" -> R.drawable.azul_carretera_1
@@ -1704,13 +1742,25 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                                         else -> R.drawable.amarillo_carretera_1
                                     }
                                 }
-                                if (jugador_3!!.yo == true) {
+                                if (jugador_3!!.yo == true && (Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) == "null")) {
                                     colorEne = when (jugador_3!!.color) {
                                         "RED" -> R.drawable.rojo_carretera_1
                                         "BLUE" -> R.drawable.azul_carretera_1
                                         "GREEN" -> R.drawable.verde_carretera_1
                                         else -> R.drawable.amarillo_carretera_1
                                     }
+                                }
+                                if (Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) != "null" && Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) == "1") {
+                                    colorEne = R.drawable.rojo_carretera_1
+                                }
+                                if (Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) != "null" && Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) == "2") {
+                                    colorEne = R.drawable.azul_carretera_1
+                                }
+                                if (Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) != "null" && Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) == "3") {
+                                    colorEne = R.drawable.verde_carretera_1
+                                }
+                                if (Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) != "null" && Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) == "4") {
+                                    colorEne = R.drawable.amarillo_carretera_1
                                 }
                                 val drawable = context.resources.getDrawable(colorEne, null)
 
@@ -1723,7 +1773,7 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                                 println("topleft")
                                 var colorEne = R.drawable.amarillo_carretera_1_dcha // valor predeterminado
 
-                                if (jugador_0!!.yo == true) {
+                                if (jugador_0!!.yo == true && (Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) == "null")) {
                                     colorEne = when (jugador_0!!.color) {
                                         "RED" -> R.drawable.rojo_carretera_1_dcha
                                         "BLUE" -> R.drawable.azul_carretera_1_dcha
@@ -1731,7 +1781,7 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                                         else -> R.drawable.amarillo_carretera_1_dcha
                                     }
                                 }
-                                if (jugador_1!!.yo == true) {
+                                if (jugador_1!!.yo == true && (Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) == "null")) {
                                     colorEne = when (jugador_1!!.color) {
                                         "RED" -> R.drawable.rojo_carretera_1_dcha
                                         "BLUE" -> R.drawable.azul_carretera_1_dcha
@@ -1739,7 +1789,7 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                                         else -> R.drawable.amarillo_carretera_1_dcha
                                     }
                                 }
-                                if (jugador_2!!.yo == true) {
+                                if (jugador_2!!.yo == true && (Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) == "null")) {
                                     colorEne = when (jugador_2!!.color) {
                                         "RED" -> R.drawable.rojo_carretera_1_dcha
                                         "BLUE" -> R.drawable.azul_carretera_1_dcha
@@ -1747,13 +1797,26 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                                         else -> R.drawable.amarillo_carretera_1_dcha
                                     }
                                 }
-                                if (jugador_3!!.yo == true) {
+                                if (jugador_3!!.yo == true && (Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) == "null")) {
                                     colorEne = when (jugador_3!!.color) {
                                         "RED" -> R.drawable.rojo_carretera_1_dcha
                                         "BLUE" -> R.drawable.azul_carretera_1_dcha
                                         "GREEN" -> R.drawable.verde_carretera_1_dcha
                                         else -> R.drawable.amarillo_carretera_1_dcha
                                     }
+                                }
+
+                                if (Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) != "null" && Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) == "1") {
+                                    colorEne = R.drawable.rojo_carretera_1_dcha
+                                }
+                                if (Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) != "null" && Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) == "2") {
+                                    colorEne = R.drawable.azul_carretera_1_dcha
+                                }
+                                if (Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) != "null" && Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) == "3") {
+                                    colorEne = R.drawable.verde_carretera_1_dcha
+                                }
+                                if (Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) != "null" && Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) == "4") {
+                                    colorEne = R.drawable.amarillo_carretera_1_dcha
                                 }
 
                                 val drawable = context.resources.getDrawable(colorEne, null)
@@ -1771,7 +1834,7 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
 
                                 var colorEne = R.drawable.amarillo_carretera_1_izq // valor predeterminado
 
-                                if (jugador_0!!.yo == true) {
+                                if (jugador_0!!.yo == true && (Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) == "null")) {
                                     colorEne = when (jugador_0!!.color) {
                                         "RED" -> R.drawable.rojo_carretera_1_izq
                                         "BLUE" -> R.drawable.azul_carretera_1_izq
@@ -1779,7 +1842,7 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                                         else -> R.drawable.amarillo_carretera_1_izq
                                     }
                                 }
-                                if (jugador_1!!.yo == true) {
+                                if (jugador_1!!.yo == true && (Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) == "null")) {
                                     colorEne = when (jugador_1!!.color) {
                                         "RED" -> R.drawable.rojo_carretera_1_izq
                                         "BLUE" -> R.drawable.azul_carretera_1_izq
@@ -1787,7 +1850,7 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                                         else -> R.drawable.amarillo_carretera_1_izq
                                     }
                                 }
-                                if (jugador_2!!.yo == true) {
+                                if (jugador_2!!.yo == true && (Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) == "null")) {
                                     colorEne = when (jugador_2!!.color) {
                                         "RED" -> R.drawable.rojo_carretera_1_izq
                                         "BLUE" -> R.drawable.azul_carretera_1_izq
@@ -1795,13 +1858,25 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                                         else -> R.drawable.amarillo_carretera_1_izq
                                     }
                                 }
-                                if (jugador_3!!.yo == true) {
+                                if (jugador_3!!.yo == true && (Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) == "null")) {
                                     colorEne = when (jugador_3!!.color) {
                                         "RED" -> R.drawable.rojo_carretera_1_izq
                                         "BLUE" -> R.drawable.azul_carretera_1_izq
                                         "GREEN" -> R.drawable.verde_carretera_1_izq
                                         else -> R.drawable.amarillo_carretera_1_izq
                                     }
+                                }
+                                if (Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) != "null" && Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) == "1") {
+                                    colorEne = R.drawable.rojo_carretera_1_izq
+                                }
+                                if (Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) != "null" && Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) == "2") {
+                                    colorEne = R.drawable.azul_carretera_1_izq
+                                }
+                                if (Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) != "null" && Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) == "3") {
+                                    colorEne = R.drawable.verde_carretera_1_izq
+                                }
+                                if (Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) != "null" && Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) == "4") {
+                                    colorEne = R.drawable.amarillo_carretera_1_izq
                                 }
                                 val drawable = context.resources.getDrawable(colorEne, null)
 
@@ -1813,7 +1888,7 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                                 println("right")
                                 var colorEne = R.drawable.amarillo_carretera_1 // valor predeterminado
 
-                                if (jugador_0!!.yo == true) {
+                                if (jugador_0!!.yo == true && (Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) == "null")) {
                                     colorEne = when (jugador_0!!.color) {
                                         "RED" -> R.drawable.rojo_carretera_1
                                         "BLUE" -> R.drawable.azul_carretera_1
@@ -1821,7 +1896,7 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                                         else -> R.drawable.amarillo_carretera_1
                                     }
                                 }
-                                if (jugador_1!!.yo == true) {
+                                if (jugador_1!!.yo == true && (Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) == "null")) {
                                     colorEne = when (jugador_1!!.color) {
                                         "RED" -> R.drawable.rojo_carretera_1
                                         "BLUE" -> R.drawable.azul_carretera_1
@@ -1829,7 +1904,7 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                                         else -> R.drawable.amarillo_carretera_1
                                     }
                                 }
-                                if (jugador_2!!.yo == true) {
+                                if (jugador_2!!.yo == true && (Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) == "null")) {
                                     colorEne = when (jugador_2!!.color) {
                                         "RED" -> R.drawable.rojo_carretera_1
                                         "BLUE" -> R.drawable.azul_carretera_1
@@ -1837,13 +1912,26 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                                         else -> R.drawable.amarillo_carretera_1
                                     }
                                 }
-                                if (jugador_3!!.yo == true) {
+                                if (jugador_3!!.yo == true && (Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) == "null")) {
                                     colorEne = when (jugador_3!!.color) {
                                         "RED" -> R.drawable.rojo_carretera_1
                                         "BLUE" -> R.drawable.azul_carretera_1
                                         "GREEN" -> R.drawable.verde_carretera_1
                                         else -> R.drawable.amarillo_carretera_1
                                     }
+                                }
+
+                                if (Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) != "null" && Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) == "1") {
+                                    colorEne = R.drawable.rojo_carretera_1
+                                }
+                                if (Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) != "null" && Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) == "2") {
+                                    colorEne = R.drawable.azul_carretera_1
+                                }
+                                if (Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) != "null" && Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) == "3") {
+                                    colorEne = R.drawable.verde_carretera_1
+                                }
+                                if (Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) != "null" && Globals.gameState.getJSONObject("board").getJSONObject("edges").getString(decimal.toString()) == "4") {
+                                    colorEne = R.drawable.amarillo_carretera_1
                                 }
                                 val drawable = context.resources.getDrawable(colorEne, null)
 
@@ -1879,10 +1967,11 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                     )
                     // COLOCACION CASA CIUDAD DE CADA JUGADOR -----------------------------------------------
                     val idVert = Partida.CoordVertices[vertex]
-                    if (Partida.Vertices[idVert.toString()] == "poblado"){
+                    val decimal = Integer.parseInt(idVert, 16) // convertir a decimal
+                    if (Partida.Vertices[idVert.toString()] == "poblado" && (Globals.gameState.getJSONObject("board").getJSONObject("nodes").getJSONArray(decimal.toString()).isNull(1))){
                         var colorEne = R.drawable.rojo_poblado_1 // valor predeterminado
 
-                        if (jugador_0!!.yo == true) {
+                        if (jugador_0!!.yo == true ) {
                             colorEne = when (jugador_0!!.color) {
                                 "RED" -> R.drawable.rojo_poblado_1
                                 "BLUE" -> R.drawable.azul_poblado_1
@@ -1922,7 +2011,56 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                         drawable.setBounds((x-30).toInt(), (y-29).toInt(), (x +30).toInt(), (y +25).toInt())
                         drawable.draw(canvas.nativeCanvas)
                     }
-                    if (Partida.Vertices[idVert.toString()] == "ciudad"){
+                    if (!Globals.gameState.getJSONObject("board").getJSONObject("nodes").getJSONArray(decimal.toString()).isNull(1)){
+                        println("entra a dibujar casas ${Globals.gameState.getJSONObject("board").getJSONObject("nodes").getJSONArray(decimal.toString())[1]}")
+                        if(Globals.gameState.getJSONObject("board").getJSONObject("nodes").getJSONArray(decimal.toString())[1]== 1) {
+                            var colorEne = R.drawable.rojo_poblado_1 // valor predeterminado
+
+                            if (Globals.gameState.getJSONObject("board").getJSONObject("nodes").getJSONArray(decimal.toString())[0] == 1) {
+                                colorEne = R.drawable.rojo_poblado_1
+                            }
+                            if (Globals.gameState.getJSONObject("board").getJSONObject("nodes").getJSONArray(decimal.toString())[0] == 2) {
+                                colorEne = R.drawable.azul_poblado_1
+                            }
+                            if (Globals.gameState.getJSONObject("board").getJSONObject("nodes").getJSONArray(decimal.toString())[0] == 3) {
+                                colorEne = R.drawable.verde_poblado_1
+                            }
+                            if (Globals.gameState.getJSONObject("board").getJSONObject("nodes").getJSONArray(decimal.toString())[0] == 4) {
+                                colorEne = R.drawable.amarillo_poblado_1
+                            }
+
+                            val drawable = context.resources.getDrawable(colorEne, null)
+
+                            val x = vertex.x // coordenada x
+                            val y = vertex.y // coordenada y
+                            drawable.setBounds((x-30).toInt(), (y-29).toInt(), (x +30).toInt(), (y +25).toInt())
+                            drawable.draw(canvas.nativeCanvas)
+                        } else{
+                            var colorEne = R.drawable.rojo_ciudad_1 // valor predeterminado
+
+                            if (Globals.gameState.getJSONObject("board").getJSONObject("nodes").getJSONArray(decimal.toString())[0] == 1) {
+                                colorEne = R.drawable.rojo_ciudad_1
+                            }
+                            if (Globals.gameState.getJSONObject("board").getJSONObject("nodes").getJSONArray(decimal.toString())[0] == 2) {
+                                colorEne = R.drawable.azul_ciudad_1
+                            }
+                            if (Globals.gameState.getJSONObject("board").getJSONObject("nodes").getJSONArray(decimal.toString())[0] == 3) {
+                                colorEne = R.drawable.verde_ciudad_1
+                            }
+                            if (Globals.gameState.getJSONObject("board").getJSONObject("nodes").getJSONArray(decimal.toString())[0] == 4) {
+                                colorEne = R.drawable.amarillo_ciudad_1
+                            }
+
+                            val drawable = context.resources.getDrawable(colorEne, null)
+
+                            val x = vertex.x // coordenada x
+                            val y = vertex.y // coordenada y
+                            drawable.setBounds((x-30).toInt(), (y-35).toInt(), (x +30).toInt(), (y +25).toInt())
+                            drawable.draw(canvas.nativeCanvas)
+                        }
+
+                    }
+                    if (Partida.Vertices[idVert.toString()] == "ciudad" && (Globals.gameState.getJSONObject("board").getJSONObject("nodes").getJSONArray(decimal.toString()).isNull(1))){
 
                         var colorEne = R.drawable.rojo_ciudad_1 // valor predeterminado
 
