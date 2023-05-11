@@ -2857,6 +2857,7 @@ fun construirCamino(idArista: String, setShowDialog: (Boolean) -> Unit) {
 fun popUpNewTurno(playerName : String, setShowDialog: (Boolean) -> Unit) {
 
     val context = LocalContext.current
+    val haTiradoDados = remember { mutableStateOf(false) }
 
     Dialog(onDismissRequest = {
         if(Globals.gameState.getString("player_turn") != Globals.Id){
@@ -2910,8 +2911,8 @@ fun popUpNewTurno(playerName : String, setShowDialog: (Boolean) -> Unit) {
                             Spacer(modifier = Modifier.height(10.dp))
                             Button(
                                 onClick = {
+                                    haTiradoDados.value = true
                                     tirarDados()
-
                                     setShowDialog(false)
                                 },
                                 shape = RoundedCornerShape(50.dp),
@@ -2934,6 +2935,19 @@ fun popUpNewTurno(playerName : String, setShowDialog: (Boolean) -> Unit) {
                                     fontWeight = FontWeight.Bold
                                 )
                             )
+                        }
+
+                        if(haTiradoDados.value){
+                            Text(
+                                text = "Resultado: ${Globals.dado1 + Globals.dado2}",
+                                color = Blanco,
+                                style = TextStyle(
+                                    fontSize = 15.sp,
+                                    fontFamily = FontFamily.Default,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            )
+
                         }
 
                     }
