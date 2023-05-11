@@ -731,6 +731,46 @@ class CatanViewModel : ViewModel() {
                         }
 
                     }
+
+                    
+                }
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(0.dp, 0.dp, 0.dp, 55.dp),
+                    contentAlignment = Alignment.CenterEnd
+                ) {
+                    val context = LocalContext.current
+                    Button(
+                        onClick = {
+                                  if ( (Partida.caminoINIdisp.value || Partida.casaINIdisp.value) && (Globals.gameState.getString("player_turn")== Globals.Id) &&
+                                      (Globals.gameState.getString("turn_phase") == "INITIAL_TURN1" || Globals.gameState.getString("turn_phase") == "INITIAL_TURN2")){
+
+                                      Toast
+                                          .makeText(context, "build first", Toast.LENGTH_SHORT)
+                                          .show()
+                                  } else {
+                                      if (Globals.gameState.getString("player_turn")!= Globals.Id){
+                                          Toast
+                                              .makeText(context, "not your turn", Toast.LENGTH_SHORT)
+                                              .show()
+                                      }else {
+                                          avanzarFase()
+                                      }
+
+                                  }
+
+                                  },
+                        modifier = Modifier
+                            .width(50.dp)
+                            .height(50.dp),
+                        shape = RoundedCornerShape(15.dp),
+                        colors = ButtonDefaults.buttonColors(backgroundColor = VerdeClarito)
+
+                    ) {
+                        Icon(imageVector = Icons.Default.ArrowForward, contentDescription = null, tint= Blanco )
+                    }
                 }
 
             }
@@ -1291,12 +1331,14 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                                 // Aquí puedes agregar el código para manejar el evento de clic en el círculo
                                 var idCoord = Partida.CoordVertices[vertex]
 
-                                var idCoordHex = idCoord?.toInt(16).toString()
+                                var idCoordHex = idCoord
+                                    ?.toInt(16)
+                                    .toString()
 
 
-                                if (Partida.nodosLegales.contains(idCoordHex)){
+                                if (Partida.nodosLegales.contains(idCoordHex)) {
 
-                                    println( "legal")
+                                    println("legal")
 
                                     if (Partida.Vertices[idCoord.toString()] == "nada") {
                                         println("verticeclicado: ${idCoord.toString()}")
@@ -1306,8 +1348,7 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                                         clickedVertex = vertex
                                     }
 
-                                }
-                                else {
+                                } else {
                                     Toast
                                         .makeText(context, "not legal", Toast.LENGTH_SHORT)
                                         .show()
@@ -1341,9 +1382,11 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
 
                                     var idCoord = Partida.CoordAristas[coordinate]
 
-                                    var idCoordHex = idCoord?.toInt(16).toString()
+                                    var idCoordHex = idCoord
+                                        ?.toInt(16)
+                                        .toString()
 
-                                    if (Partida.edgesLegales.contains(idCoordHex)){
+                                    if (Partida.edgesLegales.contains(idCoordHex)) {
 
                                         if (Partida.Aristas[idCoord.toString()] == "nada") {
                                             println("aristaclicado: ${idCoord.toString()}")
@@ -1352,14 +1395,11 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
 
                                         }
 
-                                    }
-                                    else {
+                                    } else {
                                         Toast
                                             .makeText(context, "not legal", Toast.LENGTH_SHORT)
                                             .show()
                                     }
-
-
 
 
                                     //Partida.Aristas[idCoord.toString()] = "carretera"
