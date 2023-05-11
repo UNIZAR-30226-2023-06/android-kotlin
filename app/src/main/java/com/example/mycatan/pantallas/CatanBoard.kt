@@ -652,7 +652,7 @@ class CatanViewModel : ViewModel() {
                 }
 
 
-
+                // TODO: TRATAMIENTO DE TODAS LAS FASES DE JUEGO
                 viewModelScope.launch {
                     //esperarTurno( onNewTurno = { nuevoTurnoPhase.value = true }).await()
                     nuevoTurnoPhase.value = esperarTurno().await()
@@ -675,7 +675,15 @@ class CatanViewModel : ViewModel() {
                 }
                 if (nuevoTurnoPhase.value && Globals.gameState.getString("turn_phase") == "INITIAL_TURN2") {
                     // MOSTRAR POP-UP: "ES TU TURNO OTRA VEZ, COLOCA UNA CARRETERA Y UN PUEBLO DE NUEVO"
-                    nuevoTurnoPhase2(setShowDialog = { nuevoTurnoPhase.value = it })
+                    nuevoTurnoPhase2(playerName = Globals.gameState.getString("player_turn_name"), setShowDialog = { nuevoTurnoPhase.value = it })
+                    // Get del tablero
+                    // Colocar pueblo y carretera
+                    // POST del tablero con las modificaciones que has hecho
+                    // Pasar turno al siguiente jugador -  Advance phase
+                }
+                if (nuevoTurnoPhase.value && Globals.gameState.getString("turn_phase") == "RESOURCE_PRODUCTION") {
+                    // MOSTRAR POP-UP: "ES TU TURNO, TIRA LOS DADOS PARA OBTENER RECURSOS" (POP-UP CON UNOS DADOS PARA CLICAR)
+                    popUpNewTurno(playerName = Globals.gameState.getString("player_turn_name"), setShowDialog = { nuevoTurnoPhase.value = it })
                     // Get del tablero
                     // Colocar pueblo y carretera
                     // POST del tablero con las modificaciones que has hecho
@@ -2803,28 +2811,57 @@ fun popUpNewTurno(playerName : String, setShowDialog: (Boolean) -> Unit) {
                             )
                         )
 
-                        Text(
-                            text = "Obtencion de recursos",
-                            color = Blanco,
-                            style = TextStyle(
-                                fontSize = 30.sp,
-                                fontFamily = FontFamily.Default,
-                                fontWeight = FontWeight.Bold
+                        if(Globals.gameState.getString("player_turn") == Globals.Id){
+                            Text(
+                                text = "Tira los dados para obtener recursos",
+                                color = Blanco,
+                                style = TextStyle(
+                                    fontSize = 15.sp,
+                                    fontFamily = FontFamily.Default,
+                                    fontWeight = FontWeight.Bold
+                                )
                             )
-                        )
 
-                        //TODO : AQUI IRA UN BOTON PARA TIRAR LOS DAODS
+                            Spacer(modifier = Modifier.height(10.dp))
+                            Box(
+                                modifier = Modifier.fillMaxWidth(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Image(painter = painterResource(id = R.drawable.dado), contentDescription = null, modifier = Modifier.size(50.dp))
+
+                            }
+                            Spacer(modifier = Modifier.height(10.dp))
+                            Button(
+                                onClick = {
+                                    tirarDados()
+                                    setShowDialog(false)
+                                },
+                                shape = RoundedCornerShape(50.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(50.dp),
+                                colors = ButtonDefaults.buttonColors(backgroundColor = Azul)
+
+                            ) {
+                                Text(text = "Tirar", color = Blanco)
+                            }
+                        }
+                        else{
+                            Text(
+                                text = "Esperando a que tiren los dados",
+                                color = Blanco,
+                                style = TextStyle(
+                                    fontSize = 15.sp,
+                                    fontFamily = FontFamily.Default,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            )
+                        }
 
                     }
 
                 }
             }
-        }
-
-        //maybe no funca
-        LaunchedEffect(setShowDialog) {
-            delay(2000) // espera 1 segundo
-            setShowDialog(false) // llama a setShowDialog con false
         }
 
 
@@ -2888,7 +2925,7 @@ fun nuevoTurnoPhase1(playerName : String, setShowDialog: (Boolean) -> Unit) {
 }
 
 @Composable
-fun nuevoTurnoPhase2(setShowDialog: (Boolean) -> Unit) {
+fun nuevoTurnoPhase2(playerName : String, setShowDialog: (Boolean) -> Unit) {
 
     Dialog(onDismissRequest = { }) { // PARA QUE SOLO SE CIERRE CON LA X QUITAR ESTO JEJE
         Surface(
@@ -2906,7 +2943,7 @@ fun nuevoTurnoPhase2(setShowDialog: (Boolean) -> Unit) {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "Vuelve a ser tu turno",
+                            text = "Turno de $playerName",
                             color = Blanco,
                             style = TextStyle(
                                 fontSize = 30.sp,
