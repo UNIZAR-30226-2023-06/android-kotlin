@@ -746,6 +746,7 @@ class CatanViewModel : ViewModel() {
                 }
                 if (nuevoTurnoPhase.value && Globals.gameState.getString("turn_phase") == "TRADING") {
                     // MOSTRAR POP-UP: "ES TU TURNO, TIRA LOS DADOS PARA OBTENER RECURSOS" (POP-UP CON UNOS DADOS PARA CLICAR)
+
                     popUpTradingTurn(playerName = Globals.gameState.getString("player_turn_name"), setShowDialog = { nuevoTurnoPhase.value = it })
                     // Get del tablero
                     // Colocar pueblo y carretera
@@ -2927,7 +2928,7 @@ fun popUpNewTurno(playerName : String, setShowDialog: (Boolean) -> Unit) {
                         }
                         else{
                             Text(
-                                text = "Esperando a que tiren los dados",
+                                text = "Esperando a que  $playerName tire los dados",
                                 color = Blanco,
                                 style = TextStyle(
                                     fontSize = 15.sp,
@@ -2935,19 +2936,11 @@ fun popUpNewTurno(playerName : String, setShowDialog: (Boolean) -> Unit) {
                                     fontWeight = FontWeight.Bold
                                 )
                             )
+
                         }
 
-                        if(haTiradoDados.value){
-                            Text(
-                                text = "Resultado: ${Globals.dado1 + Globals.dado2}",
-                                color = Blanco,
-                                style = TextStyle(
-                                    fontSize = 15.sp,
-                                    fontFamily = FontFamily.Default,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            )
-
+                        if(haTiradoDados.value && Globals.dado1.toInt() + Globals.dado2.toInt() == 7){
+                            // POP - UP, QUIERES MOVER EL LADRON?? SI - NO
                         }
 
                     }
@@ -3073,7 +3066,7 @@ fun nuevoTurnoPhase2(playerName : String, setShowDialog: (Boolean) -> Unit) {
 @Composable
 fun popUpTradingTurn(playerName : String, setShowDialog: (Boolean) -> Unit) {
 
-
+    var resultadoDados = Globals.gameState.getInt("die_1") + Globals.gameState.getInt("die_2").toInt()
 
     Dialog(onDismissRequest = { setShowDialog(false)}) { // PARA QUE SOLO SE CIERRE CON LA X QUITAR ESTO JEJE
         Surface(
@@ -3091,10 +3084,19 @@ fun popUpTradingTurn(playerName : String, setShowDialog: (Boolean) -> Unit) {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "Trading turn de $playerName",
+                            text = "El resultado de los dados fue $resultadoDados",
                             color = Blanco,
                             style = TextStyle(
                                 fontSize = 30.sp,
+                                fontFamily = FontFamily.Default,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+                        Text(
+                            text = "$playerName ha pasado a la fase de trading",
+                            color = Blanco,
+                            style = TextStyle(
+                                fontSize = 15.sp,
                                 fontFamily = FontFamily.Default,
                                 fontWeight = FontWeight.Bold
                             )
@@ -3163,3 +3165,4 @@ fun popUpBuildingTurn(playerName : String, setShowDialog: (Boolean) -> Unit) {
 
     }
 }
+
