@@ -207,7 +207,8 @@ fun firstPhaseBuildVillage( nodo: String): Boolean {
             val json = JSONObject(respuesta)
             //get the string from the response
             val status = json.getString("detail")
-            
+
+            println(status)
             if (status == "Village built") {
                 println("Poblado construido")
             } else {

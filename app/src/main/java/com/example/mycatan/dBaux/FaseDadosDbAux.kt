@@ -30,6 +30,7 @@ fun tirarDados(){
         .url("http://$ipBackend:8000/game-phases/resource_production")
         .get()
         .addHeader("accept", "application/json")
+        .addHeader("Authorization", "Bearer ${Globals.Token}")
         .addHeader("Content-Type", "application/x-www-form-urlencoded")
         .build()
 
@@ -43,7 +44,7 @@ fun tirarDados(){
 
         override fun onResponse(call: Call, response: Response) {
             val respuesta = response.body?.string().toString()
-
+            var error = false
             println(respuesta)
             //transform the string to json object
             val json = JSONObject(respuesta)
@@ -51,15 +52,16 @@ fun tirarDados(){
             val status = try {
                 json.getString("die1")
             } catch (e: JSONException) {
-                "Error al lanzar dados"
+                error  = true
             }
 
-            if (status == "Error al lanzar dados") {
-                println("No se han podido lanzar los dados")
-            } else {
+            if (!error) {
                 println("Dados lanzados correctamente")
                 Globals.dado1 = json.getString("die1")
                 Globals.dado2 = json.getString("die2")
+            } else {
+                println("No se han podido lanzar los dados")
+
             }
             latch.countDown()
         }

@@ -60,7 +60,7 @@ var jugador_3: Jugador? = null
 
 var jugadores: JSONArray? = null
 
-class Jugador(var yo: Boolean, var nombre: String, var color: String, var imagen: String, var puntos: Int, var piezas: String, var tablero: String)
+class Jugador(var yo: Boolean, var nombre: String, var color: String, var imagen: String, var puntos: Int, var piezas: String, var tablero: String, var ejercitoBonus: Boolean, var roadBonus: Boolean)
 
 class CatanViewModel : ViewModel() {
     @SuppressLint("CoroutineCreationDuringComposition")
@@ -79,7 +79,9 @@ class CatanViewModel : ViewModel() {
                 imagen = jugador0.getString("profile_pic"),
                 puntos = jugador0.getInt("victory_points"),
                 piezas = jugador0.getString("selected_pieces_skin"),
-                tablero = jugador0.getString("selected_grid_skin")
+                tablero = jugador0.getString("selected_grid_skin"),
+                ejercitoBonus = false,
+                roadBonus = false
             )
             if (jugador_0!!.yo == true) {
                 Partida.miColor = jugador_0!!.color
@@ -101,6 +103,8 @@ class CatanViewModel : ViewModel() {
                 puntos = jugador1.getInt("victory_points"),
                 piezas = jugador1.getString("selected_pieces_skin"),
                 tablero = jugador1.getString("selected_grid_skin")
+                ,ejercitoBonus = false,
+                roadBonus = false
             )
             if (jugador_1!!.yo == true) {
                 Partida.miColor = jugador_1!!.color
@@ -122,6 +126,8 @@ class CatanViewModel : ViewModel() {
                 puntos = jugador2.getInt("victory_points"),
                 piezas = jugador2.getString("selected_pieces_skin"),
                 tablero = jugador2.getString("selected_grid_skin")
+                ,ejercitoBonus = false,
+                roadBonus = false
             )
             if (jugador_2!!.yo == true) {
                 Partida.miColor = jugador_2!!.color
@@ -143,6 +149,8 @@ class CatanViewModel : ViewModel() {
                 puntos = jugador3.getInt("victory_points"),
                 piezas = jugador3.getString("selected_pieces_skin"),
                 tablero = jugador3.getString("selected_grid_skin")
+                ,ejercitoBonus = false,
+                roadBonus = false
             )
             if (jugador_3!!.yo == true) {
                 Partida.miColor = jugador_3!!.color
@@ -501,8 +509,8 @@ class CatanViewModel : ViewModel() {
                                     colorEne = colorEne,
                                     foto = jugador_0!!.imagen,
                                     ptsV = jugador_0!!.puntos,
-                                    ejercito = false,
-                                    carreteras = false,
+                                    ejercito = jugador_0!!.ejercitoBonus,
+                                    carreteras = jugador_0!!.roadBonus,
                                     onCardClick = {
                                         if (jugador_0!!.yo != true) {
                                             tradePlayer0.value = true
@@ -543,8 +551,8 @@ class CatanViewModel : ViewModel() {
                                     colorEne = colorEne,
                                     foto = jugador_1!!.imagen,
                                     ptsV = jugador_1!!.puntos,
-                                    ejercito = false,
-                                    carreteras = false,
+                                    ejercito = jugador_1!!.ejercitoBonus,
+                                    carreteras = jugador_1!!.roadBonus,
                                     onCardClick = {
                                         if (jugador_1!!.yo != true) {
                                             tradePlayer1.value = true
@@ -583,8 +591,8 @@ class CatanViewModel : ViewModel() {
                                     colorEne = colorEne,
                                     foto = jugador_2!!.imagen,
                                     ptsV = jugador_2!!.puntos,
-                                    ejercito = false,
-                                    carreteras = false,
+                                    ejercito = jugador_2!!.ejercitoBonus,
+                                    carreteras = jugador_2!!.roadBonus,
                                     onCardClick = {
                                         if (jugador_2!!.yo != true) {
                                             tradePlayer2.value = true
@@ -622,8 +630,8 @@ class CatanViewModel : ViewModel() {
                                     colorEne = colorEne,
                                     foto = jugador_3!!.imagen,
                                     ptsV = jugador_3!!.puntos,
-                                    ejercito = false,
-                                    carreteras = false,
+                                    ejercito = jugador_3!!.ejercitoBonus,
+                                    carreteras = jugador_3!!.roadBonus,
                                     onCardClick = {
                                         if (jugador_3!!.yo != true) {
                                             tradePlayer3.value = true
@@ -656,6 +664,20 @@ class CatanViewModel : ViewModel() {
                 viewModelScope.launch {
                     //esperarTurno( onNewTurno = { nuevoTurnoPhase.value = true }).await()
                     nuevoTurnoPhase.value = esperarTurno().await()
+
+                    jugador_0!!.puntos =  Globals.gameState.getJSONObject("player_0").getString("victory_points").toInt()
+                    jugador_1!!.puntos =  Globals.gameState.getJSONObject("player_1").getString("victory_points").toInt()
+                    jugador_2!!.puntos =  Globals.gameState.getJSONObject("player_2").getString("victory_points").toInt()
+                    jugador_3!!.puntos =  Globals.gameState.getJSONObject("player_3").getString("victory_points").toInt()
+                    jugador_0!!.ejercitoBonus =  Globals.gameState.getJSONObject("player_0").getBoolean("has_knights_bonus")
+                    jugador_0!!.roadBonus =  Globals.gameState.getJSONObject("player_0").getBoolean("has_longest_road_bonus")
+                    jugador_1!!.ejercitoBonus =  Globals.gameState.getJSONObject("player_1").getBoolean("has_knights_bonus")
+                    jugador_1!!.roadBonus =  Globals.gameState.getJSONObject("player_1").getBoolean("has_longest_road_bonus")
+                    jugador_2!!.ejercitoBonus =  Globals.gameState.getJSONObject("player_2").getBoolean("has_knights_bonus")
+                    jugador_2!!.roadBonus =  Globals.gameState.getJSONObject("player_2").getBoolean("has_longest_road_bonus")
+                    jugador_3!!.ejercitoBonus =  Globals.gameState.getJSONObject("player_3").getBoolean("has_knights_bonus")
+                    jugador_3!!.roadBonus =  Globals.gameState.getJSONObject("player_3").getBoolean("has_longest_road_bonus")
+
                     println(nuevoTurnoPhase.value)
                 }
 
@@ -675,6 +697,10 @@ class CatanViewModel : ViewModel() {
                 }
                 if (nuevoTurnoPhase.value && Globals.gameState.getString("turn_phase") == "INITIAL_TURN2") {
                     // MOSTRAR POP-UP: "ES TU TURNO OTRA VEZ, COLOCA UNA CARRETERA Y UN PUEBLO DE NUEVO"
+                    getlegalNodesINI(Partida.miColor)
+                    getlegalEdges(Partida.miColor)
+                    Partida.casaINIdisp.value = true
+                    Partida.caminoINIdisp.value = true
                     nuevoTurnoPhase2(playerName = Globals.gameState.getString("player_turn_name"), setShowDialog = { nuevoTurnoPhase.value = it })
                     // Get del tablero
                     // Colocar pueblo y carretera
@@ -689,6 +715,23 @@ class CatanViewModel : ViewModel() {
                     // POST del tablero con las modificaciones que has hecho
                     // Pasar turno al siguiente jugador -  Advance phase
                 }
+                if (nuevoTurnoPhase.value && Globals.gameState.getString("turn_phase") == "TRADING") {
+                    // MOSTRAR POP-UP: "ES TU TURNO, TIRA LOS DADOS PARA OBTENER RECURSOS" (POP-UP CON UNOS DADOS PARA CLICAR)
+                    popUpTradingTurn(playerName = Globals.gameState.getString("player_turn_name"), setShowDialog = { nuevoTurnoPhase.value = it })
+                    // Get del tablero
+                    // Colocar pueblo y carretera
+                    // POST del tablero con las modificaciones que has hecho
+                    // Pasar turno al siguiente jugador -  Advance phase
+                }
+                if (nuevoTurnoPhase.value && Globals.gameState.getString("turn_phase") == "BUILDING") {
+                    // MOSTRAR POP-UP: "ES TU TURNO, TIRA LOS DADOS PARA OBTENER RECURSOS" (POP-UP CON UNOS DADOS PARA CLICAR)
+                    popUpBuildingTurn(playerName = Globals.gameState.getString("player_turn_name"), setShowDialog = { nuevoTurnoPhase.value = it })
+                    // Get del tablero
+                    // Colocar pueblo y carretera
+                    // POST del tablero con las modificaciones que has hecho
+                    // Pasar turno al siguiente jugador -  Advance phase
+                }
+
 
 
                 //INFORMACIÓN PROPIA DEL JUGADOR ( RECURSOS ) --------------------------------------------------
@@ -2786,7 +2829,12 @@ fun popUpNewTurno(playerName : String, setShowDialog: (Boolean) -> Unit) {
 
     val context = LocalContext.current
 
-    Dialog(onDismissRequest = { }) { // PARA QUE SOLO SE CIERRE CON LA X QUITAR ESTO JEJE
+    Dialog(onDismissRequest = {
+        if(Globals.gameState.getString("player_turn") != Globals.Id){
+            setShowDialog(false)
+        }
+
+    }) { // PARA QUE SOLO SE CIERRE CON LA X QUITAR ESTO JEJE
         Surface(
             shape = RoundedCornerShape(16.dp),
             color = AzulOscuro
@@ -2889,7 +2937,7 @@ fun nuevoTurnoPhase1(playerName : String, setShowDialog: (Boolean) -> Unit) {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "Es turno de $playerName",
+                            text = "Initial turn de $playerName",
                             color = Blanco,
                             style = TextStyle(
                                 fontSize = 30.sp,
@@ -2927,7 +2975,7 @@ fun nuevoTurnoPhase1(playerName : String, setShowDialog: (Boolean) -> Unit) {
 @Composable
 fun nuevoTurnoPhase2(playerName : String, setShowDialog: (Boolean) -> Unit) {
 
-    Dialog(onDismissRequest = { }) { // PARA QUE SOLO SE CIERRE CON LA X QUITAR ESTO JEJE
+    Dialog(onDismissRequest = { setShowDialog(false)}) { // PARA QUE SOLO SE CIERRE CON LA X QUITAR ESTO JEJE
         Surface(
             shape = RoundedCornerShape(16.dp),
             color = AzulOscuro
@@ -2943,7 +2991,7 @@ fun nuevoTurnoPhase2(playerName : String, setShowDialog: (Boolean) -> Unit) {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "Turno de $playerName",
+                            text = "Initial Turn de $playerName",
                             color = Blanco,
                             style = TextStyle(
                                 fontSize = 30.sp,
@@ -2978,4 +3026,96 @@ fun nuevoTurnoPhase2(playerName : String, setShowDialog: (Boolean) -> Unit) {
     }
 }
 
+@Composable
+fun popUpTradingTurn(playerName : String, setShowDialog: (Boolean) -> Unit) {
 
+
+
+    Dialog(onDismissRequest = { setShowDialog(false)}) { // PARA QUE SOLO SE CIERRE CON LA X QUITAR ESTO JEJE
+        Surface(
+            shape = RoundedCornerShape(16.dp),
+            color = AzulOscuro
+        ) {
+            Box(
+                contentAlignment = Alignment.Center
+            ) {
+                Column(modifier = Modifier.padding(20.dp)) {
+
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "Trading turn de $playerName",
+                            color = Blanco,
+                            style = TextStyle(
+                                fontSize = 30.sp,
+                                fontFamily = FontFamily.Default,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+
+
+                    }
+
+                }
+            }
+        }
+
+        //maybe no funca
+        LaunchedEffect(setShowDialog) {
+            delay(2000) // espera 1 segundo
+            setShowDialog(false) // llama a setShowDialog con false
+        }
+
+
+    }
+}
+
+@Composable
+fun popUpBuildingTurn(playerName : String, setShowDialog: (Boolean) -> Unit) {
+
+
+
+    Dialog(onDismissRequest = { setShowDialog(false)}) { // PARA QUE SOLO SE CIERRE CON LA X QUITAR ESTO JEJE
+        Surface(
+            shape = RoundedCornerShape(16.dp),
+            color = AzulOscuro
+        ) {
+            Box(
+                contentAlignment = Alignment.Center
+            ) {
+                Column(modifier = Modifier.padding(20.dp)) {
+
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "Building turn de $playerName",
+                            color = Blanco,
+                            style = TextStyle(
+                                fontSize = 30.sp,
+                                fontFamily = FontFamily.Default,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+
+
+                    }
+
+                }
+            }
+        }
+
+        //maybe no funca
+        LaunchedEffect(setShowDialog) {
+            delay(2000) // espera 1 segundo
+            setShowDialog(false) // llama a setShowDialog con false
+        }
+
+
+    }
+}
