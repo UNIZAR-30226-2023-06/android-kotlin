@@ -677,6 +677,35 @@ class CatanViewModel : ViewModel() {
                     jugador_2!!.roadBonus =  Globals.gameState.getJSONObject("player_2").getBoolean("has_longest_road_bonus")
                     jugador_3!!.ejercitoBonus =  Globals.gameState.getJSONObject("player_3").getBoolean("has_knights_bonus")
                     jugador_3!!.roadBonus =  Globals.gameState.getJSONObject("player_3").getBoolean("has_longest_road_bonus")
+                    
+                    if (jugador_0!!.yo){
+                        Partida.Madera = Globals.gameState.getJSONObject("player_0").getJSONObject("hand").getString("wood")
+                        Partida.Ovejas = Globals.gameState.getJSONObject("player_0").getJSONObject("hand").getString("sheep")
+                        Partida.Trigo = Globals.gameState.getJSONObject("player_0").getJSONObject("hand").getString("wheat")
+                        Partida.Arcilla = Globals.gameState.getJSONObject("player_0").getJSONObject("hand").getString("clay")
+                        Partida.Roca = Globals.gameState.getJSONObject("player_0").getJSONObject("hand").getString("rock")
+                    }
+                    if (jugador_1!!.yo){
+                        Partida.Madera = Globals.gameState.getJSONObject("player_1").getJSONObject("hand").getString("wood")
+                        Partida.Ovejas = Globals.gameState.getJSONObject("player_1").getJSONObject("hand").getString("sheep")
+                        Partida.Trigo = Globals.gameState.getJSONObject("player_1").getJSONObject("hand").getString("wheat")
+                        Partida.Arcilla = Globals.gameState.getJSONObject("player_1").getJSONObject("hand").getString("clay")
+                        Partida.Roca = Globals.gameState.getJSONObject("player_1").getJSONObject("hand").getString("rock")
+                    }
+                    if (jugador_2!!.yo){
+                        Partida.Madera = Globals.gameState.getJSONObject("player_2").getJSONObject("hand").getString("wood")
+                        Partida.Ovejas = Globals.gameState.getJSONObject("player_2").getJSONObject("hand").getString("sheep")
+                        Partida.Trigo = Globals.gameState.getJSONObject("player_2").getJSONObject("hand").getString("wheat")
+                        Partida.Arcilla = Globals.gameState.getJSONObject("player_2").getJSONObject("hand").getString("clay")
+                        Partida.Roca = Globals.gameState.getJSONObject("player_2").getJSONObject("hand").getString("rock")
+                    }
+                    if (jugador_3!!.yo){
+                        Partida.Madera = Globals.gameState.getJSONObject("player_3").getJSONObject("hand").getString("wood")
+                        Partida.Ovejas = Globals.gameState.getJSONObject("player_3").getJSONObject("hand").getString("sheep")
+                        Partida.Trigo = Globals.gameState.getJSONObject("player_3").getJSONObject("hand").getString("wheat")
+                        Partida.Arcilla = Globals.gameState.getJSONObject("player_3").getJSONObject("hand").getString("clay")
+                        Partida.Roca = Globals.gameState.getJSONObject("player_3").getJSONObject("hand").getString("rock")
+                    }
 
                     println(nuevoTurnoPhase.value)
                 }
@@ -2882,6 +2911,7 @@ fun popUpNewTurno(playerName : String, setShowDialog: (Boolean) -> Unit) {
                             Button(
                                 onClick = {
                                     tirarDados()
+
                                     setShowDialog(false)
                                 },
                                 shape = RoundedCornerShape(50.dp),
