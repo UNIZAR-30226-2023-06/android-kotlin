@@ -744,7 +744,10 @@ class CatanViewModel : ViewModel() {
                     
                     popUpNewTurno(playerName = Globals.gameState.getString("player_turn_name"), setShowDialog = { nuevoTurnoPhase.value = it }, setLadron = { showpopUpLadron.value = true})
                     if (showpopUpLadron.value){
-                        popUp7detectado(setShowDialog = { showpopUpLadron.value = it })
+                        popUp7detectado(setShowDialog = {
+                            showpopUpLadron.value = it
+                            nuevoTurnoPhase.value = it
+                        })
                     }
                     // Get del tablero
                     // Colocar pueblo y carretera
@@ -1392,125 +1395,84 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                     detectClick = false
 
                     if (Globals.moviendoLadron.value) {
+
                         for (tile in tiles) {
-                            val tileX =
-                                boardX + (tile.coordinates.first + tile.coordinates.second / 2f) * hexWidth
-                            val tileY = boardY + tile.coordinates.second * 1.5f * hexRadius
+                            val tileX = boardX + tile.coordinates.first * hexWidth * 1.5f
+                            val tileY = boardY + tile.coordinates.second * hexRadius * 2f
 
-                            // Verificar si el toque está dentro de las coordenadas del hexágono
-                            if (offset.x >= tileX && offset.x <= tileX + hexWidth &&
-                                offset.y >= tileY && offset.y <= tileY + 2f * hexRadius
-                            ) {
-                                // El toque está dentro del hexágono
-                                println("Toque en el hexágono: ${tile.id}")
-                                //TODO: MOVER EL LADRON AL HEXAGONO TOCADO
+                            // Calcula las coordenadas relativas al centro del hexágono
+                            val relativeX = offset.x - tileX
+                            val relativeY = offset.y - tileY
+
+                            // Calcula la distancia desde el centro del hexágono al punto de toque
+                            val distance = sqrt(relativeX * relativeX + relativeY * relativeY)
+
+                            // Verifica si la distancia está dentro del radio del hexágono
+                            if (distance <= hexRadius) {
+                                Toast
+                                    .makeText(context, "${tile.id}", Toast.LENGTH_SHORT)
+                                    .show()
+
                                 //moverladron(tile.id, jugadorRobado)
-
                                 Globals.moviendoLadron.value = false
+                                avanzarFase()
                                 break
                             }
                         }
                     }
-
-
-
-                    for (tile in tiles) {
-                        val tileX =
-                            boardX + (tile.coordinates.first + tile.coordinates.second / 2f) * hexWidth
-                        val tileY = boardY + tile.coordinates.second * 1.5f * hexRadius
-                        /*// Devolver las aristas para cada hexágono -----------------------------
-                        val vertices = getHexagonVertices(tileX, tileY, hexRadius)
-                        val coordinates =
-                            mutableListOf<Offset>() // Lista de coordenadas de las aristas
-                        for (i in 0 until vertices.size - 1) {
-                            val vertex1 = vertices[i]
-                            val vertex2 = vertices[i + 1]
-                            println("Vertices $vertex1 $vertex2")
-                            coordinates.addAll(getHexagonLineCoordinates(vertex1, vertex2))
-                        }
-                        // Agrega también la última arista que va desde el último vértice hasta el primer vértice
-                        val vertex1 = vertices.last()
-                        val vertex2 = vertices.first()
-                        coordinates.addAll(getHexagonLineCoordinates(vertex1, vertex2))
-                        println(coordinates)*/
-                        // Detectar si el clic se hizo en una arista ------------------------------
-
-                        // Deetectar si el click se hace en un vértice --------------------------
-                        for (vertex in getHexagonVertices(tileX, tileY, hexRadius)) {
-                            val radius = 10f
-
-                            // Calcula la distancia entre el centro del círculo y la posición del clic del mouse
-                            val distance =
-                                sqrt((offset.x - vertex.x).pow(2) + (offset.y - vertex.y).pow(2))
-                            // Verifica si la distancia es menor que el radio del círculo
-                            if (distance <= radius) {
-                                detectClick = true
-                                // El clic está dentro del círculos
-                                println("punto: ${offset.x} tap: ${vertex.x}")
-
-                                // Aquí puedes agregar el código para manejar el evento de clic en el círculo
-                                var idCoord = Partida.CoordVertices[vertex]
-
-                                var idCoordHex = idCoord
-                                    ?.toInt(16)
-                                    .toString()
-
-
-                                if (Partida.nodosLegales.contains(idCoordHex)) {
-
-                                    println("legal")
-
-                                    if (Partida.Vertices[idCoord.toString()] == "nada") {
-                                        println("verticeclicado: ${idCoord.toString()}")
-                                        chosenV(idCoord.toString())
-                                        onVerticeClick()
-
-                                        clickedVertex = vertex
-                                    }
-
-                                } else {
-                                    Toast
-                                        .makeText(context, "not legal", Toast.LENGTH_SHORT)
-                                        .show()
-                                }
-
-
-                                break
+                    else {
+                        for (tile in tiles) {
+                            val tileX =
+                                boardX + (tile.coordinates.first + tile.coordinates.second / 2f) * hexWidth
+                            val tileY = boardY + tile.coordinates.second * 1.5f * hexRadius
+                            /*// Devolver las aristas para cada hexágono -----------------------------
+                            val vertices = getHexagonVertices(tileX, tileY, hexRadius)
+                            val coordinates =
+                                mutableListOf<Offset>() // Lista de coordenadas de las aristas
+                            for (i in 0 until vertices.size - 1) {
+                                val vertex1 = vertices[i]
+                                val vertex2 = vertices[i + 1]
+                                println("Vertices $vertex1 $vertex2")
+                                coordinates.addAll(getHexagonLineCoordinates(vertex1, vertex2))
                             }
-                        }
+                            // Agrega también la última arista que va desde el último vértice hasta el primer vértice
+                            val vertex1 = vertices.last()
+                            val vertex2 = vertices.first()
+                            coordinates.addAll(getHexagonLineCoordinates(vertex1, vertex2))
+                            println(coordinates)*/
+                            // Detectar si el clic se hizo en una arista ------------------------------
 
-                        for (coordinate in Partida.CoordAristas.keys) {//maybe no hay que leer tods los  hexagonos
+                            // Deetectar si el click se hace en un vértice --------------------------
+                            for (vertex in getHexagonVertices(tileX, tileY, hexRadius)) {
+                                val radius = 10f
 
-                            val radius = 20f
-                            // Calcula la distancia entre el centro del círculo y la posición del clic del mouse
-                            val distance =
-                                sqrt(
-                                    (offset.x - coordinate.x).pow(2) + (offset.y - coordinate.y).pow(
-                                        2
-                                    )
-                                )
-                            // Verifica si la distancia es menor que el radio del círculo
-                            if (distance <= radius) {
-                                // El clic está dentro del círculos
-                                //println("punto: ${offset.x} tap: ${coordinate.x}")
-                                // CLICK DE UNA ARISTA ---------------------------------------------------------------
-                                if (!detectClick) {
-
+                                // Calcula la distancia entre el centro del círculo y la posición del clic del mouse
+                                val distance =
+                                    sqrt((offset.x - vertex.x).pow(2) + (offset.y - vertex.y).pow(2))
+                                // Verifica si la distancia es menor que el radio del círculo
+                                if (distance <= radius) {
                                     detectClick = true
+                                    // El clic está dentro del círculos
+                                    println("punto: ${offset.x} tap: ${vertex.x}")
 
-                                    var idCoord = Partida.CoordAristas[coordinate]
+                                    // Aquí puedes agregar el código para manejar el evento de clic en el círculo
+                                    var idCoord = Partida.CoordVertices[vertex]
 
                                     var idCoordHex = idCoord
                                         ?.toInt(16)
                                         .toString()
 
-                                    if (Partida.edgesLegales.contains(idCoordHex)) {
 
-                                        if (Partida.Aristas[idCoord.toString()] == "nada") {
-                                            println("aristaclicado: ${idCoord.toString()}")
-                                            chosenA(idCoord.toString())
-                                            onAristaClick()
+                                    if (Partida.nodosLegales.contains(idCoordHex)) {
 
+                                        println("legal")
+
+                                        if (Partida.Vertices[idCoord.toString()] == "nada") {
+                                            println("verticeclicado: ${idCoord.toString()}")
+                                            chosenV(idCoord.toString())
+                                            onVerticeClick()
+
+                                            clickedVertex = vertex
                                         }
 
                                     } else {
@@ -1520,15 +1482,65 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                                     }
 
 
-                                    //Partida.Aristas[idCoord.toString()] = "carretera"
-                                    //println("arista clicada: ${Partida.CoordAristas[coordinate]}")
+                                    break
                                 }
-
                             }
+
+                            for (coordinate in Partida.CoordAristas.keys) {//maybe no hay que leer tods los  hexagonos
+
+                                val radius = 20f
+                                // Calcula la distancia entre el centro del círculo y la posición del clic del mouse
+                                val distance =
+                                    sqrt(
+                                        (offset.x - coordinate.x).pow(2) + (offset.y - coordinate.y).pow(
+                                            2
+                                        )
+                                    )
+                                // Verifica si la distancia es menor que el radio del círculo
+                                if (distance <= radius) {
+                                    // El clic está dentro del círculos
+                                    //println("punto: ${offset.x} tap: ${coordinate.x}")
+                                    // CLICK DE UNA ARISTA ---------------------------------------------------------------
+                                    if (!detectClick) {
+
+                                        detectClick = true
+
+                                        var idCoord = Partida.CoordAristas[coordinate]
+
+                                        var idCoordHex = idCoord
+                                            ?.toInt(16)
+                                            .toString()
+
+                                        if (Partida.edgesLegales.contains(idCoordHex)) {
+
+                                            if (Partida.Aristas[idCoord.toString()] == "nada") {
+                                                println("aristaclicado: ${idCoord.toString()}")
+                                                chosenA(idCoord.toString())
+                                                onAristaClick()
+
+                                            }
+
+                                        } else {
+                                            Toast
+                                                .makeText(context, "not legal", Toast.LENGTH_SHORT)
+                                                .show()
+                                        }
+
+
+                                        //Partida.Aristas[idCoord.toString()] = "carretera"
+                                        //println("arista clicada: ${Partida.CoordAristas[coordinate]}")
+                                    }
+
+                                }
+                            }
+
+
                         }
-
-
                     }
+
+
+
+
                 }
             )
 
@@ -2959,19 +2971,25 @@ fun popUpNewTurno(playerName : String, setShowDialog: (Boolean) -> Unit, setLadr
                                         while (!Globals.newDados.value) {
                                             delay(100) // Puedes ajustar el valor del delay según tus necesidades
                                         }
-                                        println("YAAAAAAY")
+
                                     }
 
                                     // Evaluación de los nuevos valores de los dados
                                     val sumaDados = Globals.dado1.value.toInt() + Globals.dado2.value.toInt()
+
+                                    Toast
+                                        .makeText(context, "$sumaDados", Toast.LENGTH_SHORT)
+                                        .show()
+
                                     if (sumaDados == 7) {
                                         // Realizar la acción de mover el ladrón
                                         setLadron()
                                     } else {
-                                        //avanzarFase()
+                                        avanzarFase()
+                                        setShowDialog(false)
                                     }
 
-                                    setShowDialog(false)
+
 
                                     //TODO:  DE MOMENTO SE PASA DE TURNO SIEMPRE, EN CASO DE QUE LOS DADOS DEN 7 SE DEBERÁ MOVER EL LADRÓN
 
@@ -3230,7 +3248,7 @@ fun popUpBuildingTurn(playerName : String, setShowDialog: (Boolean) -> Unit) {
 @Composable
 fun popUp7detectado( setShowDialog: (Boolean) -> Unit) {
 
-    var chosenPlayer = ""
+    var chosenPlayer =  remember { mutableStateOf("") }
     var colorBoton = TransparenteBlanco
     Dialog(onDismissRequest = { }) { // PARA QUE SOLO SE CIERRE CON LA X QUITAR ESTO JEJE
         Surface(
@@ -3259,46 +3277,56 @@ fun popUp7detectado( setShowDialog: (Boolean) -> Unit) {
 
                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center){
                             playerFoto(modifier = Modifier
-                                .size(35.dp)
+                                .size(45.dp)
                                 .clickable {
-                                    chosenPlayer = Globals.gameState
+                                    chosenPlayer.value = Globals.gameState
                                         .getJSONObject("player_0")
                                         .getString("id")
-                                }, foto = jugador_0!!.imagen , colorFondo = jugador_3!!.color )
+                                }, foto = jugador_0!!.imagen , colorFondo = jugador_0!!.color )
+
+                            Spacer(modifier = Modifier.width(20.dp))
+
                             playerFoto(modifier = Modifier
-                                .size(35.dp)
+                                .size(45.dp)
                                 .clickable {
-                                    chosenPlayer = Globals.gameState
-                                        .getJSONObject("player_0")
+                                    chosenPlayer.value = Globals.gameState
+                                        .getJSONObject("player_1")
                                         .getString("id")
-                                }, foto = jugador_1!!.imagen , colorFondo = jugador_3!!.color )
+                                }, foto = jugador_1!!.imagen , colorFondo = jugador_1!!.color )
                         }
+
+                        Spacer(modifier = Modifier.height(20.dp))
 
                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center){
                             playerFoto(modifier = Modifier
-                                .size(35.dp)
+                                .size(45.dp)
                                 .clickable {
-                                    chosenPlayer = Globals.gameState
-                                        .getJSONObject("player_0")
+                                    chosenPlayer.value = Globals.gameState
+                                        .getJSONObject("player_2")
                                         .getString("id")
-                                }, foto = jugador_2!!.imagen , colorFondo = jugador_3!!.color )
+                                }, foto = jugador_2!!.imagen , colorFondo = jugador_2!!.color )
+
+                            Spacer(modifier = Modifier.width(20.dp))
+
                             playerFoto(modifier = Modifier
-                                .size(35.dp)
+                                .size(45.dp)
                                 .clickable {
-                                    chosenPlayer = Globals.gameState
-                                        .getJSONObject("player_0")
+                                    chosenPlayer.value = Globals.gameState
+                                        .getJSONObject("player_3")
                                         .getString("id")
                                 }, foto = jugador_3!!.imagen , colorFondo = jugador_3!!.color )
                         }
 
-                        if(chosenPlayer != ""){
+                        if(chosenPlayer.value != "" && chosenPlayer.value != Globals.Id){
                             colorBoton = Verde
                         }
 
+                        Spacer(modifier = Modifier.height(20.dp))
+
                         Button(
                             onClick = {
-                                if(chosenPlayer != ""){
-                                    Globals.jugadorRobado = chosenPlayer
+                                if(chosenPlayer.value != "" && chosenPlayer.value != Globals.Id){
+                                    Globals.jugadorRobado = chosenPlayer.value
                                     Globals.moviendoLadron.value = true
                                     setShowDialog(false)
                                 }
