@@ -72,6 +72,9 @@ class CatanViewModel : ViewModel() {
     @Composable
     fun CatanBoard(navController: NavHostController) {
 
+        // GUARDAMOS LOS PUNTOS CON LOS QUE SE GANARIA UNA PARTIDA --------------------------------
+        val puntosVictoria = 10
+
         // INICIALIZACIÓN DE LOS JUGADORES EN EL TABLERO -----------------------------------------
 
 
@@ -660,9 +663,29 @@ class CatanViewModel : ViewModel() {
                     construirCamino(
                         idArista = aristaChosen.value,
                         setShowDialog = { showCamino.value = it })
-                if (showpopUpnewTurno.value) {
-                    //TODO: LLAMAR A LA FUNCION CUANDO SE DEBE Y CON LOS PARAMETROS CORRECTOS
-                    //popUpNewTurno(playerName = , setShowDialog = )
+
+
+                // SI ALGUIEN HA GANADO SE MUESTRA ESTE POPUP
+                if (jugador_0!!.puntos == puntosVictoria) {
+                    showWinner(
+                        name = jugador_0!!.nombre,
+                        navController,
+                        setShowDialog = { true })
+                } else if (jugador_1!!.puntos == puntosVictoria) {
+                    showWinner(
+                        name = jugador_1!!.nombre,
+                        navController,
+                        setShowDialog = { true })
+                } else if (jugador_2!!.puntos == puntosVictoria) {
+                    showWinner(
+                        name = jugador_2!!.nombre,
+                        navController,
+                        setShowDialog = { true })
+                } else if (jugador_3!!.puntos == puntosVictoria) {
+                    showWinner(
+                        name = jugador_3!!.nombre,
+                        navController,
+                        setShowDialog = { true })
                 }
 
 
@@ -769,10 +792,8 @@ class CatanViewModel : ViewModel() {
                             nuevoTurnoPhase.value = it
                         })
                     }
-                    // Get del tablero
-                    // Colocar pueblo y carretera
-                    // POST del tablero con las modificaciones que has hecho
-                    // Pasar turno al siguiente jugador -  Advance phase
+                    // Puedes negociar con la banca
+                    // Puedes negociar con otros jugadores
                 }
                 if (nuevoTurnoPhase.value && Globals.gameState.getString("turn_phase") == "BUILDING") {
                     // MOSTRAR POP-UP: "ES TU TURNO, TIRA LOS DADOS PARA OBTENER RECURSOS" (POP-UP CON UNOS DADOS PARA CLICAR)
@@ -3183,6 +3204,7 @@ fun popUpTradingTurn(playerName : String, setShowDialog: (Boolean) -> Unit, setT
                                 fontWeight = FontWeight.Bold
                             )
                         )
+                        Spacer(modifier = Modifier.height(5.dp))
                         Text(
                             text = "$playerName ha pasado a la fase de trading",
                             color = Blanco,
@@ -3194,7 +3216,6 @@ fun popUpTradingTurn(playerName : String, setShowDialog: (Boolean) -> Unit, setT
                         )
 
                         if(Globals.gameState.getString("player_turn") == Globals.Id){
-                            Spacer(modifier = Modifier.height(5.dp))
                             Text(
                                 text = "Negocia con la banca o pasa de fase",
                                 color = Blanco,
@@ -3488,14 +3509,18 @@ fun popUpBanca( setShowDialog: (Boolean) -> Unit) {
                             colors = ButtonDefaults.buttonColors(backgroundColor = Azul)
 
                         ) {
-                            Text(text = "Volver",color = Blanco)
+                            Text(text = "Cancelar",color = Blanco)
                         }
                         Spacer(modifier = Modifier.width(5.dp))
                         Button(
                             onClick = {
                                 // FUNCIÓN TRADING BANCA
                                 if(trade_with_bank(solicita, "1", requiere)){
-                                    setShowDialog(false)
+                                    Toast.makeText(
+                                        context,
+                                        "Intercambio correcto",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 } else{
                                     Toast.makeText(
                                         context,
@@ -3610,6 +3635,88 @@ private fun ButtonToggleGroup( // 1
                         contentDescription = null,
                         modifier = Modifier.size(35.dp)
                     )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun showWinner(name: String, navController: NavHostController, setShowDialog: (Boolean) -> Unit){
+    val context = LocalContext.current
+    Dialog(onDismissRequest = { }) { // PARA QUE SOLO SE CIERRE CON LA X QUITAR ESTO JEJE
+        Surface(
+            shape = RoundedCornerShape(16.dp),
+            color = AzulOscuro
+        ) {
+            Box(
+                contentAlignment = Alignment.Center
+            ) {
+                Column(modifier = Modifier.padding(20.dp)) {
+                    if(name == Globals.Username){
+                        Text(
+                            text = "¡Victoria!",
+                            color = Blanco,
+                            style = TextStyle(
+                                fontSize = 10.sp,
+                                fontFamily = FontFamily.Default,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+                        Text(
+                            text = "Has ganado la partida",
+                            color = Blanco,
+                            style = TextStyle(
+                                fontSize = 10.sp,
+                                fontFamily = FontFamily.Default,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+                    } else{
+                        Text(
+                            text = "¡Derrota!",
+                            color = Blanco,
+                            style = TextStyle(
+                                fontSize = 10.sp,
+                                fontFamily = FontFamily.Default,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+                        Text(
+                            text = "El ganador es: $name",
+                            color = Blanco,
+                            style = TextStyle(
+                                fontSize = 10.sp,
+                                fontFamily = FontFamily.Default,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+                    }
+                    Button(
+                        onClick = {
+                            // Borramos el lobby
+                            deleteLobby(Globals.lobbyId)
+                            // Salimos a la pantalla de home
+
+
+                                  },
+                        modifier = Modifier
+                            //.fillMaxWidth(0.5f)
+                            .width(100.dp)
+                            .height(50.dp),
+                        colors = ButtonDefaults.buttonColors(backgroundColor = Verde),
+                        shape = RoundedCornerShape(50.dp),
+                        border = BorderStroke(3.dp, AzulOscuro),
+
+                        ) {
+                        Text(
+                            text = "Salir",
+                            style = TextStyle(
+                                color = AzulOscuro, fontWeight = FontWeight.Bold
+                            )
+                        )
+                    }
+
                 }
             }
         }
