@@ -47,6 +47,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.mycatan.R
 import com.example.mycatan.dBaux.*
 import com.example.mycatan.others.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.json.JSONArray
@@ -176,6 +178,7 @@ class CatanViewModel : ViewModel() {
 
         var showpopUpnewTurno = remember { mutableStateOf(false) }
         var nuevoTurnoPhase = remember { mutableStateOf(false) }
+        var showpopUpLadron = remember { mutableStateOf(false) }
         var firstTime = remember { mutableStateOf(true) }
 
 
@@ -738,7 +741,11 @@ class CatanViewModel : ViewModel() {
                 }
                 if (nuevoTurnoPhase.value && Globals.gameState.getString("turn_phase") == "RESOURCE_PRODUCTION") {
                     // MOSTRAR POP-UP: "ES TU TURNO, TIRA LOS DADOS PARA OBTENER RECURSOS" (POP-UP CON UNOS DADOS PARA CLICAR)
-                    popUpNewTurno(playerName = Globals.gameState.getString("player_turn_name"), setShowDialog = { nuevoTurnoPhase.value = it })
+                    
+                    popUpNewTurno(playerName = Globals.gameState.getString("player_turn_name"), setShowDialog = { nuevoTurnoPhase.value = it }, setLadron = { showpopUpLadron.value = true})
+                    if (showpopUpLadron.value){
+                        popUp7detectado(setShowDialog = { showpopUpLadron.value = it })
+                    }
                     // Get del tablero
                     // Colocar pueblo y carretera
                     // POST del tablero con las modificaciones que has hecho
@@ -1000,7 +1007,15 @@ fun intercambioRecurso(id: String, mainPlayer: Boolean) {
 
 
 @Composable
-fun playerFoto(modifier: Modifier, foto: String){
+fun playerFoto(modifier: Modifier, foto: String, colorFondo: String ){
+
+    val colorF = when (colorFondo) {
+        "RED" -> Rojo
+        "BLUE" -> Azul
+        "GREEN" -> Verde
+        "" -> Blanco
+        else -> Amarillo
+    }
 
     var painterID : Painter
     var fotoX = "default"
@@ -1048,7 +1063,7 @@ fun playerFoto(modifier: Modifier, foto: String){
     Card(
         modifier = modifier,
         shape = CircleShape,
-        backgroundColor = Blanco,
+        backgroundColor = colorF,
     ){
         Image(
             painter = painterID,
@@ -1056,6 +1071,8 @@ fun playerFoto(modifier: Modifier, foto: String){
         )
     }
 }
+
+
 
 // DIALOG DE INTERCAMBIO DE RECURSOSO --------------------------------------------------------------
 @Composable
@@ -1151,7 +1168,7 @@ fun showTrading(name: String ,foto: String, setShowDialog: (Boolean) -> Unit) {
 
                             Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
 
-                                playerFoto(modifier = Modifier.size(55.dp), foto = Globals.Personaje )
+                                playerFoto(modifier = Modifier.size(55.dp), foto = Globals.Personaje ,"")
 
                                 Spacer(modifier = Modifier.height(10.dp))
 
@@ -1165,7 +1182,7 @@ fun showTrading(name: String ,foto: String, setShowDialog: (Boolean) -> Unit) {
 
                                 Spacer(modifier = Modifier.height(10.dp))
 
-                                playerFoto(modifier = Modifier.size(55.dp), foto = foto )
+                                playerFoto(modifier = Modifier.size(55.dp), foto = foto , "")
 
                             }
 
@@ -1283,7 +1300,7 @@ fun dataJugador(player: Int, colorEne: Color, ptsV: Int, foto: String, ejercito:
             
             Spacer(modifier = Modifier.width(3.dp))
 
-            playerFoto(modifier = Modifier.size(35.dp), foto = foto )
+            playerFoto(modifier = Modifier.size(35.dp), foto = foto , "")
 
 
             Column(
@@ -1373,6 +1390,30 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                 onTap = { offset ->
                     //println("tapped $offset")
                     detectClick = false
+
+                    if (Globals.moviendoLadron.value) {
+                        for (tile in tiles) {
+                            val tileX =
+                                boardX + (tile.coordinates.first + tile.coordinates.second / 2f) * hexWidth
+                            val tileY = boardY + tile.coordinates.second * 1.5f * hexRadius
+
+                            // Verificar si el toque está dentro de las coordenadas del hexágono
+                            if (offset.x >= tileX && offset.x <= tileX + hexWidth &&
+                                offset.y >= tileY && offset.y <= tileY + 2f * hexRadius
+                            ) {
+                                // El toque está dentro del hexágono
+                                println("Toque en el hexágono: ${tile.id}")
+                                //TODO: MOVER EL LADRON AL HEXAGONO TOCADO
+                                //moverladron(tile.id, jugadorRobado)
+
+                                Globals.moviendoLadron.value = false
+                                break
+                            }
+                        }
+                    }
+
+
+
                     for (tile in tiles) {
                         val tileX =
                             boardX + (tile.coordinates.first + tile.coordinates.second / 2f) * hexWidth
@@ -1406,9 +1447,7 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                                 detectClick = true
                                 // El clic está dentro del círculos
                                 println("punto: ${offset.x} tap: ${vertex.x}")
-                                Toast
-                                    .makeText(context, "OK", Toast.LENGTH_SHORT)
-                                    .show()
+
                                 // Aquí puedes agregar el código para manejar el evento de clic en el círculo
                                 var idCoord = Partida.CoordVertices[vertex]
 
@@ -1456,9 +1495,7 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                                 //println("punto: ${offset.x} tap: ${coordinate.x}")
                                 // CLICK DE UNA ARISTA ---------------------------------------------------------------
                                 if (!detectClick) {
-                                    Toast
-                                        .makeText(context, "ARIST", Toast.LENGTH_SHORT)
-                                        .show()
+
                                     detectClick = true
 
                                     var idCoord = Partida.CoordAristas[coordinate]
@@ -2855,7 +2892,7 @@ fun construirCamino(idArista: String, setShowDialog: (Boolean) -> Unit) {
 }
 
 @Composable
-fun popUpNewTurno(playerName : String, setShowDialog: (Boolean) -> Unit) {
+fun popUpNewTurno(playerName : String, setShowDialog: (Boolean) -> Unit, setLadron: () -> Unit ) {
 
     val context = LocalContext.current
     val haTiradoDados = remember { mutableStateOf(false) }
@@ -2914,7 +2951,30 @@ fun popUpNewTurno(playerName : String, setShowDialog: (Boolean) -> Unit) {
                                 onClick = {
                                     haTiradoDados.value = true
                                     tirarDados()
+                                    getGameState(Globals.lobbyId)
+
+                                    // Lanzar una corutina para introducir un retraso antes de evaluar los valores de los dados
+                                    CoroutineScope(Dispatchers.Main).launch {
+                                        // Esperar hasta que los valores de los dados sean diferentes de la inicialización
+                                        while (!Globals.newDados.value) {
+                                            delay(100) // Puedes ajustar el valor del delay según tus necesidades
+                                        }
+                                        println("YAAAAAAY")
+                                    }
+
+                                    // Evaluación de los nuevos valores de los dados
+                                    val sumaDados = Globals.dado1.value.toInt() + Globals.dado2.value.toInt()
+                                    if (sumaDados == 7) {
+                                        // Realizar la acción de mover el ladrón
+                                        setLadron()
+                                    } else {
+                                        //avanzarFase()
+                                    }
+
                                     setShowDialog(false)
+
+                                    //TODO:  DE MOMENTO SE PASA DE TURNO SIEMPRE, EN CASO DE QUE LOS DADOS DEN 7 SE DEBERÁ MOVER EL LADRÓN
+
                                 },
                                 shape = RoundedCornerShape(50.dp),
                                 modifier = Modifier
@@ -2939,9 +2999,10 @@ fun popUpNewTurno(playerName : String, setShowDialog: (Boolean) -> Unit) {
 
                         }
 
+                        /*
                         if(haTiradoDados.value && Globals.dado1.toInt() + Globals.dado2.toInt() == 7){
                             // POP - UP, QUIERES MOVER EL LADRON?? SI - NO
-                        }
+                        }*/
 
                     }
 
@@ -3084,7 +3145,7 @@ fun popUpTradingTurn(playerName : String, setShowDialog: (Boolean) -> Unit) {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "El resultado de los dados fue $resultadoDados",
+                            text = "Los dados sacaron: $resultadoDados",
                             color = Blanco,
                             style = TextStyle(
                                 fontSize = 30.sp,
@@ -3166,3 +3227,116 @@ fun popUpBuildingTurn(playerName : String, setShowDialog: (Boolean) -> Unit) {
     }
 }
 
+@Composable
+fun popUp7detectado( setShowDialog: (Boolean) -> Unit) {
+
+    var chosenPlayer = ""
+    var colorBoton = TransparenteBlanco
+    Dialog(onDismissRequest = { }) { // PARA QUE SOLO SE CIERRE CON LA X QUITAR ESTO JEJE
+        Surface(
+            shape = RoundedCornerShape(16.dp),
+            color = AzulOscuro
+        ) {
+            Box(
+                contentAlignment = Alignment.Center
+            ) {
+                Column(modifier = Modifier.padding(20.dp)) {
+
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "Selecciona a quien quieres robar",
+                            color = Blanco,
+                            style = TextStyle(
+                                fontSize = 15.sp,
+                                fontFamily = FontFamily.Default,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center){
+                            playerFoto(modifier = Modifier
+                                .size(35.dp)
+                                .clickable {
+                                    chosenPlayer = Globals.gameState
+                                        .getJSONObject("player_0")
+                                        .getString("id")
+                                }, foto = jugador_0!!.imagen , colorFondo = jugador_3!!.color )
+                            playerFoto(modifier = Modifier
+                                .size(35.dp)
+                                .clickable {
+                                    chosenPlayer = Globals.gameState
+                                        .getJSONObject("player_0")
+                                        .getString("id")
+                                }, foto = jugador_1!!.imagen , colorFondo = jugador_3!!.color )
+                        }
+
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center){
+                            playerFoto(modifier = Modifier
+                                .size(35.dp)
+                                .clickable {
+                                    chosenPlayer = Globals.gameState
+                                        .getJSONObject("player_0")
+                                        .getString("id")
+                                }, foto = jugador_2!!.imagen , colorFondo = jugador_3!!.color )
+                            playerFoto(modifier = Modifier
+                                .size(35.dp)
+                                .clickable {
+                                    chosenPlayer = Globals.gameState
+                                        .getJSONObject("player_0")
+                                        .getString("id")
+                                }, foto = jugador_3!!.imagen , colorFondo = jugador_3!!.color )
+                        }
+
+                        if(chosenPlayer != ""){
+                            colorBoton = Verde
+                        }
+
+                        Button(
+                            onClick = {
+                                if(chosenPlayer != ""){
+                                    Globals.jugadorRobado = chosenPlayer
+                                    Globals.moviendoLadron.value = true
+                                    setShowDialog(false)
+                                }
+
+                            },
+                            modifier = Modifier
+                                //.fillMaxWidth(0.5f)
+                                .width(130.dp)
+                                .height(50.dp),
+                            colors = ButtonDefaults.buttonColors(backgroundColor = colorBoton),
+                            shape = RoundedCornerShape(50.dp),
+                            border = BorderStroke(3.dp, AzulOscuro),
+
+                            ) {
+                            Text(
+                                text = "Robar",
+                                style = TextStyle(
+                                    color = AzulOscuro, fontWeight = FontWeight.Bold
+                                )
+                            )
+                        }
+
+                        Text(
+                            text = "A continuacion elige a donde mover el ladrón",
+                            color = Blanco,
+                            style = TextStyle(
+                                fontSize = 10.sp,
+                                fontFamily = FontFamily.Default,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+
+                    }
+
+                }
+            }
+        }
+
+
+    }
+}

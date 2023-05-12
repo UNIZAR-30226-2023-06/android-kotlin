@@ -46,8 +46,12 @@ object Globals {
     lateinit var gameState: JSONObject
     var lastPlayer = "nada"
     var lastFase = "nada"
-    lateinit var dado1: String
-    lateinit var dado2: String
+    var newDados = mutableStateOf(false)
+
+    var dado1 = mutableStateOf("")
+    var dado2 = mutableStateOf("")
+    var moviendoLadron = mutableStateOf(false)
+    var jugadorRobado = ""
 
 }
 

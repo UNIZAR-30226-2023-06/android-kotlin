@@ -27,10 +27,9 @@ fun tirarDados(){
     val latch = CountDownLatch(1)
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/game-phases/resource_production")
+        .url("http://$ipBackend:8000/game_phases/resource_production?lobby_id=${Globals.lobbyId}")
         .get()
         .addHeader("accept", "application/json")
-        .addHeader("Authorization", "Bearer ${Globals.Token}")
         .addHeader("Content-Type", "application/x-www-form-urlencoded")
         .build()
 
@@ -57,8 +56,10 @@ fun tirarDados(){
 
             if (!error) {
                 println("Dados lanzados correctamente")
-                Globals.dado1 = json.getString("die1")
-                Globals.dado2 = json.getString("die2")
+                Globals.dado1.value = json.getString("die1")
+                Globals.dado2.value = json.getString("die2")
+                Globals.newDados.value = true
+                println("NEW DADOOOOOOOOOOOOOS")
             } else {
                 println("No se han podido lanzar los dados")
 
