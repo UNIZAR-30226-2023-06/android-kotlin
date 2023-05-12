@@ -3697,7 +3697,7 @@ fun showWinner(name: String, navController: NavHostController, setShowDialog: (B
                             // Borramos el lobby
                             deleteLobby(Globals.lobbyId)
                             // Salimos a la pantalla de home
-
+                            navController.navigate(Routes.Home.route)
 
                                   },
                         modifier = Modifier
