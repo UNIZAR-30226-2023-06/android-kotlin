@@ -1626,7 +1626,7 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                         textAlign = Paint.Align.CENTER
                     }
 
-                    if(tile.terrain == 1){
+                    if(tile.terrain == 3){
                         // Obtener el Drawable de la imagen desde el contexto
                         val drawable = context.resources.getDrawable(R.drawable.sheephexagon, null)
 
@@ -1671,7 +1671,7 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                         drawable.draw(canvas.nativeCanvas)
                     }
 
-                    if(tile.terrain == 3){
+                    if(tile.terrain == 1){
                         // Obtener el Drawable de la imagen desde el contexto
                         val drawable = context.resources.getDrawable(R.drawable.woodhexagon, null)
 
@@ -1680,7 +1680,7 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                         drawable.draw(canvas.nativeCanvas)
                     }
 
-                    if (tile.terrain == 6){
+                    if (tile.thief ){
 
                         val drawable = context.resources.getDrawable(R.drawable.thief, null)
 
@@ -2988,6 +2988,7 @@ fun popUpNewTurno(playerName : String, setShowDialog: (Boolean) -> Unit, setLadr
                                         avanzarFase()
                                         setShowDialog(false)
                                     }
+                                    Globals.newDados.value = false
 
 
 
