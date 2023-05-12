@@ -96,12 +96,6 @@ fun turnos(turn_phase: String, playerTurn: String, turn_time: Int){
         // Mostrar directamente POP-UP con los recursos obtenidos
         // Al pasar el turn_time se pasa a la siguiente fase
 
-    } else if(turn_phase == "USO CARTAS DESARROLLO" && playerTurn == Globals.Id){
-        // TODO: MOSTRAR POP-UP: "¿QUIERES USAR UNA CARTA DE DESARROLLO?" (POP-UP CON LAS CARTAS QUE TIENES DISPONIBLES)
-
-        // Si se usa una carta se hace un POST al backend para usarla
-        // Si no tienes cartas o no quieres usarlas, click CONTINUAR y se pasa a la siguiente fase
-
     } else if(turn_phase == "NEGOCIACIÓN" && playerTurn == Globals.Id){
         // TODO: MOSTRAR POP-UP: "PIDE RECURSOS A OTROS USUARIOS" (POP-UP PARA ELEGIR EL USUARIO Y PODER INDICAR LOS RECURSOS QUE QUIERES INTERCAMBIAR)
 

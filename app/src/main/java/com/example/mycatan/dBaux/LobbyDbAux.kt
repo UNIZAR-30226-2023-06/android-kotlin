@@ -49,7 +49,7 @@ fun createLoby(): Int {
         override fun onResponse(call: Call, response: Response) {
             val respuesta = response.body?.string().toString()
 
-            println(respuesta)
+            //println(respuesta)
             //transform the string to json object
             val json = JSONObject(respuesta)
             //get the string from the response
@@ -100,7 +100,7 @@ fun deleteLobby(lobby_id: String): Boolean {
         override fun onResponse(call: Call, response: Response) {
             val respuesta = response.body?.string().toString()
 
-            println(respuesta)
+            //println(respuesta)
             //transform the string to json object
             val json = JSONObject(respuesta)
             //get the string from the response
@@ -158,7 +158,7 @@ fun joinLobby(lobby_id: Int, token: String): Int {
         override fun onResponse(call: Call, response: Response) {
             val respuesta = response.body?.string().toString()
 
-            println(respuesta)
+            //println(respuesta)
             //transform the string to json object
             val json = JSONObject(respuesta)
             //get the string from the response
@@ -211,7 +211,7 @@ fun searchLobby( token: String ): Boolean {
         override fun onResponse(call: Call, response: Response) {
             val respuesta = response.body?.string().toString()
 
-            println(respuesta)
+            //println(respuesta)
             //transform the string to json object
             val json = JSONObject(respuesta)
             //get the string from the response
@@ -448,7 +448,7 @@ fun getLobbyFromId(lobby_id: String): Boolean {
             }catch (e: JSONException) {
                 "EXISTE EL LOBBY"
             }
-            println("status $status")
+            //println("status $status")
             if (status == "EXISTE EL LOBBY") {
                     result = true
             } else {

@@ -3,6 +3,7 @@ package com.example.mycatan.pantallas
 import android.annotation.SuppressLint
 import android.graphics.*
 import android.graphics.Paint
+import android.graphics.drawable.Drawable
 import android.widget.Toast
 import androidx.compose.animation.*
 import androidx.compose.foundation.*
@@ -32,6 +33,7 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.material.icons.filled.*
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
@@ -42,6 +44,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mycatan.R
@@ -179,7 +182,7 @@ class CatanViewModel : ViewModel() {
         var showpopUpnewTurno = remember { mutableStateOf(false) }
         var nuevoTurnoPhase = remember { mutableStateOf(false) }
         var showpopUpLadron = remember { mutableStateOf(false) }
-        var firstTime = remember { mutableStateOf(true) }
+        var showpopUpBanca = remember { mutableStateOf(false) }
 
 
 
@@ -749,15 +752,23 @@ class CatanViewModel : ViewModel() {
                             nuevoTurnoPhase.value = it
                         })
                     }
-                    // Get del tablero
-                    // Colocar pueblo y carretera
-                    // POST del tablero con las modificaciones que has hecho
-                    // Pasar turno al siguiente jugador -  Advance phase
+                    // GET del tablero,  las siguientes 4 fases van seguidas, no pasas de TURNO hasta que no terminas la 4
+                    // Tirar dados
+                    // Si tenias alguna contruccion según numero y tipo de terreno obtienes recursos (funciones del backend)
+                    // Mostrar directamente POP-UP con los recursos obtenidos
+                    // Al pasar el turn_time se pasa a la siguiente fase
+                    // Si sacaste un 7 puedes mover el ladron
                 }
                 if (nuevoTurnoPhase.value && Globals.gameState.getString("turn_phase") == "TRADING") {
                     // MOSTRAR POP-UP: "ES TU TURNO, TIRA LOS DADOS PARA OBTENER RECURSOS" (POP-UP CON UNOS DADOS PARA CLICAR)
 
-                    popUpTradingTurn(playerName = Globals.gameState.getString("player_turn_name"), setShowDialog = { nuevoTurnoPhase.value = it })
+                    popUpTradingTurn(playerName = Globals.gameState.getString("player_turn_name"), setShowDialog = { nuevoTurnoPhase.value = it }, setTradingBanca = { showpopUpBanca.value = true})
+                   if (showpopUpBanca.value){
+                        popUpBanca(setShowDialog = {
+                            showpopUpBanca.value = it
+                            nuevoTurnoPhase.value = it
+                        })
+                    }
                     // Get del tablero
                     // Colocar pueblo y carretera
                     // POST del tablero con las modificaciones que has hecho
@@ -3054,10 +3065,10 @@ fun nuevoTurnoPhase1(playerName : String, setShowDialog: (Boolean) -> Unit) {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "Initial turn de $playerName",
+                            text = "Turno inicial de $playerName",
                             color = Blanco,
                             style = TextStyle(
-                                fontSize = 30.sp,
+                                fontSize = 25.sp,
                                 fontFamily = FontFamily.Default,
                                 fontWeight = FontWeight.Bold
                             )
@@ -3108,10 +3119,10 @@ fun nuevoTurnoPhase2(playerName : String, setShowDialog: (Boolean) -> Unit) {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "Initial Turn de $playerName",
+                            text = "Turno inicial 2 de $playerName",
                             color = Blanco,
                             style = TextStyle(
-                                fontSize = 30.sp,
+                                fontSize = 25.sp,
                                 fontFamily = FontFamily.Default,
                                 fontWeight = FontWeight.Bold
                             )
@@ -3144,11 +3155,11 @@ fun nuevoTurnoPhase2(playerName : String, setShowDialog: (Boolean) -> Unit) {
 }
 
 @Composable
-fun popUpTradingTurn(playerName : String, setShowDialog: (Boolean) -> Unit) {
+fun popUpTradingTurn(playerName : String, setShowDialog: (Boolean) -> Unit, setTradingBanca: () -> Unit) {
 
     var resultadoDados = Globals.gameState.getInt("die_1") + Globals.gameState.getInt("die_2").toInt()
 
-    Dialog(onDismissRequest = { setShowDialog(false)}) { // PARA QUE SOLO SE CIERRE CON LA X QUITAR ESTO JEJE
+    Dialog(onDismissRequest = { }) { // PARA QUE SOLO SE CIERRE CON LA X QUITAR ESTO JEJE
         Surface(
             shape = RoundedCornerShape(16.dp),
             color = AzulOscuro
@@ -3167,7 +3178,7 @@ fun popUpTradingTurn(playerName : String, setShowDialog: (Boolean) -> Unit) {
                             text = "Los dados sacaron: $resultadoDados",
                             color = Blanco,
                             style = TextStyle(
-                                fontSize = 30.sp,
+                                fontSize = 25.sp,
                                 fontFamily = FontFamily.Default,
                                 fontWeight = FontWeight.Bold
                             )
@@ -3182,19 +3193,67 @@ fun popUpTradingTurn(playerName : String, setShowDialog: (Boolean) -> Unit) {
                             )
                         )
 
+                        if(Globals.gameState.getString("player_turn") == Globals.Id){
+                            Spacer(modifier = Modifier.height(5.dp))
+                            Text(
+                                text = "Negocia con la banca o pasa de fase",
+                                color = Blanco,
+                                style = TextStyle(
+                                    fontSize = 15.sp,
+                                    fontFamily = FontFamily.Default,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            )
+                            Text(
+                                text = "Recuerda que la banca te da 1 recurso por cada 4 que tengas iguales",
+                                color = Blanco,
+                                style = TextStyle(
+                                    fontSize = 8.sp,
+                                    fontFamily = FontFamily.Default,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            )
+                            Spacer(modifier = Modifier.height(5.dp))
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Button(
+                                    onClick = { // SACAR POP-UP DE NEGOCIAR CON LA BANCA
+                                        setTradingBanca()
+                                    },
+                                    shape = RoundedCornerShape(50.dp),
+                                    modifier = Modifier.weight(1f), // asignar el mismo peso relativo a ambos botones
+                                    colors = ButtonDefaults.buttonColors(backgroundColor = Azul)
+
+                                ) {
+                                    Text(text = "Negociar",color = Blanco)
+                                }
+                                Spacer(modifier = Modifier.width(5.dp))
+                                Button(
+                                    onClick = {
+
+                                        avanzarFase()
+                                        setShowDialog(false)
+
+                                              },
+                                    shape = RoundedCornerShape(50.dp),
+                                    modifier = Modifier.weight(1f) ,
+                                    colors = ButtonDefaults.buttonColors(backgroundColor = Azul)
+
+                                ) {
+                                    Text(text = "Continuar", color = Blanco)
+                                }
+                            }
+                        }
+
 
                     }
 
                 }
             }
         }
-
-        //maybe no funca
-        LaunchedEffect(setShowDialog) {
-            delay(2000) // espera 1 segundo
-            setShowDialog(false) // llama a setShowDialog con false
-        }
-
 
     }
 }
@@ -3220,10 +3279,10 @@ fun popUpBuildingTurn(playerName : String, setShowDialog: (Boolean) -> Unit) {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "Building turn de $playerName",
+                            text = "Fase de construcción de $playerName",
                             color = Blanco,
                             style = TextStyle(
-                                fontSize = 30.sp,
+                                fontSize = 20.sp,
                                 fontFamily = FontFamily.Default,
                                 fontWeight = FontWeight.Bold
                             )
@@ -3235,14 +3294,6 @@ fun popUpBuildingTurn(playerName : String, setShowDialog: (Boolean) -> Unit) {
                 }
             }
         }
-
-        //maybe no funca
-        LaunchedEffect(setShowDialog) {
-            delay(2000) // espera 1 segundo
-            setShowDialog(false) // llama a setShowDialog con false
-        }
-
-
     }
 }
 
@@ -3367,5 +3418,200 @@ fun popUp7detectado( setShowDialog: (Boolean) -> Unit) {
         }
 
 
+    }
+}
+
+@Composable
+fun popUpBanca( setShowDialog: (Boolean) -> Unit) {
+    val context = LocalContext.current
+    val options = listOf("WOOD", "CLAY", "SHEEP", "STONE", "WHEAT")
+
+    var solicita by remember { mutableStateOf(options[0]) }
+    var requiere by remember { mutableStateOf(options[0]) }
+
+    Dialog(onDismissRequest = { }) { // PARA QUE SOLO SE CIERRE CON LA X QUITAR ESTO JEJE
+        Surface(
+            shape = RoundedCornerShape(16.dp),
+            color = AzulOscuro
+        ) {
+            Box(
+                contentAlignment = Alignment.Center
+            ) {
+                Column(modifier = Modifier.padding(20.dp)) {
+
+                    Text(
+                        text = "Indica el recurso que solicitas",
+                        color = Blanco,
+                        style = TextStyle(
+                            fontSize = 10.sp,
+                            fontFamily = FontFamily.Default,
+                            fontWeight = FontWeight.Bold
+                        )
+                    )
+
+                    ButtonToggleGroup(
+                        options = options,
+                        selectedOption = solicita,
+                        onOptionSelect = { solicita = it },
+                    )
+
+
+                    Text(
+                        text = "Indica el recurso que das a la banca",
+                        color = Blanco,
+                        style = TextStyle(
+                            fontSize = 10.sp,
+                            fontFamily = FontFamily.Default,
+                            fontWeight = FontWeight.Bold
+                        )
+                    )
+
+                    ButtonToggleGroup(
+                        options = options,
+                        selectedOption = requiere,
+                        onOptionSelect = { requiere = it },
+                    )
+
+
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Button(
+                            onClick = {
+                                setShowDialog(false)
+                            },
+                            shape = RoundedCornerShape(50.dp),
+                            modifier = Modifier.weight(1f), // asignar el mismo peso relativo a ambos botones
+                            colors = ButtonDefaults.buttonColors(backgroundColor = Azul)
+
+                        ) {
+                            Text(text = "Volver",color = Blanco)
+                        }
+                        Spacer(modifier = Modifier.width(5.dp))
+                        Button(
+                            onClick = {
+                                // FUNCIÓN TRADING BANCA
+                                if(trade_with_bank(solicita, "1", requiere)){
+                                    setShowDialog(false)
+                                } else{
+                                    Toast.makeText(
+                                        context,
+                                        "No tienes suficientes recursos",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            },
+                            shape = RoundedCornerShape(50.dp),
+                            modifier = Modifier.weight(1f) ,
+                            colors = ButtonDefaults.buttonColors(backgroundColor = Azul)
+
+                        ) {
+                            Text(text = "Intercambiar", color = Blanco)
+                        }
+                    }
+
+                }
+            }
+        }
+    }
+}
+
+
+@Composable
+private fun ButtonToggleGroup( // 1
+    options: List<String>,
+    selectedOption: String,
+    onOptionSelect: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+
+    Row(modifier = modifier) { // 2
+        options.forEachIndexed { index, option -> // 3
+            val selected = selectedOption == option // 4
+
+            val border = if (selected) BorderStroke( // 5
+                width = 1.dp,
+                color = MaterialTheme.colors.primary
+            ) else ButtonDefaults.outlinedBorder
+
+            val shape = when (index) { // 6
+                0 -> RoundedCornerShape(
+                    topStart = 4.dp,
+                    bottomStart = 4.dp,
+                    topEnd = 0.dp,
+                    bottomEnd = 0.dp
+                )
+                options.size - 1 -> RoundedCornerShape(
+                    topStart = 0.dp, bottomStart = 0.dp,
+                    topEnd = 4.dp,
+                    bottomEnd = 4.dp
+                )
+                else -> CutCornerShape(0.dp)
+            }
+
+            val zIndex = if (selected) 1f else 0f
+
+            val buttonModifier = when (index) { // 7
+                0 -> Modifier.zIndex(zIndex)
+                else -> {
+                    val offset = -1 * index
+                    Modifier
+                        .offset(x = offset.dp)
+                        .zIndex(zIndex)
+                }
+            }
+
+            val colors = ButtonDefaults.outlinedButtonColors( // 8
+                backgroundColor = if (selected) MaterialTheme.colors.primary.copy(alpha = 0.12f)
+                else MaterialTheme.colors.surface,
+                contentColor = if (selected) MaterialTheme.colors.primary else Color.DarkGray
+            )
+            OutlinedButton( // 9
+                onClick = { onOptionSelect(option) },
+                border = border,
+                shape = shape,
+                colors = colors,
+                modifier = buttonModifier.weight(1f)
+            ) {
+                if(option == "WOOD"){
+                    Image(
+                        painter = painterResource(R.drawable.wood),
+                        contentDescription = null,
+                        modifier = Modifier.size(35.dp)
+                    )
+                }
+                if(option == "CLAY"){
+                    Image(
+                        painter = painterResource(R.drawable.clay),
+                        contentDescription = null,
+                        modifier = Modifier.size(35.dp)
+                    )
+                }
+                if(option == "SHEEP"){
+                    Image(
+                        painter = painterResource(R.drawable.sheep),
+                        contentDescription = null,
+                        modifier = Modifier.size(35.dp)
+                    )
+                }
+                if(option == "STONE"){
+                    Image(
+                        painter = painterResource(R.drawable.rock),
+                        contentDescription = null,
+                        modifier = Modifier.size(35.dp)
+                    )
+                }
+                if(option == "WHEAT"){
+                    Image(
+                        painter = painterResource(R.drawable.trigo),
+                        contentDescription = null,
+                        modifier = Modifier.size(35.dp)
+                    )
+                }
+            }
+        }
     }
 }
