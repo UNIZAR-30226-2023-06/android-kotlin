@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.graphics.*
 import android.graphics.Paint
 import android.graphics.drawable.Drawable
+import android.os.CountDownTimer
 import android.widget.Toast
 import androidx.compose.animation.*
 import androidx.compose.foundation.*
@@ -55,6 +56,17 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.json.JSONArray
+
+val time = Globals.gameState.getInt("turn_time") * 1000
+var timer = object: CountDownTimer(time.toLong(), 1000) {
+    override fun onTick(millisUntilFinished: Long) {
+    }
+
+    override fun onFinish() {
+        // TODO Auto-generated method stub
+        avanzarFase()
+    }
+}
 
 var clickedVertex: Offset? = null
 
@@ -694,6 +706,21 @@ class CatanViewModel : ViewModel() {
                     //esperarTurno( onNewTurno = { nuevoTurnoPhase.value = true }).await()
                     nuevoTurnoPhase.value = esperarTurno().await()
 
+                    // REDEFINIMOS EL VALOR DEL TIMER CON EL NUEVO TIEMPO LIMITE DE FASE ---------------------
+                        val newDuration = Globals.gameState.getInt("turn_time") * 1000
+                        val newTimer = object : CountDownTimer(newDuration.toLong(), 1000) {
+                            override fun onTick(millisUntilFinished: Long) {
+                            }
+
+                            override fun onFinish() {
+                                // Avanzamos fase y ponemos la barra de progreso a 0
+                                avanzarFase()
+                                //progress = 0f
+                            }
+                        }
+
+                        timer = newTimer
+
                     jugador_0!!.puntos =  Globals.gameState.getJSONObject("player_0").getString("victory_points").toInt()
                     jugador_1!!.puntos =  Globals.gameState.getJSONObject("player_1").getString("victory_points").toInt()
                     jugador_2!!.puntos =  Globals.gameState.getJSONObject("player_2").getString("victory_points").toInt()
@@ -741,7 +768,10 @@ class CatanViewModel : ViewModel() {
 
 
                if (nuevoTurnoPhase.value && Globals.gameState.getString("turn_phase") == "INITIAL_TURN1") {
-                    // MOSTRAR POP-UP (O ALGO ASI) CON ALGO DEL ESTILO: "ES TU TURNO, COLOCA UNA CARRETERA Y UN PUEBLO"
+                    timer.cancel()
+                    timer.start()
+
+                // MOSTRAR POP-UP (O ALGO ASI) CON ALGO DEL ESTILO: "ES TU TURNO, COLOCA UNA CARRETERA Y UN PUEBLO"
 
                     getlegalNodesINI(Partida.miColor)
                     getlegalEdges(Partida.miColor)
@@ -754,6 +784,9 @@ class CatanViewModel : ViewModel() {
                     // Pasar turno al siguiente jugador
                 }
                 if (nuevoTurnoPhase.value && Globals.gameState.getString("turn_phase") == "INITIAL_TURN2") {
+                    timer.cancel()
+                    timer.start()
+
                     // MOSTRAR POP-UP: "ES TU TURNO OTRA VEZ, COLOCA UNA CARRETERA Y UN PUEBLO DE NUEVO"
                     getlegalNodesINI(Partida.miColor)
                     getlegalEdges(Partida.miColor)
@@ -766,6 +799,8 @@ class CatanViewModel : ViewModel() {
                     // Pasar turno al siguiente jugador -  Advance phase
                 }
                 if (nuevoTurnoPhase.value && Globals.gameState.getString("turn_phase") == "RESOURCE_PRODUCTION") {
+                    timer.cancel()
+                    timer.start()
                     // MOSTRAR POP-UP: "ES TU TURNO, TIRA LOS DADOS PARA OBTENER RECURSOS" (POP-UP CON UNOS DADOS PARA CLICAR)
                     
                     popUpNewTurno(playerName = Globals.gameState.getString("player_turn_name"), setShowDialog = { nuevoTurnoPhase.value = it }, setLadron = { showpopUpLadron.value = true})
@@ -783,6 +818,9 @@ class CatanViewModel : ViewModel() {
                     // Si sacaste un 7 puedes mover el ladron
                 }
                 if (nuevoTurnoPhase.value && Globals.gameState.getString("turn_phase") == "TRADING") {
+                    timer.cancel()
+                    timer.start()
+
                     // MOSTRAR POP-UP: "ES TU TURNO, TIRA LOS DADOS PARA OBTENER RECURSOS" (POP-UP CON UNOS DADOS PARA CLICAR)
 
                     popUpTradingTurn(playerName = Globals.gameState.getString("player_turn_name"), setShowDialog = { nuevoTurnoPhase.value = it }, setTradingBanca = { showpopUpBanca.value = true})
@@ -796,6 +834,9 @@ class CatanViewModel : ViewModel() {
                     // Puedes negociar con otros jugadores
                 }
                 if (nuevoTurnoPhase.value && Globals.gameState.getString("turn_phase") == "BUILDING") {
+                    timer.cancel()
+                    timer.start()
+
                     // MOSTRAR POP-UP: "ES TU TURNO, TIRA LOS DADOS PARA OBTENER RECURSOS" (POP-UP CON UNOS DADOS PARA CLICAR)
                     popUpBuildingTurn(playerName = Globals.gameState.getString("player_turn_name"), setShowDialog = { nuevoTurnoPhase.value = it })
                     // Get del tablero
@@ -879,6 +920,7 @@ class CatanViewModel : ViewModel() {
                                               .makeText(context, "not your turn", Toast.LENGTH_SHORT)
                                               .show()
                                       }else {
+                                          timer.cancel()
                                           avanzarFase()
                                       }
 
@@ -1447,6 +1489,7 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
 
                                 //moverladron(tile.id, jugadorRobado)
                                 Globals.moviendoLadron.value = false
+                                timer.cancel()
                                 avanzarFase()
                                 break
                             }
@@ -3017,6 +3060,7 @@ fun popUpNewTurno(playerName : String, setShowDialog: (Boolean) -> Unit, setLadr
                                         // Realizar la acción de mover el ladrón
                                         setLadron()
                                     } else {
+                                        timer.cancel()
                                         avanzarFase()
                                         setShowDialog(false)
                                     }
@@ -3091,15 +3135,24 @@ fun nuevoTurnoPhase1(playerName : String, setShowDialog: (Boolean) -> Unit) {
                             style = TextStyle(
                                 fontSize = 25.sp,
                                 fontFamily = FontFamily.Default,
+                                fontWeight = FontWeight.Bold)
+                        )
+
+                       Text(
+                            text = "Coloca 1 casa y 1 camino",
+                            color = Blanco,
+                            style = TextStyle(
+                                fontSize = 15.sp,
+                                fontFamily = FontFamily.Default,
                                 fontWeight = FontWeight.Bold
                             )
                         )
 
                         Text(
-                            text = "Coloca 1 casa y 1 camino",
+                            text = "El tiempo es de ${Globals.gameState.getString("turn_time")} segundos",
                             color = Blanco,
                             style = TextStyle(
-                                fontSize = 15.sp,
+                                fontSize = 20.sp,
                                 fontFamily = FontFamily.Default,
                                 fontWeight = FontWeight.Bold
                             )
@@ -3149,11 +3202,23 @@ fun nuevoTurnoPhase2(playerName : String, setShowDialog: (Boolean) -> Unit) {
                             )
                         )
 
+
+
                         Text(
                             text = "Coloca 1 casa y 1 camino de nuevo",
                             color = Blanco,
                             style = TextStyle(
                                 fontSize = 15.sp,
+                                fontFamily = FontFamily.Default,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+
+                        Text(
+                            text = "El tiempo es de ${Globals.gameState.getString("turn_time")} segundos",
+                            color = Blanco,
+                            style = TextStyle(
+                                fontSize = 20.sp,
                                 fontFamily = FontFamily.Default,
                                 fontWeight = FontWeight.Bold
                             )
@@ -3215,6 +3280,16 @@ fun popUpTradingTurn(playerName : String, setShowDialog: (Boolean) -> Unit, setT
                             )
                         )
 
+                        Text(
+                            text = "El tiempo es de ${Globals.gameState.getString("turn_time")} segundos",
+                            color = Blanco,
+                            style = TextStyle(
+                                fontSize = 20.sp,
+                                fontFamily = FontFamily.Default,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+
                         if(Globals.gameState.getString("player_turn") == Globals.Id){
                             Text(
                                 text = "Negocia con la banca o pasa de fase",
@@ -3254,7 +3329,7 @@ fun popUpTradingTurn(playerName : String, setShowDialog: (Boolean) -> Unit, setT
                                 Spacer(modifier = Modifier.width(5.dp))
                                 Button(
                                     onClick = {
-
+                                        timer.cancel()
                                         avanzarFase()
                                         setShowDialog(false)
 
@@ -3267,6 +3342,8 @@ fun popUpTradingTurn(playerName : String, setShowDialog: (Boolean) -> Unit, setT
                                     Text(text = "Continuar", color = Blanco)
                                 }
                             }
+
+
                         }
 
 
@@ -3301,6 +3378,16 @@ fun popUpBuildingTurn(playerName : String, setShowDialog: (Boolean) -> Unit) {
                     ) {
                         Text(
                             text = "Fase de construcción de $playerName",
+                            color = Blanco,
+                            style = TextStyle(
+                                fontSize = 20.sp,
+                                fontFamily = FontFamily.Default,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+
+                        Text(
+                            text = "El tiempo es de ${Globals.gameState.getString("turn_time")} segundos",
                             color = Blanco,
                             style = TextStyle(
                                 fontSize = 20.sp,
@@ -3536,6 +3623,8 @@ fun popUpBanca( setShowDialog: (Boolean) -> Unit) {
                         ) {
                             Text(text = "Intercambiar", color = Blanco)
                         }
+
+
                     }
 
                 }
