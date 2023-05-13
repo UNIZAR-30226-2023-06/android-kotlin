@@ -199,6 +199,8 @@ class CatanViewModel : ViewModel() {
         var showpopUpLadron = remember { mutableStateOf(false) }
         var showpopUpBanca = remember { mutableStateOf(false) }
 
+        var showCartasDesarrollo = remember { mutableStateOf(false) }
+
 
 
         // set up all transformation states
@@ -494,6 +496,10 @@ class CatanViewModel : ViewModel() {
                 if (showTablaCostes.value)
                     showTablaCostes(setShowDialog = {
                         showTablaCostes.value = it
+                    })
+                if(showCartasDesarrollo.value)
+                    showCartasDesarrollo(setShowDialog = {
+                        showCartasDesarrollo.value = it
                     })
 
                 // DIBUJANDO LAS CARDS DE LOS PLAYERS ----------------------------------------------
@@ -881,21 +887,40 @@ class CatanViewModel : ViewModel() {
 
                         Spacer(modifier = Modifier.height(5.dp))
 
-                        //Tabla costes
-                        Button(
-                            onClick = { showTablaCostes.value = true },
-                            modifier = Modifier
-                                .width(50.dp)
-                                .height(50.dp),
-                            shape = RoundedCornerShape(15.dp),
-                            colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
+                        Row(){
+                            //Tabla costes
+                            Button(
+                                onClick = { showTablaCostes.value = true },
+                                modifier = Modifier
+                                    .width(50.dp)
+                                    .height(50.dp),
+                                shape = RoundedCornerShape(15.dp),
+                                colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
 
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.hammer),
-                                contentDescription = null,
-                                tint = Blanco
-                            )
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.hammer),
+                                    contentDescription = null,
+                                    tint = Blanco
+                                )
+                            }
+
+                            //Cartas de desarrollo
+                            Button(
+                                onClick = { showCartasDesarrollo.value = true },
+                                modifier = Modifier
+                                    .width(50.dp)
+                                    .height(50.dp),
+                                shape = RoundedCornerShape(15.dp),
+                                colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
+
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.carta_de_desarrollo_oculta),
+                                    contentDescription = null
+                                )
+                            }
+
                         }
 
                     }
@@ -3746,6 +3771,26 @@ private fun ButtonToggleGroup( // 1
     }
 }
 
+@Composable
+fun showCartasDesarrollo(setShowDialog: (Boolean) -> Unit){
+    Dialog(onDismissRequest = { setShowDialog(false)}) { // PARA QUE SOLO SE CIERRE CON LA X QUITAR ESTO JEJE
+        Surface(
+            shape = RoundedCornerShape(16.dp),
+            color = AzulOscuro
+        ) {
+            Box(
+                contentAlignment = Alignment.Center
+            ) {
+                Column(modifier = Modifier.padding(20.dp)) {
+
+
+
+                }
+            }
+        }
+    }
+
+}
 @Composable
 fun showWinner(name: String, navController: NavHostController, setShowDialog: (Boolean) -> Unit){
     val context = LocalContext.current
