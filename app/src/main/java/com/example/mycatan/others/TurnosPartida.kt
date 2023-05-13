@@ -6,15 +6,6 @@ import com.example.mycatan.pantallas.nuevoTurnoPhase1
 import com.example.mycatan.pantallas.stopBuscar
 import kotlinx.coroutines.*
 
-/*val timer = object : CountDownTimer(60000, 1000) { // 60 segundos, 1 segundo por intervalo
-        override fun onTick(millisUntilFinished: Long) {
-            // Aquí puedes actualizar la UI con el tiempo restante
-        }
-
-        override fun onFinish() {
-
-        }
-    }*/
 
 fun CoroutineScope.waitForPlayerTurn(id: String) = launch {
     while (Globals.gameState.getString("player_turn")!= id) {
