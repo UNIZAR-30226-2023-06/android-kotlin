@@ -1487,10 +1487,15 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                                     .makeText(context, "${tile.id}", Toast.LENGTH_SHORT)
                                     .show()
 
-                                //moverladron(tile.id, jugadorRobado)
-                                Globals.moviendoLadron.value = false
-                                timer.cancel()
-                                avanzarFase()
+                                var idCoordHex = tile.id?.toInt(16).toString()
+
+                                if (moverLadron(idCoordHex, Globals.jugadorRobado)){
+                                    Globals.moviendoLadron.value = false
+                                    Globals.jugadorRobado  = ""
+                                    timer.cancel()
+                                    avanzarFase()
+                                }
+
                                 break
                             }
                         }
@@ -2257,7 +2262,7 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                         drawable.draw(canvas.nativeCanvas)
                     }
                     if (!Globals.gameState.getJSONObject("board").getJSONObject("nodes").getJSONArray(decimal.toString()).isNull(1)){
-                        println("entra a dibujar casas ${Globals.gameState.getJSONObject("board").getJSONObject("nodes").getJSONArray(decimal.toString())[1]}")
+                        //println("entra a dibujar casas ${Globals.gameState.getJSONObject("board").getJSONObject("nodes").getJSONArray(decimal.toString())[1]}")
                         if(Globals.gameState.getJSONObject("board").getJSONObject("nodes").getJSONArray(decimal.toString())[1]== 1) {
                             var colorEne = R.drawable.rojo_poblado_1 // valor predeterminado
 
@@ -3056,7 +3061,7 @@ fun popUpNewTurno(playerName : String, setShowDialog: (Boolean) -> Unit, setLadr
                                         .makeText(context, "$sumaDados", Toast.LENGTH_SHORT)
                                         .show()
 
-                                    if (sumaDados == 7) {
+                                    if (sumaDados < 13) {
                                         // Realizar la acción de mover el ladrón
                                         setLadron()
                                     } else {
@@ -3245,7 +3250,12 @@ fun popUpTradingTurn(playerName : String, setShowDialog: (Boolean) -> Unit, setT
 
     var resultadoDados = Globals.gameState.getInt("die_1") + Globals.gameState.getInt("die_2").toInt()
 
-    Dialog(onDismissRequest = { }) { // PARA QUE SOLO SE CIERRE CON LA X QUITAR ESTO JEJE
+    Dialog(onDismissRequest = {
+        if (Globals.gameState.getString("player_turn") != Globals.Id){
+            setShowDialog(false)
+        }
+    })
+    { // PARA QUE SOLO SE CIERRE CON LA X QUITAR ESTO JEJE
         Surface(
             shape = RoundedCornerShape(16.dp),
             color = AzulOscuro

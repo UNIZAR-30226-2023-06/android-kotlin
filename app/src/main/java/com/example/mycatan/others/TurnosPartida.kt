@@ -4,6 +4,7 @@ import com.example.mycatan.dBaux.getGameState
 import com.example.mycatan.dBaux.getLobbyFromPlayer
 import com.example.mycatan.pantallas.nuevoTurnoPhase1
 import com.example.mycatan.pantallas.stopBuscar
+import com.example.mycatan.pantallas.timer
 import kotlinx.coroutines.*
 
 /*val timer = object : CountDownTimer(60000, 1000) { // 60 segundos, 1 segundo por intervalo
@@ -41,7 +42,7 @@ suspend fun esperarTurno(): Deferred<Boolean> {
                 if (Globals.gameState.getString("turn_phase")!= Globals.lastFase){
                     Globals.lastFase = Globals.gameState.getString("turn_phase")
                 }
-
+                timer.cancel()
                 miTurno= true
             } else{
                 miTurno= false
