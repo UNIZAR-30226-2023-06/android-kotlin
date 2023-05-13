@@ -70,9 +70,12 @@ fun tirarDados(){
     latch.await()
 }
 
-fun moverLadron( stolenPlayer: String, hexagono: String) : Boolean{
+fun moverLadron(  hexagono: Int,stolenPlayer: Int, reOpen: () -> Unit) : Boolean{
     val latch = CountDownLatch(1)
     var result = false
+
+    println(stolenPlayer)
+    println(hexagono)
 
     val request = Request.Builder()
         .url("http://$ipBackend:8000/game_phases/move_thief?lobby_id=${Globals.lobbyId}&stolen_player_id=$stolenPlayer&new_thief_position_tile_coord=$hexagono")
@@ -92,7 +95,8 @@ fun moverLadron( stolenPlayer: String, hexagono: String) : Boolean{
 
         override fun onResponse(call: Call, response: Response) {
             val respuesta = response.body?.string().toString()
-            var error = false
+            var error1 = false
+            var error2 = false
             println(respuesta)
             //transform the string to json object
             val json = JSONObject(respuesta)
@@ -100,17 +104,32 @@ fun moverLadron( stolenPlayer: String, hexagono: String) : Boolean{
             val status = try {
                 json.getString("message")
             } catch (e: JSONException) {
-                error  = true
+                error1  = true
+            }
+            val detail = try {
+                json.getString("detail")
+            } catch (e: JSONException) {
+                error2  = true
             }
 
-            if (!error) {
+            if (!error1) {
                 if(status == "Thief moved successfully"){
                     println("Ladron movido")
                     result = true
                 }
-                println("No se han podido mover el ladron")
-            } else {
-                println("No se han podido mover el ladron ")
+                else{
+                    println("No se han podido mover el ladron")
+                    reOpen()
+                }
+
+            } else if(!error2) {
+                if(detail == "Error: No hay ningún edificio del jugador robado en los nodos adyacentes al ladrón"){
+                    println("Ladron movido pero no robando a nadie")
+                    result = true
+                } else {
+                    println("No se han podido mover el ladron ")
+                    reOpen()
+                }
 
             }
             latch.countDown()

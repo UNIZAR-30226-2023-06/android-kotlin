@@ -485,7 +485,9 @@ class CatanViewModel : ViewModel() {
                         chosenV = { verticeChosen.value = it },
                         onVerticeClick = { showConstruir.value = true },
                         chosenA = { aristaChosen.value = it },
-                        onAristaClick = { showCamino.value = true })
+                        onAristaClick = { showCamino.value = true },
+                        setLadron = { showpopUpLadron.value = true
+                                    nuevoTurnoPhase.value = true })
                 }
 
                 // MOSTRAR LA TABLA DE COSTES ------------------------------------------------------
@@ -802,9 +804,11 @@ class CatanViewModel : ViewModel() {
                     timer.cancel()
                     timer.start()
                     // MOSTRAR POP-UP: "ES TU TURNO, TIRA LOS DADOS PARA OBTENER RECURSOS" (POP-UP CON UNOS DADOS PARA CLICAR)
-                    
-                    popUpNewTurno(playerName = Globals.gameState.getString("player_turn_name"), setShowDialog = { nuevoTurnoPhase.value = it }, setLadron = { showpopUpLadron.value = true})
-                    if (showpopUpLadron.value){
+                    if (!showpopUpLadron.value){
+                        popUpNewTurno(playerName = Globals.gameState.getString("player_turn_name"), setShowDialog = { nuevoTurnoPhase.value = it }, setLadron = { showpopUpLadron.value = true})
+                    }
+
+                     if(showpopUpLadron.value){
                         popUp7detectado(setShowDialog = {
                             showpopUpLadron.value = it
                             nuevoTurnoPhase.value = it
@@ -1434,7 +1438,7 @@ class Tile(val terrain: Int, val number: Int, val thief: Boolean,val coordinates
 }
 
 @Composable
-fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () -> Unit, chosenA: (String) -> Unit, onAristaClick: () -> Unit) {
+fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () -> Unit, chosenA: (String) -> Unit, onAristaClick: () -> Unit, setLadron: () -> Unit) {
     val context = LocalContext.current
     val isUpdated = remember { mutableStateOf(true) }
     Canvas(modifier = Modifier
@@ -1471,8 +1475,9 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                     if (Globals.moviendoLadron.value) {
 
                         for (tile in tiles) {
-                            val tileX = boardX + tile.coordinates.first * hexWidth * 1.5f
-                            val tileY = boardY + tile.coordinates.second * hexRadius * 2f
+                            val tileX =
+                                boardX + (tile.coordinates.first + tile.coordinates.second / 2f) * hexWidth
+                            val tileY = boardY + tile.coordinates.second * 1.5f * hexRadius
 
                             // Calcula las coordenadas relativas al centro del hexágono
                             val relativeX = offset.x - tileX
@@ -1487,14 +1492,15 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                                     .makeText(context, "${tile.id}", Toast.LENGTH_SHORT)
                                     .show()
 
-                                var idCoordHex = tile.id?.toInt(16).toString()
+                                var idCoordHex = tile.id?.toInt(16)
 
-                                if (moverLadron(idCoordHex, Globals.jugadorRobado)){
+
+                                if (moverLadron(idCoordHex, Globals.jugadorRobado.toInt(), reOpen = setLadron)){
                                     Globals.moviendoLadron.value = false
-                                    Globals.jugadorRobado  = ""
                                     timer.cancel()
                                     avanzarFase()
                                 }
+                                Globals.jugadorRobado  = ""
 
                                 break
                             }
@@ -1760,7 +1766,7 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                         drawable.draw(canvas.nativeCanvas)
                     }
 
-                    if (tile.thief ){
+                    if (Globals.gameState.getBoolean("thief_enabled") && Globals.gameState.getInt("thief_position") == tile.id.toInt(16) ){
 
                         val drawable = context.resources.getDrawable(R.drawable.thief, null)
 
@@ -3061,7 +3067,7 @@ fun popUpNewTurno(playerName : String, setShowDialog: (Boolean) -> Unit, setLadr
                                         .makeText(context, "$sumaDados", Toast.LENGTH_SHORT)
                                         .show()
 
-                                    if (sumaDados < 13) {
+                                    if (sumaDados == 7 ) {
                                         // Realizar la acción de mover el ladrón
                                         setLadron()
                                     } else {
