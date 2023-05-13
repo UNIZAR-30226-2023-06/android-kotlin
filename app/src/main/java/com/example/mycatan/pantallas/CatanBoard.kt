@@ -4,10 +4,8 @@ import android.annotation.SuppressLint
 import android.graphics.*
 import android.graphics.Paint
 import android.graphics.drawable.Drawable
-import android.os.CountDownTimer
 import android.widget.Toast
 import androidx.compose.animation.*
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -52,20 +50,11 @@ import androidx.lifecycle.viewModelScope
 import com.example.mycatan.R
 import com.example.mycatan.dBaux.*
 import com.example.mycatan.others.*
-import kotlinx.coroutines.*
-import kotlinx.coroutines.NonCancellable.cancel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.json.JSONArray
-
-val time = Globals.gameState.getInt("turn_time") * 1000
-var timer = object: CountDownTimer(time.toLong(), 1000) {
-    override fun onTick(millisUntilFinished: Long) {
-    }
-
-    override fun onFinish() {
-        // TODO Auto-generated method stub
-        avanzarFase()
-    }
-}
 
 var clickedVertex: Offset? = null
 
@@ -121,7 +110,8 @@ class CatanViewModel : ViewModel() {
                 imagen = jugador1.getString("profile_pic"),
                 puntos = jugador1.getInt("victory_points"),
                 piezas = jugador1.getString("selected_pieces_skin"),
-                tablero = jugador1.getString("selected_grid_skin"), ejercitoBonus = false,
+                tablero = jugador1.getString("selected_grid_skin")
+                ,ejercitoBonus = false,
                 roadBonus = false
             )
             if (jugador_1!!.yo == true) {
@@ -143,7 +133,8 @@ class CatanViewModel : ViewModel() {
                 imagen = jugador2.getString("profile_pic"),
                 puntos = jugador2.getInt("victory_points"),
                 piezas = jugador2.getString("selected_pieces_skin"),
-                tablero = jugador2.getString("selected_grid_skin"), ejercitoBonus = false,
+                tablero = jugador2.getString("selected_grid_skin")
+                ,ejercitoBonus = false,
                 roadBonus = false
             )
             if (jugador_2!!.yo == true) {
@@ -165,7 +156,8 @@ class CatanViewModel : ViewModel() {
                 imagen = jugador3.getString("profile_pic"),
                 puntos = jugador3.getInt("victory_points"),
                 piezas = jugador3.getString("selected_pieces_skin"),
-                tablero = jugador3.getString("selected_grid_skin"), ejercitoBonus = false,
+                tablero = jugador3.getString("selected_grid_skin")
+                ,ejercitoBonus = false,
                 roadBonus = false
             )
             if (jugador_3!!.yo == true) {
@@ -195,8 +187,6 @@ class CatanViewModel : ViewModel() {
         var showpopUpLadron = remember { mutableStateOf(false) }
         var showpopUpBanca = remember { mutableStateOf(false) }
 
-        // Barra de progreso del tiempo
-        //var progress by remember { mutableStateOf(1f) }
 
 
         // set up all transformation states
@@ -493,538 +483,423 @@ class CatanViewModel : ViewModel() {
                     })
 
                 // DIBUJANDO LAS CARDS DE LOS PLAYERS ----------------------------------------------
-
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.Top
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.Top
+                ) {
+                    Column(
+                        modifier = Modifier.weight(1f)
                     ) {
-                        Column(
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            if (jugador_0 != null) {
-                                // Pop-up de intercambio de elementos
-                                if (tradePlayer0.value && jugador_0!!.yo != true)
-                                    showTrading(
-                                        name = jugador_0!!.nombre,
-                                        foto = jugador_0!!.imagen,
-                                        setShowDialog = { tradePlayer0.value = it })
-                                // Cajita con la info del usuario
-                                Box(
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                                {
-                                    val colorEne = when (jugador_0!!.color) {
-                                        "RED" -> Rojo
-                                        "BLUE" -> Azul
-                                        "GREEN" -> Verde
-                                        else -> Amarillo
-                                    }
-                                    val player = if (jugador_0!!.yo) {
-                                        0
-                                    } else {
-                                        5
-                                    }
-                                    dataJugador(player = player,
-                                        colorEne = colorEne,
-                                        foto = jugador_0!!.imagen,
-                                        ptsV = jugador_0!!.puntos,
-                                        ejercito = jugador_0!!.ejercitoBonus,
-                                        carreteras = jugador_0!!.roadBonus,
-                                        onCardClick = {
-                                            if (jugador_0!!.yo != true) {
-                                                tradePlayer0.value = true
-                                            }
-                                        })
-
+                        if (jugador_0 != null) {
+                            // Pop-up de intercambio de elementos
+                            if (tradePlayer0.value && jugador_0!!.yo != true)
+                                showTrading(
+                                    name = jugador_0!!.nombre,
+                                    foto = jugador_0!!.imagen,
+                                    setShowDialog = { tradePlayer0.value = it })
+                            // Cajita con la info del usuario
+                            Box(
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            {
+                                val colorEne = when (jugador_0!!.color) {
+                                    "RED" -> Rojo
+                                    "BLUE" -> Azul
+                                    "GREEN" -> Verde
+                                    else -> Amarillo
                                 }
-
-                            }
-
-                            Spacer(modifier = Modifier.height(5.dp))
-
-                            if (jugador_1 != null) {
-                                if (tradePlayer1.value && jugador_1!!.yo != true)
-                                    showTrading(
-                                        name = jugador_1!!.nombre,
-                                        foto = jugador_1!!.imagen,
-                                        setShowDialog = { tradePlayer1.value = it })
-                                // Cajita con la info del usuario
-                                Box(
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                                {
-                                    val colorEne = when (jugador_1!!.color) {
-                                        "RED" -> Rojo
-                                        "BLUE" -> Azul
-                                        "GREEN" -> Verde
-                                        else -> Amarillo
-                                    }
-
-                                    val player = if (jugador_1!!.yo) {
-                                        0
-                                    } else {
-                                        1
-                                    }
-
-                                    dataJugador(player = player,
-                                        colorEne = colorEne,
-                                        foto = jugador_1!!.imagen,
-                                        ptsV = jugador_1!!.puntos,
-                                        ejercito = jugador_1!!.ejercitoBonus,
-                                        carreteras = jugador_1!!.roadBonus,
-                                        onCardClick = {
-                                            if (jugador_1!!.yo != true) {
-                                                tradePlayer1.value = true
-                                            }
-                                        })
-
-                                }
-
-                            }
-                        }
-
-                        Column(modifier = Modifier.weight(1f)) {
-                            if (jugador_2 != null) {
-                                if (tradePlayer2.value && jugador_2!!.yo != true)
-                                    showTrading(
-                                        name = jugador_2!!.nombre,
-                                        foto = jugador_2!!.imagen,
-                                        setShowDialog = { tradePlayer2.value = it })
-                                // Cajita con la info del usuario
-                                Box(
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                                {
-                                    val colorEne = when (jugador_2!!.color) {
-                                        "RED" -> Rojo
-                                        "BLUE" -> Azul
-                                        "GREEN" -> Verde
-                                        else -> Amarillo
-                                    }
-                                    val player = if (jugador_2!!.yo) {
-                                        0
-                                    } else {
-                                        2
-                                    }
-                                    dataJugador(player = player,
-                                        colorEne = colorEne,
-                                        foto = jugador_2!!.imagen,
-                                        ptsV = jugador_2!!.puntos,
-                                        ejercito = jugador_2!!.ejercitoBonus,
-                                        carreteras = jugador_2!!.roadBonus,
-                                        onCardClick = {
-                                            if (jugador_2!!.yo != true) {
-                                                tradePlayer2.value = true
-                                            }
-                                        })
-
-                                }
-
-                            }
-
-                            Spacer(modifier = Modifier.height(5.dp))
-                            if (jugador_3 != null) {
-                                if (tradePlayer3.value && jugador_3!!.yo != true)
-                                    showTrading(
-                                        name = jugador_3!!.nombre,
-                                        foto = jugador_3!!.imagen,
-                                        setShowDialog = { tradePlayer3.value = it })
-                                // Cajita con la info del usuario
-                                Box(
-                                    modifier = Modifier.fillMaxWidth(),
-                                )
-                                {
-                                    val colorEne = when (jugador_3!!.color) {
-                                        "RED" -> Rojo
-                                        "BLUE" -> Azul
-                                        "GREEN" -> Verde
-                                        else -> Amarillo
-                                    }
-                                    val player = if (jugador_3!!.yo) {
-                                        0
-                                    } else {
-                                        3
-                                    }
-                                    dataJugador(player = player,
-                                        colorEne = colorEne,
-                                        foto = jugador_3!!.imagen,
-                                        ptsV = jugador_3!!.puntos,
-                                        ejercito = jugador_3!!.ejercitoBonus,
-                                        carreteras = jugador_3!!.roadBonus,
-                                        onCardClick = {
-                                            if (jugador_3!!.yo != true) {
-                                                tradePlayer3.value = true
-                                            }
-                                        })
-
-                                }
-
-                            }
-                        }
-
-
-                    }
-
-
-                    if (showConstruir.value)
-                        showConstruir(
-                            idVert = verticeChosen.value,
-                            setShowDialog = { showConstruir.value = it })
-                    if (showCamino.value)
-                        construirCamino(
-                            idArista = aristaChosen.value,
-                            setShowDialog = { showCamino.value = it })
-
-
-                    // SI ALGUIEN HA GANADO SE MUESTRA ESTE POPUP
-                    if (jugador_0!!.puntos == puntosVictoria) {
-                        timer.cancel()
-                        showWinner(
-                            name = jugador_0!!.nombre,
-                            navController,
-                            setShowDialog = { true })
-                    } else if (jugador_1!!.puntos == puntosVictoria) {
-                        timer.cancel()
-                        showWinner(
-                            name = jugador_1!!.nombre,
-                            navController,
-                            setShowDialog = { true })
-                    } else if (jugador_2!!.puntos == puntosVictoria) {
-                        timer.cancel()
-                        showWinner(
-                            name = jugador_2!!.nombre,
-                            navController,
-                            setShowDialog = { true })
-                    } else if (jugador_3!!.puntos == puntosVictoria) {
-                        timer.cancel()
-                        showWinner(
-                            name = jugador_3!!.nombre,
-                            navController,
-                            setShowDialog = { true })
-                    }
-
-
-                    // TODO: TRATAMIENTO DE TODAS LAS FASES DE JUEGO
-                    viewModelScope.launch {
-                        //esperarTurno( onNewTurno = { nuevoTurnoPhase.value = true }).await()
-                        nuevoTurnoPhase.value = esperarTurno().await()
-
-                        // REDEFINIMOS EL VALOR DEL TIMER CON EL NUEVO TIEMPO LIMITE DE FASE ---------------------
-                        val newDuration = Globals.gameState.getInt("turn_time") * 1000
-                        val newTimer = object : CountDownTimer(newDuration.toLong(), 1000) {
-                            override fun onTick(millisUntilFinished: Long) {
-                            }
-
-                            override fun onFinish() {
-                                // Avanzamos fase y ponemos la barra de progreso a 0
-                                avanzarFase()
-                                //progress = 0f
-                            }
-                        }
-
-                        timer = newTimer
-
-
-                        jugador_0!!.puntos =
-                            Globals.gameState.getJSONObject("player_0").getString("victory_points")
-                                .toInt()
-                        jugador_1!!.puntos =
-                            Globals.gameState.getJSONObject("player_1").getString("victory_points")
-                                .toInt()
-                        jugador_2!!.puntos =
-                            Globals.gameState.getJSONObject("player_2").getString("victory_points")
-                                .toInt()
-                        jugador_3!!.puntos =
-                            Globals.gameState.getJSONObject("player_3").getString("victory_points")
-                                .toInt()
-                        jugador_0!!.ejercitoBonus = Globals.gameState.getJSONObject("player_0")
-                            .getBoolean("has_knights_bonus")
-                        jugador_0!!.roadBonus = Globals.gameState.getJSONObject("player_0")
-                            .getBoolean("has_longest_road_bonus")
-                        jugador_1!!.ejercitoBonus = Globals.gameState.getJSONObject("player_1")
-                            .getBoolean("has_knights_bonus")
-                        jugador_1!!.roadBonus = Globals.gameState.getJSONObject("player_1")
-                            .getBoolean("has_longest_road_bonus")
-                        jugador_2!!.ejercitoBonus = Globals.gameState.getJSONObject("player_2")
-                            .getBoolean("has_knights_bonus")
-                        jugador_2!!.roadBonus = Globals.gameState.getJSONObject("player_2")
-                            .getBoolean("has_longest_road_bonus")
-                        jugador_3!!.ejercitoBonus = Globals.gameState.getJSONObject("player_3")
-                            .getBoolean("has_knights_bonus")
-                        jugador_3!!.roadBonus = Globals.gameState.getJSONObject("player_3")
-                            .getBoolean("has_longest_road_bonus")
-
-                        if (jugador_0!!.yo) {
-                            Partida.Madera =
-                                Globals.gameState.getJSONObject("player_0").getJSONObject("hand")
-                                    .getString("wood")
-                            Partida.Ovejas =
-                                Globals.gameState.getJSONObject("player_0").getJSONObject("hand")
-                                    .getString("sheep")
-                            Partida.Trigo =
-                                Globals.gameState.getJSONObject("player_0").getJSONObject("hand")
-                                    .getString("wheat")
-                            Partida.Arcilla =
-                                Globals.gameState.getJSONObject("player_0").getJSONObject("hand")
-                                    .getString("clay")
-                            Partida.Roca =
-                                Globals.gameState.getJSONObject("player_0").getJSONObject("hand")
-                                    .getString("rock")
-                        }
-                        if (jugador_1!!.yo) {
-                            Partida.Madera =
-                                Globals.gameState.getJSONObject("player_1").getJSONObject("hand")
-                                    .getString("wood")
-                            Partida.Ovejas =
-                                Globals.gameState.getJSONObject("player_1").getJSONObject("hand")
-                                    .getString("sheep")
-                            Partida.Trigo =
-                                Globals.gameState.getJSONObject("player_1").getJSONObject("hand")
-                                    .getString("wheat")
-                            Partida.Arcilla =
-                                Globals.gameState.getJSONObject("player_1").getJSONObject("hand")
-                                    .getString("clay")
-                            Partida.Roca =
-                                Globals.gameState.getJSONObject("player_1").getJSONObject("hand")
-                                    .getString("rock")
-                        }
-                        if (jugador_2!!.yo) {
-                            Partida.Madera =
-                                Globals.gameState.getJSONObject("player_2").getJSONObject("hand")
-                                    .getString("wood")
-                            Partida.Ovejas =
-                                Globals.gameState.getJSONObject("player_2").getJSONObject("hand")
-                                    .getString("sheep")
-                            Partida.Trigo =
-                                Globals.gameState.getJSONObject("player_2").getJSONObject("hand")
-                                    .getString("wheat")
-                            Partida.Arcilla =
-                                Globals.gameState.getJSONObject("player_2").getJSONObject("hand")
-                                    .getString("clay")
-                            Partida.Roca =
-                                Globals.gameState.getJSONObject("player_2").getJSONObject("hand")
-                                    .getString("rock")
-                        }
-                        if (jugador_3!!.yo) {
-                            Partida.Madera =
-                                Globals.gameState.getJSONObject("player_3").getJSONObject("hand")
-                                    .getString("wood")
-                            Partida.Ovejas =
-                                Globals.gameState.getJSONObject("player_3").getJSONObject("hand")
-                                    .getString("sheep")
-                            Partida.Trigo =
-                                Globals.gameState.getJSONObject("player_3").getJSONObject("hand")
-                                    .getString("wheat")
-                            Partida.Arcilla =
-                                Globals.gameState.getJSONObject("player_3").getJSONObject("hand")
-                                    .getString("clay")
-                            Partida.Roca =
-                                Globals.gameState.getJSONObject("player_3").getJSONObject("hand")
-                                    .getString("rock")
-                        }
-
-                        println(nuevoTurnoPhase.value)
-                    }
-
-
-                    if (nuevoTurnoPhase.value && Globals.gameState.getString("turn_phase") == "INITIAL_TURN1") {
-                        // MOSTRAR POP-UP (O ALGO ASI) CON ALGO DEL ESTILO: "ES TU TURNO, COLOCA UNA CARRETERA Y UN PUEBLO"
-                        timer.cancel()
-                        timer.start()
-                        getlegalNodesINI(Partida.miColor)
-                        getlegalEdges(Partida.miColor)
-                        Partida.casaINIdisp.value = true
-                        Partida.caminoINIdisp.value = true
-                        nuevoTurnoPhase1(
-                            playerName = Globals.gameState.getString("player_turn_name"),
-                            setShowDialog = { nuevoTurnoPhase.value = it })
-                        // GET del tablero si no eres el primero
-                        // Colocar pueblo y carretera
-                        // POST del tablero con las modificaciones que has hecho
-                        // Pasar turno al siguiente jugador
-                    }
-                    if (nuevoTurnoPhase.value && Globals.gameState.getString("turn_phase") == "INITIAL_TURN2") {
-                        // INICIAMOS EL TIMER
-                        timer.cancel()
-                        timer.start()
-                        // MOSTRAR POP-UP: "ES TU TURNO OTRA VEZ, COLOCA UNA CARRETERA Y UN PUEBLO DE NUEVO"
-                        getlegalNodesINI(Partida.miColor)
-                        getlegalEdges(Partida.miColor)
-                        Partida.casaINIdisp.value = true
-                        Partida.caminoINIdisp.value = true
-                        nuevoTurnoPhase2(
-                            playerName = Globals.gameState.getString("player_turn_name"),
-                            setShowDialog = { nuevoTurnoPhase.value = it })
-                        // Get del tablero
-                        // Colocar pueblo y carretera
-                        // POST del tablero con las modificaciones que has hecho
-                        // Pasar turno al siguiente jugador -  Advance phase
-                    }
-                    if (nuevoTurnoPhase.value && Globals.gameState.getString("turn_phase") == "RESOURCE_PRODUCTION") {
-                        // INICIAMOS EL TIMER
-                        timer.cancel()
-                        timer.start()
-                        // MOSTRAR POP-UP: "ES TU TURNO, TIRA LOS DADOS PARA OBTENER RECURSOS" (POP-UP CON UNOS DADOS PARA CLICAR)
-
-                        popUpNewTurno(
-                            playerName = Globals.gameState.getString("player_turn_name"),
-                            setShowDialog = { nuevoTurnoPhase.value = it },
-                            setLadron = { showpopUpLadron.value = true })
-                        if (showpopUpLadron.value) {
-                            popUp7detectado(setShowDialog = {
-                                showpopUpLadron.value = it
-                                nuevoTurnoPhase.value = it
-                            })
-                        }
-                        // GET del tablero,  las siguientes 4 fases van seguidas, no pasas de TURNO hasta que no terminas la 4
-                        // Tirar dados
-                        // Si tenias alguna contruccion según numero y tipo de terreno obtienes recursos (funciones del backend)
-                        // Mostrar directamente POP-UP con los recursos obtenidos
-                        // Al pasar el turn_time se pasa a la siguiente fase
-                        // Si sacaste un 7 puedes mover el ladron
-                    }
-                    if (nuevoTurnoPhase.value && Globals.gameState.getString("turn_phase") == "TRADING") {
-                        // INICIAMOS EL TIMER
-                        timer.cancel()
-                        timer.start()
-                        // MOSTRAR POP-UP: "ES TU TURNO, TIRA LOS DADOS PARA OBTENER RECURSOS" (POP-UP CON UNOS DADOS PARA CLICAR)
-
-                        popUpTradingTurn(
-                            playerName = Globals.gameState.getString("player_turn_name"),
-                            setShowDialog = { nuevoTurnoPhase.value = it },
-                            setTradingBanca = { showpopUpBanca.value = true })
-                        if (showpopUpBanca.value) {
-                            popUpBanca(setShowDialog = {
-                                showpopUpBanca.value = it
-                                nuevoTurnoPhase.value = it
-                            })
-                        }
-                        // Puedes negociar con la banca
-                        // Puedes negociar con otros jugadores
-                    }
-                    if (nuevoTurnoPhase.value && Globals.gameState.getString("turn_phase") == "BUILDING") {
-                        // INICIAMOS EL TIMER
-                        timer.cancel()
-                        timer.start()
-                        // MOSTRAR POP-UP: "ES TU TURNO, TIRA LOS DADOS PARA OBTENER RECURSOS" (POP-UP CON UNOS DADOS PARA CLICAR)
-                        popUpBuildingTurn(
-                            playerName = Globals.gameState.getString("player_turn_name"),
-                            setShowDialog = { nuevoTurnoPhase.value = it })
-                        // Get del tablero
-                        // Colocar pueblo y carretera
-                        // POST del tablero con las modificaciones que has hecho
-                        // Pasar turno al siguiente jugador -  Advance phase
-                    }
-
-
-                    //INFORMACIÓN PROPIA DEL JUGADOR ( RECURSOS ) --------------------------------------------------
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(0.dp, 0.dp, 0.dp, 55.dp),
-                        contentAlignment = Alignment.BottomStart
-                    ) {
-                        Column(horizontalAlignment = Alignment.Start) {
-
-                            // TODO: AÑADIR INFO SOBRE LAS CARTAS QUE TIENE (POP-UP) Y LAS CONTRUCCIONES QUE LLEVA(ESTO SE PUEDE EVITAR SI NO CABE, QUE LAS CUENTE)
-                            Column(
-                                modifier = Modifier
-                                    .background(
-                                        color = TransparenteBlanco,
-                                        shape = RoundedCornerShape(15.dp)
-                                    )
-                                    .padding(vertical = 5.dp, horizontal = 2.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Center
-                            ) {
-
-                                dataRecurso(id = "oveja", cantidad = Partida.Ovejas.toInt())
-                                dataRecurso(id = "arcilla", cantidad = Partida.Arcilla.toInt())
-                                dataRecurso(id = "madera", cantidad = Partida.Madera.toInt())
-                                dataRecurso(id = "trigo", cantidad = Partida.Trigo.toInt())
-                                dataRecurso(id = "roca", cantidad = Partida.Roca.toInt())
-                            }
-
-                            Spacer(modifier = Modifier.height(5.dp))
-
-                            //Tabla costes
-                            Button(
-                                onClick = { showTablaCostes.value = true },
-                                modifier = Modifier
-                                    .width(50.dp)
-                                    .height(50.dp),
-                                shape = RoundedCornerShape(15.dp),
-                                colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
-
-                            ) {
-                                Icon(
-                                    painter = painterResource(R.drawable.hammer),
-                                    contentDescription = null,
-                                    tint = Blanco
-                                )
-                            }
-
-                        }
-
-
-                    }
-
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(0.dp, 0.dp, 0.dp, 55.dp),
-                        contentAlignment = Alignment.CenterEnd
-                    ) {
-                        val context = LocalContext.current
-                        Button(
-                            onClick = {
-                                if ((Partida.caminoINIdisp.value || Partida.casaINIdisp.value) && (Globals.gameState.getString(
-                                        "player_turn"
-                                    ) == Globals.Id) &&
-                                    (Globals.gameState.getString("turn_phase") == "INITIAL_TURN1" || Globals.gameState.getString(
-                                        "turn_phase"
-                                    ) == "INITIAL_TURN2")
-                                ) {
-
-                                    Toast
-                                        .makeText(context, "build first", Toast.LENGTH_SHORT)
-                                        .show()
+                                val player = if (jugador_0!!.yo) {
+                                    0
                                 } else {
-                                    if (Globals.gameState.getString("player_turn") != Globals.Id) {
-                                        Toast
-                                            .makeText(context, "not your turn", Toast.LENGTH_SHORT)
-                                            .show()
-                                    } else {
-                                        timer.cancel()
-                                        avanzarFase()
-                                    }
+                                    5
+                                }
+                                dataJugador(player = player,
+                                    colorEne = colorEne,
+                                    foto = jugador_0!!.imagen,
+                                    ptsV = jugador_0!!.puntos,
+                                    ejercito = jugador_0!!.ejercitoBonus,
+                                    carreteras = jugador_0!!.roadBonus,
+                                    onCardClick = {
+                                        if (jugador_0!!.yo != true) {
+                                            tradePlayer0.value = true
+                                        }
+                                    })
 
+                            }
+
+                        }
+
+                        Spacer(modifier = Modifier.height(5.dp))
+
+                        if (jugador_1 != null) {
+                            if (tradePlayer1.value && jugador_1!!.yo != true)
+                                showTrading(
+                                    name = jugador_1!!.nombre,
+                                    foto = jugador_1!!.imagen,
+                                    setShowDialog = { tradePlayer1.value = it })
+                            // Cajita con la info del usuario
+                            Box(
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            {
+                                val colorEne = when (jugador_1!!.color) {
+                                    "RED" -> Rojo
+                                    "BLUE" -> Azul
+                                    "GREEN" -> Verde
+                                    else -> Amarillo
                                 }
 
-                            },
+                                val player = if (jugador_1!!.yo) {
+                                    0
+                                } else {
+                                    1
+                                }
+
+                                dataJugador(player = player,
+                                    colorEne = colorEne,
+                                    foto = jugador_1!!.imagen,
+                                    ptsV = jugador_1!!.puntos,
+                                    ejercito = jugador_1!!.ejercitoBonus,
+                                    carreteras = jugador_1!!.roadBonus,
+                                    onCardClick = {
+                                        if (jugador_1!!.yo != true) {
+                                            tradePlayer1.value = true
+                                        }
+                                    })
+
+                            }
+
+                        }
+                    }
+
+                    Column(modifier = Modifier.weight(1f)) {
+                        if (jugador_2 != null) {
+                            if (tradePlayer2.value && jugador_2!!.yo != true)
+                                showTrading(
+                                    name = jugador_2!!.nombre,
+                                    foto = jugador_2!!.imagen,
+                                    setShowDialog = { tradePlayer2.value = it })
+                            // Cajita con la info del usuario
+                            Box(
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            {
+                                val colorEne = when (jugador_2!!.color) {
+                                    "RED" -> Rojo
+                                    "BLUE" -> Azul
+                                    "GREEN" -> Verde
+                                    else -> Amarillo
+                                }
+                                val player = if (jugador_2!!.yo) {
+                                    0
+                                } else {
+                                    2
+                                }
+                                dataJugador(player = player,
+                                    colorEne = colorEne,
+                                    foto = jugador_2!!.imagen,
+                                    ptsV = jugador_2!!.puntos,
+                                    ejercito = jugador_2!!.ejercitoBonus,
+                                    carreteras = jugador_2!!.roadBonus,
+                                    onCardClick = {
+                                        if (jugador_2!!.yo != true) {
+                                            tradePlayer2.value = true
+                                        }
+                                    })
+
+                            }
+
+                        }
+
+                        Spacer(modifier = Modifier.height(5.dp))
+                        if (jugador_3 != null) {
+                            if (tradePlayer3.value && jugador_3!!.yo != true)
+                                showTrading(
+                                    name = jugador_3!!.nombre,
+                                    foto = jugador_3!!.imagen,
+                                    setShowDialog = { tradePlayer3.value = it })
+                            // Cajita con la info del usuario
+                            Box(
+                                modifier = Modifier.fillMaxWidth(),
+                            )
+                            {
+                                val colorEne = when (jugador_3!!.color) {
+                                    "RED" -> Rojo
+                                    "BLUE" -> Azul
+                                    "GREEN" -> Verde
+                                    else -> Amarillo
+                                }
+                                val player = if (jugador_3!!.yo) {
+                                    0
+                                } else {
+                                    3
+                                }
+                                dataJugador(player = player,
+                                    colorEne = colorEne,
+                                    foto = jugador_3!!.imagen,
+                                    ptsV = jugador_3!!.puntos,
+                                    ejercito = jugador_3!!.ejercitoBonus,
+                                    carreteras = jugador_3!!.roadBonus,
+                                    onCardClick = {
+                                        if (jugador_3!!.yo != true) {
+                                            tradePlayer3.value = true
+                                        }
+                                    })
+
+                            }
+
+                        }
+                    }
+
+
+                }
+
+                if (showConstruir.value)
+                    showConstruir(
+                        idVert = verticeChosen.value,
+                        setShowDialog = { showConstruir.value = it })
+                if (showCamino.value)
+                    construirCamino(
+                        idArista = aristaChosen.value,
+                        setShowDialog = { showCamino.value = it })
+
+
+                // SI ALGUIEN HA GANADO SE MUESTRA ESTE POPUP
+                if (jugador_0!!.puntos == puntosVictoria) {
+                    showWinner(
+                        name = jugador_0!!.nombre,
+                        navController,
+                        setShowDialog = { true })
+                } else if (jugador_1!!.puntos == puntosVictoria) {
+                    showWinner(
+                        name = jugador_1!!.nombre,
+                        navController,
+                        setShowDialog = { true })
+                } else if (jugador_2!!.puntos == puntosVictoria) {
+                    showWinner(
+                        name = jugador_2!!.nombre,
+                        navController,
+                        setShowDialog = { true })
+                } else if (jugador_3!!.puntos == puntosVictoria) {
+                    showWinner(
+                        name = jugador_3!!.nombre,
+                        navController,
+                        setShowDialog = { true })
+                }
+
+
+                // TODO: TRATAMIENTO DE TODAS LAS FASES DE JUEGO
+                viewModelScope.launch {
+                    //esperarTurno( onNewTurno = { nuevoTurnoPhase.value = true }).await()
+                    nuevoTurnoPhase.value = esperarTurno().await()
+
+                    jugador_0!!.puntos =  Globals.gameState.getJSONObject("player_0").getString("victory_points").toInt()
+                    jugador_1!!.puntos =  Globals.gameState.getJSONObject("player_1").getString("victory_points").toInt()
+                    jugador_2!!.puntos =  Globals.gameState.getJSONObject("player_2").getString("victory_points").toInt()
+                    jugador_3!!.puntos =  Globals.gameState.getJSONObject("player_3").getString("victory_points").toInt()
+                    jugador_0!!.ejercitoBonus =  Globals.gameState.getJSONObject("player_0").getBoolean("has_knights_bonus")
+                    jugador_0!!.roadBonus =  Globals.gameState.getJSONObject("player_0").getBoolean("has_longest_road_bonus")
+                    jugador_1!!.ejercitoBonus =  Globals.gameState.getJSONObject("player_1").getBoolean("has_knights_bonus")
+                    jugador_1!!.roadBonus =  Globals.gameState.getJSONObject("player_1").getBoolean("has_longest_road_bonus")
+                    jugador_2!!.ejercitoBonus =  Globals.gameState.getJSONObject("player_2").getBoolean("has_knights_bonus")
+                    jugador_2!!.roadBonus =  Globals.gameState.getJSONObject("player_2").getBoolean("has_longest_road_bonus")
+                    jugador_3!!.ejercitoBonus =  Globals.gameState.getJSONObject("player_3").getBoolean("has_knights_bonus")
+                    jugador_3!!.roadBonus =  Globals.gameState.getJSONObject("player_3").getBoolean("has_longest_road_bonus")
+                    
+                    if (jugador_0!!.yo){
+                        Partida.Madera = Globals.gameState.getJSONObject("player_0").getJSONObject("hand").getString("wood")
+                        Partida.Ovejas = Globals.gameState.getJSONObject("player_0").getJSONObject("hand").getString("sheep")
+                        Partida.Trigo = Globals.gameState.getJSONObject("player_0").getJSONObject("hand").getString("wheat")
+                        Partida.Arcilla = Globals.gameState.getJSONObject("player_0").getJSONObject("hand").getString("clay")
+                        Partida.Roca = Globals.gameState.getJSONObject("player_0").getJSONObject("hand").getString("rock")
+                    }
+                    if (jugador_1!!.yo){
+                        Partida.Madera = Globals.gameState.getJSONObject("player_1").getJSONObject("hand").getString("wood")
+                        Partida.Ovejas = Globals.gameState.getJSONObject("player_1").getJSONObject("hand").getString("sheep")
+                        Partida.Trigo = Globals.gameState.getJSONObject("player_1").getJSONObject("hand").getString("wheat")
+                        Partida.Arcilla = Globals.gameState.getJSONObject("player_1").getJSONObject("hand").getString("clay")
+                        Partida.Roca = Globals.gameState.getJSONObject("player_1").getJSONObject("hand").getString("rock")
+                    }
+                    if (jugador_2!!.yo){
+                        Partida.Madera = Globals.gameState.getJSONObject("player_2").getJSONObject("hand").getString("wood")
+                        Partida.Ovejas = Globals.gameState.getJSONObject("player_2").getJSONObject("hand").getString("sheep")
+                        Partida.Trigo = Globals.gameState.getJSONObject("player_2").getJSONObject("hand").getString("wheat")
+                        Partida.Arcilla = Globals.gameState.getJSONObject("player_2").getJSONObject("hand").getString("clay")
+                        Partida.Roca = Globals.gameState.getJSONObject("player_2").getJSONObject("hand").getString("rock")
+                    }
+                    if (jugador_3!!.yo){
+                        Partida.Madera = Globals.gameState.getJSONObject("player_3").getJSONObject("hand").getString("wood")
+                        Partida.Ovejas = Globals.gameState.getJSONObject("player_3").getJSONObject("hand").getString("sheep")
+                        Partida.Trigo = Globals.gameState.getJSONObject("player_3").getJSONObject("hand").getString("wheat")
+                        Partida.Arcilla = Globals.gameState.getJSONObject("player_3").getJSONObject("hand").getString("clay")
+                        Partida.Roca = Globals.gameState.getJSONObject("player_3").getJSONObject("hand").getString("rock")
+                    }
+
+                    println(nuevoTurnoPhase.value)
+                }
+
+
+               if (nuevoTurnoPhase.value && Globals.gameState.getString("turn_phase") == "INITIAL_TURN1") {
+                    // MOSTRAR POP-UP (O ALGO ASI) CON ALGO DEL ESTILO: "ES TU TURNO, COLOCA UNA CARRETERA Y UN PUEBLO"
+
+                    getlegalNodesINI(Partida.miColor)
+                    getlegalEdges(Partida.miColor)
+                    Partida.casaINIdisp.value = true
+                    Partida.caminoINIdisp.value = true
+                    nuevoTurnoPhase1(playerName = Globals.gameState.getString("player_turn_name"), setShowDialog = { nuevoTurnoPhase.value = it })
+                    // GET del tablero si no eres el primero
+                    // Colocar pueblo y carretera
+                    // POST del tablero con las modificaciones que has hecho
+                    // Pasar turno al siguiente jugador
+                }
+                if (nuevoTurnoPhase.value && Globals.gameState.getString("turn_phase") == "INITIAL_TURN2") {
+                    // MOSTRAR POP-UP: "ES TU TURNO OTRA VEZ, COLOCA UNA CARRETERA Y UN PUEBLO DE NUEVO"
+                    getlegalNodesINI(Partida.miColor)
+                    getlegalEdges(Partida.miColor)
+                    Partida.casaINIdisp.value = true
+                    Partida.caminoINIdisp.value = true
+                    nuevoTurnoPhase2(playerName = Globals.gameState.getString("player_turn_name"), setShowDialog = { nuevoTurnoPhase.value = it })
+                    // Get del tablero
+                    // Colocar pueblo y carretera
+                    // POST del tablero con las modificaciones que has hecho
+                    // Pasar turno al siguiente jugador -  Advance phase
+                }
+                if (nuevoTurnoPhase.value && Globals.gameState.getString("turn_phase") == "RESOURCE_PRODUCTION") {
+                    // MOSTRAR POP-UP: "ES TU TURNO, TIRA LOS DADOS PARA OBTENER RECURSOS" (POP-UP CON UNOS DADOS PARA CLICAR)
+                    
+                    popUpNewTurno(playerName = Globals.gameState.getString("player_turn_name"), setShowDialog = { nuevoTurnoPhase.value = it }, setLadron = { showpopUpLadron.value = true})
+                    if (showpopUpLadron.value){
+                        popUp7detectado(setShowDialog = {
+                            showpopUpLadron.value = it
+                            nuevoTurnoPhase.value = it
+                        })
+                    }
+                    // GET del tablero,  las siguientes 4 fases van seguidas, no pasas de TURNO hasta que no terminas la 4
+                    // Tirar dados
+                    // Si tenias alguna contruccion según numero y tipo de terreno obtienes recursos (funciones del backend)
+                    // Mostrar directamente POP-UP con los recursos obtenidos
+                    // Al pasar el turn_time se pasa a la siguiente fase
+                    // Si sacaste un 7 puedes mover el ladron
+                }
+                if (nuevoTurnoPhase.value && Globals.gameState.getString("turn_phase") == "TRADING") {
+                    // MOSTRAR POP-UP: "ES TU TURNO, TIRA LOS DADOS PARA OBTENER RECURSOS" (POP-UP CON UNOS DADOS PARA CLICAR)
+
+                    popUpTradingTurn(playerName = Globals.gameState.getString("player_turn_name"), setShowDialog = { nuevoTurnoPhase.value = it }, setTradingBanca = { showpopUpBanca.value = true})
+                   if (showpopUpBanca.value){
+                        popUpBanca(setShowDialog = {
+                            showpopUpBanca.value = it
+                            nuevoTurnoPhase.value = it
+                        })
+                    }
+                    // Puedes negociar con la banca
+                    // Puedes negociar con otros jugadores
+                }
+                if (nuevoTurnoPhase.value && Globals.gameState.getString("turn_phase") == "BUILDING") {
+                    // MOSTRAR POP-UP: "ES TU TURNO, TIRA LOS DADOS PARA OBTENER RECURSOS" (POP-UP CON UNOS DADOS PARA CLICAR)
+                    popUpBuildingTurn(playerName = Globals.gameState.getString("player_turn_name"), setShowDialog = { nuevoTurnoPhase.value = it })
+                    // Get del tablero
+                    // Colocar pueblo y carretera
+                    // POST del tablero con las modificaciones que has hecho
+                    // Pasar turno al siguiente jugador -  Advance phase
+                }
+
+
+
+                //INFORMACIÓN PROPIA DEL JUGADOR ( RECURSOS ) --------------------------------------------------
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(0.dp, 0.dp, 0.dp, 55.dp),
+                    contentAlignment = Alignment.BottomStart
+                ) {
+                    Column(horizontalAlignment = Alignment.Start) {
+
+                        // TODO: AÑADIR INFO SOBRE LAS CARTAS QUE TIENE (POP-UP) Y LAS CONTRUCCIONES QUE LLEVA(ESTO SE PUEDE EVITAR SI NO CABE, QUE LAS CUENTE)
+                        Column(
+                            modifier = Modifier
+                                .background(
+                                    color = TransparenteBlanco,
+                                    shape = RoundedCornerShape(15.dp)
+                                )
+                                .padding(vertical = 5.dp, horizontal = 2.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+
+                            dataRecurso(id = "oveja", cantidad = Partida.Ovejas.toInt())
+                            dataRecurso(id = "arcilla", cantidad = Partida.Arcilla.toInt())
+                            dataRecurso(id = "madera", cantidad = Partida.Madera.toInt())
+                            dataRecurso(id = "trigo", cantidad = Partida.Trigo.toInt())
+                            dataRecurso(id = "roca", cantidad = Partida.Roca.toInt())
+                        }
+
+                        Spacer(modifier = Modifier.height(5.dp))
+
+                        //Tabla costes
+                        Button(
+                            onClick = { showTablaCostes.value = true },
                             modifier = Modifier
                                 .width(50.dp)
                                 .height(50.dp),
                             shape = RoundedCornerShape(15.dp),
-                            colors = ButtonDefaults.buttonColors(backgroundColor = VerdeClarito)
+                            colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
 
                         ) {
                             Icon(
-                                imageVector = Icons.Default.ArrowForward,
+                                painter = painterResource(R.drawable.hammer),
                                 contentDescription = null,
                                 tint = Blanco
                             )
                         }
+
                     }
 
+                    
                 }
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(0.dp, 0.dp, 0.dp, 55.dp),
+                    contentAlignment = Alignment.CenterEnd
+                ) {
+                    val context = LocalContext.current
+                    Button(
+                        onClick = {
+                                  if ( (Partida.caminoINIdisp.value || Partida.casaINIdisp.value) && (Globals.gameState.getString("player_turn")== Globals.Id) &&
+                                      (Globals.gameState.getString("turn_phase") == "INITIAL_TURN1" || Globals.gameState.getString("turn_phase") == "INITIAL_TURN2")){
+
+                                      Toast
+                                          .makeText(context, "build first", Toast.LENGTH_SHORT)
+                                          .show()
+                                  } else {
+                                      if (Globals.gameState.getString("player_turn")!= Globals.Id){
+                                          Toast
+                                              .makeText(context, "not your turn", Toast.LENGTH_SHORT)
+                                              .show()
+                                      }else {
+                                          avanzarFase()
+                                      }
+
+                                  }
+
+                                  },
+                        modifier = Modifier
+                            .width(50.dp)
+                            .height(50.dp),
+                        shape = RoundedCornerShape(15.dp),
+                        colors = ButtonDefaults.buttonColors(backgroundColor = VerdeClarito)
+
+                    ) {
+                        Icon(imageVector = Icons.Default.ArrowForward, contentDescription = null, tint= Blanco )
+                    }
+                }
+
             }
         }
     }
-
-
+}
 @Composable
 fun dataRecurso(id: String, cantidad: Int) {
 
@@ -1572,13 +1447,12 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
 
                                 //moverladron(tile.id, jugadorRobado)
                                 Globals.moviendoLadron.value = false
-                                // CANCELAMOS EL TIMER POR SI HACEMOS ESTO ANTES DE QUE SE ACABE EL TIEMPO
-                                timer.cancel()
                                 avanzarFase()
                                 break
                             }
                         }
-                    } else {
+                    }
+                    else {
                         for (tile in tiles) {
                             val tileX =
                                 boardX + (tile.coordinates.first + tile.coordinates.second / 2f) * hexWidth
@@ -1695,6 +1569,8 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
 
                         }
                     }
+
+
 
 
                 }
@@ -3095,17 +2971,6 @@ fun popUpNewTurno(playerName : String, setShowDialog: (Boolean) -> Unit, setLadr
                             )
                         )
 
-                        Text(
-                            text = "Tienes ${Globals.gameState.getInt("turn_time")} segundos",
-                            color = Blanco,
-                            style = TextStyle(
-                                fontSize = 15.sp,
-                                fontFamily = FontFamily.Default,
-                                fontWeight = FontWeight.Bold
-                            )
-                        )
-
-
                         if(Globals.gameState.getString("player_turn") == Globals.Id){
                             Text(
                                 text = "Tira los dados para obtener recursos",
@@ -3152,7 +3017,6 @@ fun popUpNewTurno(playerName : String, setShowDialog: (Boolean) -> Unit, setLadr
                                         // Realizar la acción de mover el ladrón
                                         setLadron()
                                     } else {
-                                        timer.cancel()
                                         avanzarFase()
                                         setShowDialog(false)
                                     }
@@ -3231,28 +3095,15 @@ fun nuevoTurnoPhase1(playerName : String, setShowDialog: (Boolean) -> Unit) {
                             )
                         )
 
-                        if(Globals.gameState.getString("player_turn") == Globals.Id){
-                            Text(
-                                text = "Tienes ${Globals.gameState.getInt("turn_time")} segundos",
-                                color = Blanco,
-                                style = TextStyle(
-                                    fontSize = 15.sp,
-                                    fontFamily = FontFamily.Default,
-                                    fontWeight = FontWeight.Bold
-                                )
+                        Text(
+                            text = "Coloca 1 casa y 1 camino",
+                            color = Blanco,
+                            style = TextStyle(
+                                fontSize = 15.sp,
+                                fontFamily = FontFamily.Default,
+                                fontWeight = FontWeight.Bold
                             )
-
-                            Text(
-                                text = "Coloca 1 casa y 1 camino",
-                                color = Blanco,
-                                style = TextStyle(
-                                    fontSize = 15.sp,
-                                    fontFamily = FontFamily.Default,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            )
-                        }
-
+                        )
 
                     }
 
@@ -3298,27 +3149,15 @@ fun nuevoTurnoPhase2(playerName : String, setShowDialog: (Boolean) -> Unit) {
                             )
                         )
 
-                        if(Globals.gameState.getString("player_turn") == Globals.Id){
-                            Text(
-                                text = "Tienes ${Globals.gameState.getInt("turn_time")} segundos",
-                                color = Blanco,
-                                style = TextStyle(
-                                    fontSize = 15.sp,
-                                    fontFamily = FontFamily.Default,
-                                    fontWeight = FontWeight.Bold
-                                )
+                        Text(
+                            text = "Coloca 1 casa y 1 camino de nuevo",
+                            color = Blanco,
+                            style = TextStyle(
+                                fontSize = 15.sp,
+                                fontFamily = FontFamily.Default,
+                                fontWeight = FontWeight.Bold
                             )
-
-                            Text(
-                                text = "Coloca 1 casa y 1 camino de nuevo",
-                                color = Blanco,
-                                style = TextStyle(
-                                    fontSize = 15.sp,
-                                    fontFamily = FontFamily.Default,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            )
-                        }
+                        )
 
                     }
 
@@ -3378,16 +3217,6 @@ fun popUpTradingTurn(playerName : String, setShowDialog: (Boolean) -> Unit, setT
 
                         if(Globals.gameState.getString("player_turn") == Globals.Id){
                             Text(
-                                text = "Tienes ${Globals.gameState.getInt("turn_time")} segundos",
-                                color = Blanco,
-                                style = TextStyle(
-                                    fontSize = 15.sp,
-                                    fontFamily = FontFamily.Default,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            )
-
-                            Text(
                                 text = "Negocia con la banca o pasa de fase",
                                 color = Blanco,
                                 style = TextStyle(
@@ -3425,7 +3254,7 @@ fun popUpTradingTurn(playerName : String, setShowDialog: (Boolean) -> Unit, setT
                                 Spacer(modifier = Modifier.width(5.dp))
                                 Button(
                                     onClick = {
-                                        timer.cancel()
+
                                         avanzarFase()
                                         setShowDialog(false)
 
@@ -3453,6 +3282,8 @@ fun popUpTradingTurn(playerName : String, setShowDialog: (Boolean) -> Unit, setT
 @Composable
 fun popUpBuildingTurn(playerName : String, setShowDialog: (Boolean) -> Unit) {
 
+
+
     Dialog(onDismissRequest = { setShowDialog(false)}) { // PARA QUE SOLO SE CIERRE CON LA X QUITAR ESTO JEJE
         Surface(
             shape = RoundedCornerShape(16.dp),
@@ -3477,18 +3308,6 @@ fun popUpBuildingTurn(playerName : String, setShowDialog: (Boolean) -> Unit) {
                                 fontWeight = FontWeight.Bold
                             )
                         )
-
-                        if(Globals.gameState.getString("player_turn") == Globals.Id){
-                            Text(
-                                text = "Tienes ${Globals.gameState.getInt("turn_time")} segundos",
-                                color = Blanco,
-                                style = TextStyle(
-                                    fontSize = 15.sp,
-                                    fontFamily = FontFamily.Default,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            )
-                        }
 
 
                     }
@@ -3823,7 +3642,7 @@ private fun ButtonToggleGroup( // 1
 }
 
 @Composable
-fun showWinner(name: String, navController: NavHostController, setShowDialog: (Boolean) -> Unit) {
+fun showWinner(name: String, navController: NavHostController, setShowDialog: (Boolean) -> Unit){
     val context = LocalContext.current
     Dialog(onDismissRequest = { }) { // PARA QUE SOLO SE CIERRE CON LA X QUITAR ESTO JEJE
         Surface(
@@ -3834,7 +3653,7 @@ fun showWinner(name: String, navController: NavHostController, setShowDialog: (B
                 contentAlignment = Alignment.Center
             ) {
                 Column(modifier = Modifier.padding(20.dp)) {
-                    if (name == Globals.Username) {
+                    if(name == Globals.Username){
                         Text(
                             text = "¡Victoria!",
                             color = Blanco,
@@ -3853,7 +3672,7 @@ fun showWinner(name: String, navController: NavHostController, setShowDialog: (B
                                 fontWeight = FontWeight.Bold
                             )
                         )
-                    } else {
+                    } else{
                         Text(
                             text = "¡Derrota!",
                             color = Blanco,
@@ -3880,7 +3699,7 @@ fun showWinner(name: String, navController: NavHostController, setShowDialog: (B
                             // Salimos a la pantalla de home
                             navController.navigate(Routes.Home.route)
 
-                        },
+                                  },
                         modifier = Modifier
                             //.fillMaxWidth(0.5f)
                             .width(100.dp)
