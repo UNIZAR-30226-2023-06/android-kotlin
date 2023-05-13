@@ -359,3 +359,57 @@ fun getlegalEdges( color: String ): Boolean {
 
 }
 
+/*
+    Da el estado de un jugador
+    @param: token del jugador
+    @return: true si se esta buscando partida, false si ya esta en un lobby y no busca
+ */
+fun getPlayerState(): Boolean {
+    var result = false
+    val latch = CountDownLatch(1)
+
+    val request = Request.Builder()
+        .url("http://$ipBackend:8000/game_phases/get_player_state?lobby_id=${Globals.lobbyId}")
+        .get()
+        .addHeader("accept", "application/json")
+        .addHeader("Authorization", "Bearer ${Globals.Token}")
+        .addHeader("Content-Type", "application/x-www-form-urlencoded")
+        .build()
+
+    val client = OkHttpClient()
+
+    client.newCall(request).enqueue(object : Callback {
+        override fun onFailure(call: Call, e: IOException) {
+            println("ERROR al conectar con backend")
+            latch.countDown()
+        }
+
+        override fun onResponse(call: Call, response: Response) {
+            val respuesta = response.body?.string().toString()
+
+            println(respuesta)
+            //transform the string to json object
+            val json = JSONObject(respuesta)
+            //get the string from the response
+            val status = try{
+                json.getString("id")
+            } catch(e: JSONException){
+                "error"
+            }
+
+            println(status)
+            if (status == "error") {
+                println("Error al coger el jugador")
+                
+            } else {
+                Globals.playerState = json
+                println("Se cogido la info del jugador")
+
+            }
+            latch.countDown()
+        }
+    })
+    latch.await()
+    return result
+}
+

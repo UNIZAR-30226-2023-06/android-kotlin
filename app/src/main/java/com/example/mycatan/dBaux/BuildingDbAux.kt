@@ -367,7 +367,7 @@ fun buy_and_build_village(coord: String): Boolean {
     val latch = CountDownLatch(1)
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/game_phases/use_invention_card?lobby_id=${Globals.lobbyId}&coord=$coord")
+        .url("http://$ipBackend:8000/game_phases/buy_and_build_village?lobby_id=${Globals.lobbyId}&coord=$coord")
         .get()
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer ${Globals.Token}")

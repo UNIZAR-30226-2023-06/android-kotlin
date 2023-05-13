@@ -44,6 +44,7 @@ object Globals {
     // Globals.juego.getJSONObject("game").getJSONArray("jugadores")
     lateinit var juego: JSONObject
     lateinit var gameState: JSONObject
+    lateinit var playerState: JSONObject
     var lastPlayer = "nada"
     var lastFase = "nada"
     var newDados = mutableStateOf(false)

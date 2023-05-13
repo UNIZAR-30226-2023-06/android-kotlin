@@ -1520,18 +1520,22 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                                 var idCoordHex = tile.id?.toInt(16)
 
 
-                                if (moverLadron(idCoordHex, Globals.jugadorRobado.toInt(), reOpen = setLadron)){
+                                if (moverLadron(
+                                        idCoordHex,
+                                        Globals.jugadorRobado.toInt(),
+                                        reOpen = setLadron
+                                    )
+                                ) {
                                     Globals.moviendoLadron.value = false
                                     timer.cancel()
                                     avanzarFase()
                                 }
-                                Globals.jugadorRobado  = ""
+                                Globals.jugadorRobado = ""
 
                                 break
                             }
                         }
-                    }
-                    else {
+                    } else {
                         for (tile in tiles) {
                             val tileX =
                                 boardX + (tile.coordinates.first + tile.coordinates.second / 2f) * hexWidth
@@ -1648,8 +1652,6 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
 
                         }
                     }
-
-
 
 
                 }
@@ -3773,6 +3775,7 @@ private fun ButtonToggleGroup( // 1
 
 @Composable
 fun showCartasDesarrollo(setShowDialog: (Boolean) -> Unit){
+    val context = LocalContext.current
     Dialog(onDismissRequest = { setShowDialog(false)}) { // PARA QUE SOLO SE CIERRE CON LA X QUITAR ESTO JEJE
         Surface(
             shape = RoundedCornerShape(16.dp),
@@ -3781,8 +3784,153 @@ fun showCartasDesarrollo(setShowDialog: (Boolean) -> Unit){
             Box(
                 contentAlignment = Alignment.Center
             ) {
-                Column(modifier = Modifier.padding(20.dp)) {
+                
+                Column(modifier = Modifier
+                    .padding(20.dp)
+                    .fillMaxWidth()) {
+                    // Recorrer array de cartas que tiene el user
+                    Row( modifier = Modifier.clickable {
+                        if(Globals.gameState.getString("turn_phase") == "BUILDING" && Globals.gameState.getString("player_turn_phase") == Globals.Id){
+                            use_victory_point_progress_card()
+                        }
+                    },
+                        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+                        Image(painter =  painterResource(R.drawable.carta_de_desarrollo_1), contentDescription = null, modifier = Modifier.size(60.dp))
+                        Spacer(modifier = Modifier.width(10.dp))
 
+                        var cartasPV = Globals.playerState.getJSONObject("hand").getJSONObject("dev_cards").getInt("town_hall") +
+                                Globals.playerState.getJSONObject("hand").getJSONObject("dev_cards").getInt("university")  +
+                                Globals.playerState.getJSONObject("hand").getJSONObject("dev_cards").getInt("market") +
+                                Globals.playerState.getJSONObject("hand").getJSONObject("dev_cards").getInt("library") +
+                                Globals.playerState.getJSONObject("hand").getJSONObject("dev_cards").getInt("church")
+
+                        Text(
+                            text = cartasPV.toString(),
+                            color = Blanco,
+                            style = TextStyle(
+                                fontSize = 10.sp,
+                                fontFamily = FontFamily.Default,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    Row(modifier = Modifier.clickable {
+                        if(Globals.gameState.getString("turn_phase") == "BUILDING" && Globals.gameState.getString("player_turn_phase") == Globals.Id){
+
+                        }
+                    },
+                        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+                        Image(painter =  painterResource(R.drawable.carta_de_desarrollo_6), contentDescription = null, modifier = Modifier.size(60.dp))
+                        Spacer(modifier = Modifier.width(10.dp))
+
+                        Text(
+                            text = Globals.playerState.getJSONObject("hand").getJSONObject("dev_cards").getInt("knight").toString(),
+                            color = Blanco,
+                            style = TextStyle(
+                                fontSize = 10.sp,
+                                fontFamily = FontFamily.Default,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    Row(modifier = Modifier.clickable {
+                        if(Globals.gameState.getString("turn_phase") == "BUILDING" && Globals.gameState.getString("player_turn_phase") == Globals.Id){
+                            //use_invention_card()
+                        }
+                    },
+                        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+                        Image(painter =  painterResource(R.drawable.carta_de_desarrollo_9), contentDescription = null, modifier = Modifier.size(60.dp))
+                        Spacer(modifier = Modifier.width(10.dp))
+
+                        Text(
+                            text = Globals.playerState.getJSONObject("hand").getJSONObject("dev_cards").getInt("invention_progress").toString(),
+                            color = Blanco,
+                            style = TextStyle(
+                                fontSize = 10.sp,
+                                fontFamily = FontFamily.Default,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    Row(modifier = Modifier.clickable {
+                        if(Globals.gameState.getString("turn_phase") == "BUILDING" && Globals.gameState.getString("player_turn_phase") == Globals.Id){
+                            //use_road_progress_card()
+                        }
+                    },
+                        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+                        Image(painter =  painterResource(R.drawable.carta_de_desarrollo_8), contentDescription = null, modifier = Modifier.size(60.dp))
+                        Spacer(modifier = Modifier.width(10.dp))
+
+                        Text(
+                            text = Globals.playerState.getJSONObject("hand").getJSONObject("dev_cards").getInt("road_progress").toString(),
+                            color = Blanco,
+                            style = TextStyle(
+                                fontSize = 10.sp,
+                                fontFamily = FontFamily.Default,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    Row(modifier = Modifier.clickable {
+                        if(Globals.gameState.getString("turn_phase") == "BUILDING" && Globals.gameState.getString("player_turn_phase") == Globals.Id){
+                            //use_monopoly_progress_card()
+                        }
+                    },
+                        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+                        Image(painter =  painterResource(R.drawable.carta_de_desarrollo_7), contentDescription = null, modifier = Modifier.size(60.dp))
+                        Spacer(modifier = Modifier.width(10.dp))
+
+                        Text(
+                            text = Globals.playerState.getJSONObject("hand").getJSONObject("dev_cards").getInt("monoploy_progress").toString(),
+                            color = Blanco,
+                            style = TextStyle(
+                                fontSize = 10.sp,
+                                fontFamily = FontFamily.Default,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+                    }
+
+
+                    // Boton comprar más cartas de desarrollo
+                    if(Globals.gameState.getString("turn_phase") == "BUILDING" && Globals.gameState.getString("player_turn_phase") == Globals.Id){
+                        Button(
+                        onClick = {
+                                if(buy_development_card()){
+                                    Toast.makeText(context, "Carta de desarrollo comprada correctamente", Toast.LENGTH_SHORT).show()
+
+                                } else{
+                                    Toast.makeText(context, "ERROR, compra fallida", Toast.LENGTH_SHORT).show()
+                                }
+                                  },
+                        modifier = Modifier
+                            .width(100.dp)
+                            .height(50.dp),
+                        colors = ButtonDefaults.buttonColors(backgroundColor = Verde),
+                        shape = RoundedCornerShape(50.dp),
+                        border = BorderStroke(3.dp, AzulOscuro),
+
+                        ) {
+                        Text(
+                            text = "Comprar",
+                            style = TextStyle(
+                                color = AzulOscuro, fontWeight = FontWeight.Bold
+                            )
+                        )
+                    }
+                    }
 
 
                 }
