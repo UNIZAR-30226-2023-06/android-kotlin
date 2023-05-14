@@ -17,7 +17,7 @@ fun getUserID(id: String): String {
     val latch = CountDownLatch(1)
     val request = Request.Builder()
 
-        .url("http://$ipBackend:8000/get-user-from-id/$id")
+        .url("$ipBackend/get-user-from-id/$id")
         .get()
         .addHeader("accept", "application/json")
         .addHeader("Content-Type", "application/x-www-form-urlencoded")
@@ -65,7 +65,7 @@ fun getUserName(id: String): String {
     val latch = CountDownLatch(1)
     val request = Request.Builder()
 
-        .url("http://$ipBackend:8000/get-user-from-id/$id")
+        .url("$ipBackend/get-user-from-id/$id")
         .get()
         .addHeader("accept", "application/json")
         .addHeader("Content-Type", "application/x-www-form-urlencoded")

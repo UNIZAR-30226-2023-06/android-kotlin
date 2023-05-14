@@ -29,7 +29,7 @@ fun buyPersonaje(skinName: String): Boolean {
     )
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/buy_profile_picture?profile_picture_name=$skin")
+        .url("$ipBackend/buy_profile_picture?profile_picture_name=$skin")
         .post(body)
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer ${Globals.Token}")
@@ -90,7 +90,7 @@ fun buyMapa(skinName: String): Boolean {
     )
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/buy_board_skin?board_skin_name=$skin")
+        .url("$ipBackend/buy_board_skin?board_skin_name=$skin")
         .post(body)
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer ${Globals.Token}")
@@ -149,7 +149,7 @@ fun buyPiezas(skinName: String): Boolean {
     )
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/buy_piece_skin?piece_skin_name=$skin")
+        .url("$ipBackend/buy_piece_skin?piece_skin_name=$skin")
         .post(body)
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer ${Globals.Token}")
@@ -206,7 +206,7 @@ fun addCoins(coins: Int): Boolean {
     )
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/add-coins?amount=$coins")
+        .url("$ipBackend/add-coins?amount=$coins")
         .post(body)
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer ${Globals.Token}")
@@ -262,7 +262,7 @@ fun subCoins(coins: Int): Boolean {
     )
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/remove-coins?amount=$coins")
+        .url("$ipBackend/remove-coins?amount=$coins")
         .post(body)
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer ${Globals.Token}")

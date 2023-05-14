@@ -34,7 +34,7 @@ fun setPlayerReady( token: String ): Boolean {
     )
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/set-player-ready")
+        .url("$ipBackend/set-player-ready")
         .post(body)
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer $token")
@@ -82,7 +82,7 @@ fun getGameState( idlobby: String ): Boolean {
     val latch = CountDownLatch(1)
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/game_phases/get_game_state?lobby_id=$idlobby")
+        .url("$ipBackend/game_phases/get_game_state?lobby_id=$idlobby")
         .get()
         .addHeader("accept", "application/json")
         .addHeader("Content-Type", "application/x-www-form-urlencoded")
@@ -130,7 +130,7 @@ fun avanzarFase(  ): Boolean {
     val latch = CountDownLatch(1)
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/game_phases/advance_phase?lobby_id=${Globals.lobbyId}")
+        .url("$ipBackend/game_phases/advance_phase?lobby_id=${Globals.lobbyId}")
         .get()
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer ${Globals.Token}")
@@ -184,7 +184,7 @@ fun firstPhaseBuildVillage( nodo: String): Boolean {
     )
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/build-village?node=$nodo")
+        .url("$ipBackend/build-village?node=$nodo")
         .post(body)
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer ${Globals.Token}")
@@ -233,7 +233,7 @@ fun firstPhaseBuildRoad( edge: String): Boolean {
     )
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/build-road?edge=$edge")
+        .url("$ipBackend/build-road?edge=$edge")
         .post(body)
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer ${Globals.Token}")
@@ -281,7 +281,7 @@ fun getlegalNodesINI( color: String ): Boolean {
     val latch = CountDownLatch(1)
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/get-legal-building-nodes?lobby_id=${Globals.lobbyId}&color=$color")
+        .url("$ipBackend/get-legal-building-nodes?lobby_id=${Globals.lobbyId}&color=$color")
         .get()
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer ${Globals.Token}")
@@ -322,7 +322,7 @@ fun getlegalEdges( color: String ): Boolean {
     val latch = CountDownLatch(1)
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/get-legal-building-edges?lobby_id=${Globals.lobbyId}&color=$color")
+        .url("$ipBackend/get-legal-building-edges?lobby_id=${Globals.lobbyId}&color=$color")
         .get()
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer ${Globals.Token}")
@@ -369,7 +369,7 @@ fun getPlayerState(): Boolean {
     val latch = CountDownLatch(1)
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/game_phases/get_player_state?lobby_id=${Globals.lobbyId}")
+        .url("$ipBackend/game_phases/get_player_state?lobby_id=${Globals.lobbyId}")
         .get()
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer ${Globals.Token}")

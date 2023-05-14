@@ -26,7 +26,7 @@ fun getAmigosTodos(token: String): List<Persona>{
         ""
     )
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/get_friends")
+        .url("$ipBackend/get_friends")
         .put(body)
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer $token")
@@ -83,7 +83,7 @@ fun getAmigosPendiente(token: String): List<String>{
         ""
     )
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/get_friend_requests")
+        .url("$ipBackend/get_friend_requests")
         .put(body)
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer $token")
@@ -133,7 +133,7 @@ fun getNumAmigosPendiente(token: String): String{
         ""
     )
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/get_friend_requests")
+        .url("$ipBackend/get_friend_requests")
         .put(body)
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer $token")
@@ -181,7 +181,7 @@ fun postSendRequestFriend( userId: String, token: String ): Boolean{
     )
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/send_friend_request?friend_id=$userId")
+        .url("$ipBackend/send_friend_request?friend_id=$userId")
         .post(body)
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer $token")
@@ -239,7 +239,7 @@ fun postAcceptRequestFriend( requestId: String, token: String ): Boolean{
     )
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/accept_friend_request?requester_id=$requestId")
+        .url("$ipBackend/accept_friend_request?requester_id=$requestId")
         .post(body)
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer $token")
@@ -293,7 +293,7 @@ fun postRejectRequestFriend( requestId: String, token: String ): Boolean{
     )
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/reject_friend_request?requester_id=$requestId")
+        .url("$ipBackend/reject_friend_request?requester_id=$requestId")
         .post(body)
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer $token")
@@ -345,7 +345,7 @@ fun postdeleteFriend( userId: String, token: String ): Boolean{
     )
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/delete_friend?friend_id=$userId")
+        .url("$ipBackend/delete_friend?friend_id=$userId")
         .post(body)
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer $token")

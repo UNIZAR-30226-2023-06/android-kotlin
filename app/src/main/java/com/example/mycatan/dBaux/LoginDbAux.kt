@@ -28,7 +28,7 @@ fun enviarLogin(username: String, password: String):Boolean {
     )
     val request = Request.Builder()
 
-        .url("http://$ipBackend:8000/login")
+        .url("$ipBackend/login")
         .post(body)
         .addHeader("accept", "application/json")
         .addHeader("Content-Type", "application/x-www-form-urlencoded")
@@ -146,7 +146,7 @@ fun getUserData( userId: String ){
     println("userID: $userId")
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/get-user-from-id/$userId")
+        .url("$ipBackend/get-user-from-id/$userId")
         .get()
         .addHeader("accept", "application/json")
         .addHeader("Content-Type", "application/x-www-form-urlencoded")
@@ -206,7 +206,7 @@ fun getListaPersonajes(): Array<String>{
     val latch = CountDownLatch(1)
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/list-profile-pictures")
+        .url("$ipBackend/list-profile-pictures")
         .get()
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer ${Globals.Token}")
@@ -261,7 +261,7 @@ fun getListaPiezas(): Array<String>{
     val latch = CountDownLatch(1)
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/list-piece-skins")
+        .url("$ipBackend/list-piece-skins")
         .get()
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer ${Globals.Token}")
@@ -316,7 +316,7 @@ fun getListaMapas(): Array<String>{
     val latch = CountDownLatch(1)
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/list-board-skins")
+        .url("$ipBackend/list-board-skins")
         .get()
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer ${Globals.Token}")
@@ -371,7 +371,7 @@ fun getPrecioPersonaje(skinName: String): Array<String>{
     val latch = CountDownLatch(1)
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/get-profile-picture?profile_picture_name=$skinName")
+        .url("$ipBackend/get-profile-picture?profile_picture_name=$skinName")
         .get()
         .addHeader("accept", "application/json")
         .addHeader("Content-Type", "application/x-www-form-urlencoded")

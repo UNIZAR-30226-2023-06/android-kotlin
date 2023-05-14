@@ -32,7 +32,7 @@ fun createLoby(): Int {
     )
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/create-lobby'")
+        .url("$ipBackend/create-lobby'")
         .post(body)
         .addHeader("accept", "application/json")
         .addHeader("Content-Type", "application/x-www-form-urlencoded")
@@ -83,7 +83,7 @@ fun deleteLobby(lobby_id: String): Boolean {
     )
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/delete-lobby?lobby_id=$lobby_id")
+        .url("$ipBackend/delete-lobby?lobby_id=$lobby_id")
         .delete(body)
         .addHeader("accept", "application/json")
         .addHeader("Content-Type", "application/x-www-form-urlencoded")
@@ -140,7 +140,7 @@ fun joinLobby(lobby_id: Int, token: String): Int {
     )
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/join-lobby?lobby_id=$lobby_id")
+        .url("$ipBackend/join-lobby?lobby_id=$lobby_id")
         .post(body)
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer $token")
@@ -193,7 +193,7 @@ fun searchLobby( token: String ): Boolean {
     )
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/search-lobby")
+        .url("$ipBackend/search-lobby")
         .post(body)
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer $token")
@@ -247,7 +247,7 @@ fun stopSearchingLobby(token: String): Boolean {
     )
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/stop-searching-lobby")
+        .url("$ipBackend/stop-searching-lobby")
         .post(body)
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer $token")
@@ -295,7 +295,7 @@ fun getLobbyFromPlayer( token: String): Boolean {
         val latch = CountDownLatch(1)
 
         val request = Request.Builder()
-            .url("http://$ipBackend:8000/get-lobby-from-player")
+            .url("$ipBackend/get-lobby-from-player")
             .get()
             .addHeader("accept", "application/json")
             .addHeader("Authorization", "Bearer $token")
@@ -353,7 +353,7 @@ fun numOfReadyPlayers( token: String): Boolean {
     val latch = CountDownLatch(1)
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/get-lobby-from-player")
+        .url("$ipBackend/get-lobby-from-player")
         .get()
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer $token")
@@ -422,7 +422,7 @@ fun getLobbyFromId(lobby_id: String): Boolean {
     val latch = CountDownLatch(1)
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/get-lobby-from-id?lobby_id=$lobby_id")
+        .url("$ipBackend/get-lobby-from-id?lobby_id=$lobby_id")
         .get()
         .addHeader("accept", "application/json")
         .addHeader("Content-Type", "application/x-www-form-urlencoded")

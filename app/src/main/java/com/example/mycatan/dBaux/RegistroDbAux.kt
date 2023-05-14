@@ -23,7 +23,7 @@ fun enviarRegistro(email: String, password: String, name:String, onErrorClick: (
         ""
     )
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/register?name=$name&email=$email&password=$password&coins=0&selected_grid_skin=default&selected_piece_skin=default&saved_music=default&elo=500")
+        .url("$ipBackend/register?name=$name&email=$email&password=$password&coins=0&selected_grid_skin=default&selected_piece_skin=default&saved_music=default&elo=500")
         .post(body)
         .addHeader("accept", "application/json")
         .addHeader("Content-Type", "application/x-www-form-urlencoded")

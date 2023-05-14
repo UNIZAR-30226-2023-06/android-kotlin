@@ -19,17 +19,24 @@ import java.util.concurrent.CountDownLatch
 
 
 /*
-    Tira los dados y además actualiza los recursos de los jugadores
+    Envia un mensaje al chat
     @param: token del jugador
-    @return: true si se esta buscando partida, false si ya esta en un lobby y no busca
+    @return: true si se ha enviado, false si no
  */
-fun tirarDados(){
+fun send_chat_message(message: String){
     val latch = CountDownLatch(1)
 
+    val mediaType = "application/x-www-form-urlencoded".toMediaTypeOrNull()
+    val body = RequestBody.create(
+        mediaType,
+        ""
+    )
+
     val request = Request.Builder()
-        .url("$ipBackend/game_phases/resource_production?lobby_id=${Globals.lobbyId}")
-        .get()
+        .url("$ipBackend/send_chat_message?message=$message")
+        .post(body)
         .addHeader("accept", "application/json")
+        .addHeader("Authorization", "Bearer ${Globals.Token}")
         .addHeader("Content-Type", "application/x-www-form-urlencoded")
         .build()
 
@@ -43,25 +50,16 @@ fun tirarDados(){
 
         override fun onResponse(call: Call, response: Response) {
             val respuesta = response.body?.string().toString()
-            var error = false
             println(respuesta)
             //transform the string to json object
             val json = JSONObject(respuesta)
             //get the string from the response
-            val status = try {
-                json.getString("die1")
-            } catch (e: JSONException) {
-                error  = true
-            }
+            val status = json.getString("detail")
 
-            if (!error) {
-                println("Dados lanzados correctamente")
-                Globals.dado1.value = json.getString("die1")
-                Globals.dado2.value = json.getString("die2")
-                Globals.newDados.value = true
-                println("NEW DADOOOOOOOOOOOOOS")
+            if (status == "Message sent") {
+                println("Mensaje enviado")
             } else {
-                println("No se han podido lanzar los dados")
+                println("Mensaje no enviado")
 
             }
             latch.countDown()
@@ -70,15 +68,28 @@ fun tirarDados(){
     latch.await()
 }
 
-fun moverLadron(  hexagono: Int,stolenPlayer: Int, reOpen: () -> Unit) : Boolean{
-    val latch = CountDownLatch(1)
-    var result = false
+data class Message(val id: String, val username: String, val message: String)
 
-    println(stolenPlayer)
-    println(hexagono)
+fun get_chat_messages(): List<Message>{
+    var result = mutableListOf<Message>()
+    val jsonArray = Globals.gameState.getJSONArray("chat")
+    for (i in 0 until jsonArray.length()) {
+        val jsonObject = jsonArray.getJSONObject(i)
+        val id = jsonObject.getString("id")
+        val username = jsonObject.getString("username")
+        val message = jsonObject.getString("message")
+        result.add(Message(id, username, message))
+    }
+
+    return result
+}
+
+/*fun get_chat_messages(): List<Message>{
+    val latch = CountDownLatch(1)
+    var result = mutableListOf<Message>()
 
     val request = Request.Builder()
-        .url("$ipBackend/game_phases/move_thief?lobby_id=${Globals.lobbyId}&stolen_player_id=$stolenPlayer&new_thief_position_tile_coord=$hexagono")
+        .url("$ipBackend/get_chat_messages")
         .get()
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer ${Globals.Token}")
@@ -95,46 +106,35 @@ fun moverLadron(  hexagono: Int,stolenPlayer: Int, reOpen: () -> Unit) : Boolean
 
         override fun onResponse(call: Call, response: Response) {
             val respuesta = response.body?.string().toString()
-            var error1 = false
-            var error2 = false
-            println(respuesta)
+            var error = false
             //transform the string to json object
             val json = JSONObject(respuesta)
             //get the string from the response
             val status = try {
-                json.getString("message")
+                json.getString("messages")
             } catch (e: JSONException) {
-                error1  = true
-            }
-            val detail = try {
-                json.getString("detail")
-            } catch (e: JSONException) {
-                error2  = true
+                error  = true
             }
 
-            if (!error1) {
-                if(status == "Thief moved successfully"){
-                    println("Ladron movido")
-                    result = true
-                }
-                else{
-                    println("No se han podido mover el ladron")
-                    reOpen()
-                }
-
-            } else if(!error2) {
-                if(detail == "Error: No hay ningún edificio del jugador robado en los nodos adyacentes al ladrón"){
-                    println("Ladron movido pero no robando a nadie")
-                    result = true
-                } else {
-                    println("No se han podido mover el ladron ")
-                    reOpen()
+            if(!error){
+                println("Hemos cogido correctamente los mensajes")
+                val jsonArray = JSONArray(status)
+                for (i in 0 until jsonArray.length()) {
+                    val jsonObject = jsonArray.getJSONObject(i)
+                    val id = jsonObject.getString("id")
+                    val username = jsonObject.getString("username")
+                    val message = jsonObject.getString("message")
+                    result.add(Message(id, username, message))
                 }
 
             }
+            else{
+                println("Error al coger los mensajes")
+            }
+
             latch.countDown()
         }
     })
     latch.await()
     return result
-}
+}*/

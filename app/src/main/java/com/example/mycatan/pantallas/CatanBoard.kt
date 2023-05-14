@@ -204,7 +204,7 @@ class CatanViewModel : ViewModel() {
 
 
         var showCartasDesarrollo = remember { mutableStateOf(false) }
-
+        var showChat = remember { mutableStateOf(false) }
 
 
         // set up all transformation states
@@ -420,50 +420,6 @@ class CatanViewModel : ViewModel() {
             tileB7
         )
 
-        Scaffold(
-            // BOTTOM BAR DE NAVEGACIÓN ----------------------------------------------------------------
-            bottomBar = {
-                BottomAppBar {
-                    BottomNavigationItem(
-                        icon = {
-                            Icon(
-                                imageVector = Icons.Default.Place,
-                                contentDescription = null,
-                                tint = Blanco,
-                            )
-                        },
-                        selected = true,
-                        onClick = {
-                            navController.navigate(Routes.CatanBoard.route)
-                        }
-                    )
-                    BottomNavigationItem(
-                        icon = {
-                            Icon(
-                                imageVector = Icons.Default.Email,
-                                contentDescription = null,
-                                tint = Blanco,
-                                modifier = Modifier.padding(5.dp)
-                            )
-                            /*if (pendiente.toInt() > 0) { SI HAY MENSAJES
-                            Badge(
-                                backgroundColor = Color.Red,
-                                contentColor = Color.White
-                            ) {
-                                Text(text = pendiente)
-                            }
-                        }*/
-                        },
-                        selected = false,
-                        onClick = {
-                            navController.navigate(Routes.Chat.route)
-                        }
-
-                    )
-
-                }
-            },
-        ) {
             Box(
                 modifier = Modifier
                     .background(AzulClaro)
@@ -505,6 +461,10 @@ class CatanViewModel : ViewModel() {
                     showCartasDesarrollo(setShowDialog = {
                         showCartasDesarrollo.value = it
                     }, showMonoply = { showpopUpMonopoly.value = true })
+                if(showChat.value)
+                    showChat(setShowDialog = {
+                        showChat.value = it
+                    })
 
                 if(showpopUpMonopoly.value){
                     showMonopolio(setShowDialog = {showpopUpMonopoly.value = it })
@@ -937,6 +897,22 @@ class CatanViewModel : ViewModel() {
                                     tint = Blanco
                                 )
                             }
+                            //Chat
+                            Button(
+                                onClick = {showChat.value = true },
+                                modifier = Modifier
+                                    .width(50.dp)
+                                    .height(50.dp),
+                                shape = RoundedCornerShape(15.dp),
+                                colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
+
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.chat),
+                                    contentDescription = null,
+                                    tint = Blanco
+                                )
+                            }
 
                         }
 
@@ -985,7 +961,7 @@ class CatanViewModel : ViewModel() {
                 }
 
             }
-        }
+
     }
 }
 @Composable

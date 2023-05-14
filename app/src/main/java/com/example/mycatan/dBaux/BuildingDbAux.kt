@@ -30,7 +30,7 @@ fun use_knight_card(stolen_player_id: String, new_thief_position_tile_coord: Str
     val latch = CountDownLatch(1)
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/game_phases/use_knight_card?lobby_id=${Globals.lobbyId}&stolen_player_id=$stolen_player_id&new_thief_position_tile_coord=$new_thief_position_tile_coord")
+        .url("$ipBackend/game_phases/use_knight_card?lobby_id=${Globals.lobbyId}&stolen_player_id=$stolen_player_id&new_thief_position_tile_coord=$new_thief_position_tile_coord")
         .get()
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer ${Globals.Token}")
@@ -80,7 +80,7 @@ fun use_invention_card(resource1: String, resource2: String): Boolean {
     val latch = CountDownLatch(1)
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/game_phases/use_invention_card?lobby_id=${Globals.lobbyId}&resource1=$resource1&resource2=$resource2")
+        .url("$ipBackend/game_phases/use_invention_card?lobby_id=${Globals.lobbyId}&resource1=$resource1&resource2=$resource2")
         .get()
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer ${Globals.Token}")
@@ -128,7 +128,7 @@ fun use_road_progress_card(coord: String): Boolean {
     val latch = CountDownLatch(1)
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/game_phases/use_road_progress_card?lobby_id=${Globals.lobbyId}&coord=$coord")
+        .url("$ipBackend/game_phases/use_road_progress_card?lobby_id=${Globals.lobbyId}&coord=$coord")
         .get()
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer ${Globals.Token}")
@@ -177,7 +177,7 @@ fun use_monopoly_progress_card(resource1: String): Boolean {
     val latch = CountDownLatch(1)
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/game_phases/use_monopoly_progress_card?lobby_id=${Globals.lobbyId}&resource1=$resource1")
+        .url("$ipBackend/game_phases/use_monopoly_progress_card?lobby_id=${Globals.lobbyId}&resource1=$resource1")
         .get()
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer ${Globals.Token}")
@@ -224,7 +224,7 @@ fun use_victory_point_progress_card(): Boolean {
     val latch = CountDownLatch(1)
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/game_phases/use_victory_point_progress_card?lobby_id=${Globals.lobbyId}")
+        .url("$ipBackend/game_phases/use_victory_point_progress_card?lobby_id=${Globals.lobbyId}")
         .get()
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer ${Globals.Token}")
@@ -271,7 +271,7 @@ fun buy_development_card(): Boolean {
     val latch = CountDownLatch(1)
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/game_phases/buy_development_card?lobby_id=${Globals.lobbyId}")
+        .url("$ipBackend/game_phases/buy_development_card?lobby_id=${Globals.lobbyId}")
         .get()
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer ${Globals.Token}")
@@ -319,7 +319,7 @@ fun buy_and_build_road(coord: String): Boolean {
     val latch = CountDownLatch(1)
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/game_phases/buy_and_build_road?lobby_id=${Globals.lobbyId}&coord=$coord")
+        .url("$ipBackend/game_phases/buy_and_build_road?lobby_id=${Globals.lobbyId}&coord=$coord")
         .get()
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer ${Globals.Token}")
@@ -367,7 +367,7 @@ fun buy_and_build_village(coord: String): Boolean {
     val latch = CountDownLatch(1)
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/game_phases/buy_and_build_village?lobby_id=${Globals.lobbyId}&coord=$coord")
+        .url("$ipBackend/game_phases/buy_and_build_village?lobby_id=${Globals.lobbyId}&coord=$coord")
         .get()
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer ${Globals.Token}")
@@ -416,7 +416,7 @@ fun buy_and_build_city(coord: String): Boolean {
     val latch = CountDownLatch(1)
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/game_phases/buy_and_build_city?lobby_id=${Globals.lobbyId}&coord=$coord")
+        .url("$ipBackend/game_phases/buy_and_build_city?lobby_id=${Globals.lobbyId}&coord=$coord")
         .get()
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer ${Globals.Token}")

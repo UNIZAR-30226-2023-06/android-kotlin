@@ -27,7 +27,7 @@ fun changeUsername(newName: String): Boolean {
     )
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/change-username?new_username=$newName")
+        .url("$ipBackend/change-username?new_username=$newName")
         .post(body)
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer ${Globals.Token}")
@@ -80,7 +80,7 @@ fun changePassword(newPsswd: String): Boolean {
     )
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/change-password?new_password=$newPsswd")
+        .url("$ipBackend/change-password?new_password=$newPsswd")
         .post(body)
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer ${Globals.Token}")
@@ -135,7 +135,7 @@ fun changeGridSkin(newSkin: String): Boolean {
     )
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/change-grid-skin?new_grid_skin=$skin")
+        .url("$ipBackend/change-grid-skin?new_grid_skin=$skin")
         .post(body)
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer ${Globals.Token}")
@@ -193,7 +193,7 @@ fun changeProfilePicture(newSkin: String): Boolean {
     )
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/change-profile-picture?new_profile_picture=$skin")
+        .url("$ipBackend/change-profile-picture?new_profile_picture=$skin")
         .post(body)
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer ${Globals.Token}")
@@ -251,7 +251,7 @@ fun changePiecesSkin(newSkin: String): Boolean {
     )
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/change-pieces-skin?new_pieces_skin=$skin")
+        .url("$ipBackend/change-pieces-skin?new_pieces_skin=$skin")
         .post(body)
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer ${Globals.Token}")
