@@ -47,7 +47,7 @@ fun showChat(setShowDialog: (Boolean) -> Unit){
             Box(
                 contentAlignment = Alignment.Center
             ) {
-                Column(modifier = Modifier.padding(20.dp)) {
+                Column(modifier = Modifier.padding(5.dp)) {
                     ChatScreen()
                 }
             }
@@ -72,31 +72,41 @@ fun ChatScreen() {
 
     Column(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
+            .fillMaxHeight(0.75f)
             .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         LazyColumn(
-            modifier = Modifier.weight(1f).height(400.dp)
+            modifier = Modifier.weight(1f)
         ) {
             items(messages) { message ->
+                val isMe = message.username == Globals.Username
+                val backgroundColor = if (isMe) Blanco else AzulClaro
+                val contentAlignment = if (isMe) Alignment.End else Alignment.Start
+                val textColor = if (isMe) Color.Black else Color.Black
+
                 Card(
                     modifier = Modifier
                         .padding(8.dp)
                         .fillMaxWidth(),
+                    backgroundColor = backgroundColor,
                     elevation = 4.dp
                 ) {
                     Column(
-                        modifier = Modifier.padding(8.dp)
+                        modifier = Modifier.padding(8.dp),
+                        horizontalAlignment = contentAlignment
                     ) {
                         Text(
                             text = message.username,
                             fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            color = textColor
                         )
                         Text(
                             text = message.message,
                             fontSize = 16.sp,
-                            fontWeight = FontWeight.Normal
+                            fontWeight = FontWeight.Normal,
+                            color = textColor
                         )
                     }
                 }
