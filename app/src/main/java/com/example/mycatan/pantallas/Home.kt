@@ -177,25 +177,33 @@ fun HomePage(navController: NavHostController) {
                 Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp)) {
                     Button(
                         onClick = {
-                            buscarPartida.value = true
-                            if(searchLobby(Globals.Token)){
-                                var hayCuatro = false
-                                // CUANDO HAY 4 JUGADORES BUSCANDO PARTIDA SACAR POP-UP CANCELAR LISTO
-                                viewModelScope.launch {
-                                    hayCuatro = buscarJugadores(buscarPartida.value).await()
-                                    if(hayCuatro){
-                                        println("HAY CUATRO JUGADORES")
-                                        buscarPartida.value = false
-                                        cancelarListo.value = true
-                                        //Hacemos un stop search para que los jugadores dejen de buscar, ya que ya han encontrado (ns si hace falta)
-                                        stopSearchingLobby(Globals.Token)
+                            if(getLobbyFromPlayer(Globals.Token)){
+                                // Si el jugador esta en un lobby, y clica aqui, le volvemos a unir al lobby
+                                //Recoger la información del lobby
+                                getGameState(Globals.lobbyId)
+                                navController.navigate(Routes.CatanBoard.route)
+                            } else{
+                                buscarPartida.value = true
+                                if(searchLobby(Globals.Token)){
+                                    var hayCuatro = false
+                                    // CUANDO HAY 4 JUGADORES BUSCANDO PARTIDA SACAR POP-UP CANCELAR LISTO
+                                    viewModelScope.launch {
+                                        hayCuatro = buscarJugadores(buscarPartida.value).await()
+                                        if(hayCuatro){
+                                            println("HAY CUATRO JUGADORES")
+                                            buscarPartida.value = false
+                                            cancelarListo.value = true
+                                            //Hacemos un stop search para que los jugadores dejen de buscar, ya que ya han encontrado (ns si hace falta)
+                                            stopSearchingLobby(Globals.Token)
+                                        }
+
                                     }
 
+                                } else{
+                                    Toast.makeText(context, "ERROR ya se esa buscando partida", Toast.LENGTH_SHORT).show()
                                 }
-
-                            } else{
-                                Toast.makeText(context, "ERROR ya se esa buscando partida", Toast.LENGTH_SHORT).show()
                             }
+
                                   },
                         modifier = Modifier
                             .width(280.dp)

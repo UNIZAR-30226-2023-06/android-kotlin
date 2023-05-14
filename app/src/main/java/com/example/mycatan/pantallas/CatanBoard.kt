@@ -83,6 +83,7 @@ class CatanViewModel : ViewModel() {
     @SuppressLint("CoroutineCreationDuringComposition")
     @Composable
     fun CatanBoard(navController: NavHostController) {
+        getPlayerState()
 
         // GUARDAMOS LOS PUNTOS CON LOS QUE SE GANARIA UNA PARTIDA --------------------------------
         val puntosVictoria = 10
@@ -907,7 +908,9 @@ class CatanViewModel : ViewModel() {
 
                             //Cartas de desarrollo
                             Button(
-                                onClick = { showCartasDesarrollo.value = true },
+                                onClick = {
+                                    getPlayerState()
+                                    showCartasDesarrollo.value = true },
                                 modifier = Modifier
                                     .width(50.dp)
                                     .height(50.dp),
@@ -2741,12 +2744,12 @@ fun showConstruir( idVert: String, setShowDialog: (Boolean) -> Unit) {
                             Spacer(modifier = Modifier.height(15.dp))
 
                             // Solo se puede contruir en 3 ocasiones
-                            // 1º Es tu turno y tienes los recursos
+                            // 1º Es tu turno, tienes los recursos y es la fase de building
                             // 2º Es tu turno y estas en la fase inicial 1
                             // 3º Es tu turno y estas en la fase inicial 2
 
                             if( Partida.casaINIdisp.value
-                                && ((Partida.Trigo.toInt()>=1 && Partida.Madera.toInt()>=1 && Partida.Ovejas.toInt()>=1 && Partida.Arcilla.toInt()>=1 && Globals.gameState.getString("player_turn")== Globals.Id)
+                                && ((Partida.Trigo.toInt()>=1 && Partida.Madera.toInt()>=1 && Partida.Ovejas.toInt()>=1 && Partida.Arcilla.toInt()>=1 && Globals.gameState.getString("player_turn")== Globals.Id &&  Globals.gameState.getString("turn_phase") == "BUILDING")
                                 || (Globals.gameState.getString("player_turn")== Globals.Id
                                         && (Globals.gameState.getString("turn_phase") == "INITIAL_TURN1" || Globals.gameState.getString("turn_phase") == "INITIAL_TURN2")))
                             ){
@@ -2760,7 +2763,11 @@ fun showConstruir( idVert: String, setShowDialog: (Boolean) -> Unit) {
                                             //se actualizan los edges legales al poner una  casa
                                             getlegalEdges(Partida.miColor)
 
-                                        }else {
+                                        }  else{
+                                            // IGUAL QUE ARRIBA PERO CONTRUIMOS EN LA FASE DE CONSTRUCCION -------------------
+                                            val decimal = Integer.parseInt(idVert, 16)
+                                            buy_and_build_village(decimal.toString())
+                                            // Resta los recursos
                                             buildPoblado()
                                         }
                                         setShowDialog(false) },
@@ -2833,13 +2840,24 @@ fun showConstruir( idVert: String, setShowDialog: (Boolean) -> Unit) {
 
                             Spacer(modifier = Modifier.height(15.dp))
 
-                            // En la fase 1 y 2 solo se contruiyen poblados y caminos, asik vamos a ignorar las ciudades
-                            if(Partida.Trigo.toInt()>=2 && Partida.Roca.toInt()>=3 && Globals.gameState.getString("player_turn")== Globals.Id){
+
+                            // SE PUEDE CONSTRUIR UNA CIUDAD CUANDO:
+                            // 1 - Tienes los recursos
+                            // 2 - Es tu turno
+                            // 3 - Estas en la fase de construccion
+                            // 4 - Tienes un poblado en el vertice
+                            if(Partida.Trigo.toInt()>=2 && Partida.Roca.toInt()>=3 && Globals.gameState.getString("player_turn")== Globals.Id
+                                && Globals.gameState.getString("turn_phase") == "BUILDING"
+                                && Partida.Vertices[idVert] == "poblado"){
                                 Button(
                                     onClick = {
                                         Partida.Vertices[idVert] = "ciudad"
+                                        val decimal = Integer.parseInt(idVert, 16)
+                                        buy_and_build_city(decimal.toString())
                                         buildCiudad()
-                                        setShowDialog(false) },
+                                        setShowDialog(false)
+
+                                              },
                                     modifier = Modifier
                                         //.fillMaxWidth(0.5f)
                                         .width(100.dp)
@@ -2958,12 +2976,12 @@ fun construirCamino(idArista: String, setShowDialog: (Boolean) -> Unit) {
                     Spacer(modifier = Modifier.height(15.dp))
 
                     // Solo se puede contruir en 3 ocasiones
-                    // 1º Es tu turno y tienes los recursos
+                    // 1º Es tu turno , tienes los recursos y estas en la fase de construccion
                     // 2º Es tu turno y estas en la fase inicial 1
                     // 3º Es tu turno y estas en la fase inicial 2
 
                     if( Partida.caminoINIdisp.value
-                        && ((Partida.Arcilla.toInt()>=1 && Partida.Madera.toInt()>=1 && Globals.gameState.getString("player_turn")== Globals.Id)
+                        && ((Partida.Arcilla.toInt()>=1 && Partida.Madera.toInt()>=1 && Globals.gameState.getString("player_turn")== Globals.Id && Globals.gameState.getString("turn_phase") == "BUILDING")
                             || (Globals.gameState.getString("player_turn")== Globals.Id
                             && (Globals.gameState.getString("turn_phase") == "INITIAL_TURN1" || Globals.gameState.getString("turn_phase") == "INITIAL_TURN2")))
                     ){
@@ -2976,6 +2994,8 @@ fun construirCamino(idArista: String, setShowDialog: (Boolean) -> Unit) {
                                     Partida.caminoINIdisp.value= false
 
                                 }else {
+                                    val decimal = Integer.parseInt(idArista, 16) // convertir a decimal
+                                    buy_and_build_road(decimal.toString())
                                     buildCamino()
                                 }
 

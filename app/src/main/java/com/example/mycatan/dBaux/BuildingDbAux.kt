@@ -411,7 +411,7 @@ fun buy_and_build_village(coord: String): Boolean {
     @param: coord de la ciudad
     @return: true si se esta buscando partida, false si ya esta en un lobby y no busca
  */
-fun buy_and_buld_city(coord: String): Boolean {
+fun buy_and_build_city(coord: String): Boolean {
     var result = false;
     val latch = CountDownLatch(1)
 
