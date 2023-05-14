@@ -47,7 +47,7 @@ suspend fun esperarTurno(): Deferred<Boolean> {
             } else{
                 miTurno= false
                 getGameState(Globals.lobbyId)
-                delay(1000) // esperar un segundo antes de volver a llamar a getGameState
+                delay(5000) // esperar un segundo antes de volver a llamar a getGameState
             }
             // Llamamos a la funcion que relaciona el estado de la partida con las acciones que se pueden hacer
             // Si no somos el jugador que tiene el turno, no se nos permite hacer nada, saldrá pop-up de esperar

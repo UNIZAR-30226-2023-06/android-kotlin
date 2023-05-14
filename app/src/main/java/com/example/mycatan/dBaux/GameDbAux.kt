@@ -99,7 +99,7 @@ fun getGameState( idlobby: String ): Boolean {
         override fun onResponse(call: Call, response: Response) {
             val respuesta = response.body?.string().toString()
 
-            println(respuesta)
+            //println(respuesta)
             //transform the string to json object
             val json = JSONObject(respuesta)
             //get the string from the response

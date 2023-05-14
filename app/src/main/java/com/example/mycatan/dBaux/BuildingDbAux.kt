@@ -25,12 +25,12 @@ import java.util.concurrent.CountDownLatch
     @param: new_thief_position_tile_coord coordenadas de la nueva posicion del ladron
     @return: true si se esta buscando partida, false si ya esta en un lobby y no busca
  */
-fun use_knight_card(stolen_player_id: String, new_thief_position_tile_coord: String): Boolean {
+fun use_knight_card(): Boolean {
     var result = false;
     val latch = CountDownLatch(1)
 
     val request = Request.Builder()
-        .url("$ipBackend/game_phases/use_knight_card?lobby_id=${Globals.lobbyId}&stolen_player_id=$stolen_player_id&new_thief_position_tile_coord=$new_thief_position_tile_coord")
+        .url("$ipBackend/game_phases/substract_knight_card?lobby_id=${Globals.lobbyId}")
         .get()
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer ${Globals.Token}")
@@ -123,12 +123,12 @@ fun use_invention_card(resource1: String, resource2: String): Boolean {
     @param: coord coordenada de la carretera
     @return: true si se esta buscando partida, false si ya esta en un lobby y no busca
  */
-fun use_road_progress_card(coord: String): Boolean {
+fun use_road_progress_card(): Boolean {
     var result = false;
     val latch = CountDownLatch(1)
 
     val request = Request.Builder()
-        .url("$ipBackend/game_phases/use_road_progress_card?lobby_id=${Globals.lobbyId}&coord=$coord")
+        .url("$ipBackend/game_phases/substract_road_progress_card?lobby_id=${Globals.lobbyId}")
         .get()
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer ${Globals.Token}")

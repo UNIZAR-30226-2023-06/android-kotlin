@@ -69,6 +69,7 @@ object Partida {
     lateinit var miColor : String
     var casaINIdisp =  mutableStateOf(false)
     var caminoINIdisp =  mutableStateOf(false)
+    var caminosGratis  = mutableStateOf(0)
     var nodosLegales = mutableListOf<String>("0")
     var edgesLegales = mutableListOf<String>("0")
     var iniciadasAristas = false

@@ -201,6 +201,8 @@ class CatanViewModel : ViewModel() {
         var showpopUpLadron = remember { mutableStateOf(false) }
         var showpopUpBanca = remember { mutableStateOf(false) }
         var showpopUpMonopoly = remember { mutableStateOf(false) }
+        var showCaballero =remember { mutableStateOf(false) }
+        var showDescubrimiento =remember { mutableStateOf(false) }
 
 
         var showCartasDesarrollo = remember { mutableStateOf(false) }
@@ -398,27 +400,27 @@ class CatanViewModel : ViewModel() {
             id = "B7"
         )
 
-        val tiles = listOf(
-            tile37,
-            tile59,
-            tile7B,
-            tile35,
-            tile57,
-            tile79,
-            tile9B,
-            tile33,
-            tile55,
-            tile77,
-            tile99,
-            tileBB,
-            tile53,
-            tile75,
-            tile97,
-            tileB9,
-            tile73,
-            tile95,
-            tileB7
-        )
+            val tiles = listOf(
+                tile37,
+                tile59,
+                tile7B,
+                tile35,
+                tile57,
+                tile79,
+                tile9B,
+                tile33,
+                tile55,
+                tile77,
+                tile99,
+                tileBB,
+                tile53,
+                tile75,
+                tile97,
+                tileB9,
+                tile73,
+                tile95,
+                tileB7
+            )
 
             Box(
                 modifier = Modifier
@@ -460,7 +462,7 @@ class CatanViewModel : ViewModel() {
                 if(showCartasDesarrollo.value)
                     showCartasDesarrollo(setShowDialog = {
                         showCartasDesarrollo.value = it
-                    }, showMonoply = { showpopUpMonopoly.value = true })
+                    }, showMonoply = { showpopUpMonopoly.value = true }, showCaballero = { showCaballero.value = true}, showDescubrimiento = {showDescubrimiento.value = true})
                 if(showChat.value)
                     showChat(setShowDialog = {
                         showChat.value = it
@@ -468,6 +470,14 @@ class CatanViewModel : ViewModel() {
 
                 if(showpopUpMonopoly.value){
                     showMonopolio(setShowDialog = {showpopUpMonopoly.value = it })
+                }
+                if (showCaballero.value){
+                    popUp7detectado(setShowDialog = {
+                        showCaballero.value = it
+                        showCartasDesarrollo.value = it} )
+                }
+                if (showDescubrimiento.value){
+                    showDescubrimiento(setShowDialog = {showDescubrimiento.value = it })
                 }
 
                 // DIBUJANDO LAS CARDS DE LOS PLAYERS ----------------------------------------------
@@ -1520,8 +1530,10 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                                     )
                                 ) {
                                     Globals.moviendoLadron.value = false
-                                    timer.cancel()
-                                    avanzarFase()
+
+                                    getGameState(Globals.lobbyId)
+                                    //timer.cancel()
+                                    //avanzarFase()
                                 }
                                 Globals.jugadorRobado = ""
 
@@ -2995,15 +3007,19 @@ fun construirCamino(idArista: String, setShowDialog: (Boolean) -> Unit) {
                     // 2º Es tu turno y estas en la fase inicial 1
                     // 3º Es tu turno y estas en la fase inicial 2
 
-                    if( Partida.caminoINIdisp.value
+                    if(  ((Globals.gameState.getString("player_turn")== Globals.Id && Globals.gameState.getString("turn_phase") == "BUILDING") && Partida.caminosGratis.value > 0  )
+                        || (Partida.caminoINIdisp.value
                         && ((Partida.Arcilla.toInt()>=1 && Partida.Madera.toInt()>=1 && Globals.gameState.getString("player_turn")== Globals.Id && Globals.gameState.getString("turn_phase") == "BUILDING")
                             || (Globals.gameState.getString("player_turn")== Globals.Id
-                            && (Globals.gameState.getString("turn_phase") == "INITIAL_TURN1" || Globals.gameState.getString("turn_phase") == "INITIAL_TURN2")))
+                            && (Globals.gameState.getString("turn_phase") == "INITIAL_TURN1" || Globals.gameState.getString("turn_phase") == "INITIAL_TURN2"))))
                     ){
                         Button(
                             onClick = {
                                 Partida.Aristas[idArista] = "carretera"
-                                if (Globals.gameState.getString("turn_phase") == "INITIAL_TURN1" || Globals.gameState.getString("turn_phase") == "INITIAL_TURN2"){
+                                if (Globals.gameState.getString("turn_phase") == "INITIAL_TURN1" || Globals.gameState.getString("turn_phase") == "INITIAL_TURN2" || Partida.caminosGratis.value > 0){
+                                    if (Partida.caminosGratis.value > 0){
+                                        Partida.caminosGratis.value = Partida.caminosGratis.value - 1
+                                    }
                                     val decimal = Integer.parseInt(idArista, 16) // convertir a decimal
                                     firstPhaseBuildRoad(decimal.toString())
                                     Partida.caminoINIdisp.value= false
@@ -3809,7 +3825,7 @@ private fun ButtonToggleGroup( // 1
 }
 
 @Composable
-fun showCartasDesarrollo(setShowDialog: (Boolean) -> Unit, showMonoply: () -> Unit){
+fun showCartasDesarrollo(setShowDialog: (Boolean) -> Unit, showMonoply: () -> Unit, showCaballero: () -> Unit, showDescubrimiento: () -> Unit){
     val context = LocalContext.current
     Dialog(onDismissRequest = { setShowDialog(false)}) { // PARA QUE SOLO SE CIERRE CON LA X QUITAR ESTO JEJE
         Surface(
@@ -3837,6 +3853,7 @@ fun showCartasDesarrollo(setShowDialog: (Boolean) -> Unit, showMonoply: () -> Un
                         Column( modifier = Modifier.clickable {
                             if(Globals.gameState.getString("turn_phase") == "BUILDING" && Globals.gameState.getString("player_turn") == Globals.Id && cartasPV > 0){
                                 use_victory_point_progress_card()
+                                getGameState(Globals.lobbyId)
                             }
                         },
                             horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center)
@@ -3862,7 +3879,8 @@ fun showCartasDesarrollo(setShowDialog: (Boolean) -> Unit, showMonoply: () -> Un
 
                         Column(modifier = Modifier.clickable {
                             if(Globals.gameState.getString("turn_phase") == "BUILDING" && Globals.gameState.getString("player_turn") == Globals.Id && Globals.playerState.getJSONObject("hand").getJSONObject("dev_cards").getInt("knight")>0) {
-
+                                use_knight_card()
+                                showCaballero()
                             }
                         },
                             horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
@@ -3884,7 +3902,7 @@ fun showCartasDesarrollo(setShowDialog: (Boolean) -> Unit, showMonoply: () -> Un
 
                         Column(modifier = Modifier.clickable {
                             if(Globals.gameState.getString("turn_phase") == "BUILDING" && Globals.gameState.getString("player_turn") == Globals.Id && Globals.playerState.getJSONObject("hand").getJSONObject("dev_cards").getInt("invention_progress") > 0){
-                                //use_invention_card()
+                                showDescubrimiento()
                             }
                         },
                             verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
@@ -3912,7 +3930,11 @@ fun showCartasDesarrollo(setShowDialog: (Boolean) -> Unit, showMonoply: () -> Un
 
                         Column(modifier = Modifier.clickable {
                             if(Globals.gameState.getString("turn_phase") == "BUILDING" && Globals.gameState.getString("player_turn") == Globals.Id && Globals.playerState.getJSONObject("hand").getJSONObject("dev_cards").getInt("road_progress") > 0){
-                                //use_road_progress_card()
+                                use_road_progress_card()
+                                getGameState(Globals.lobbyId)
+                                Partida.caminosGratis.value = 2
+                                getlegalEdges(Partida.miColor)
+                                setShowDialog(false)
                             }
                         },
                             verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
@@ -4082,7 +4104,10 @@ fun showWinner(name: String, navController: NavHostController, setShowDialog: (B
 @Composable
 fun showMonopolio(setShowDialog: (Boolean) -> Unit) {
 
-    var recurso1 = remember {mutableStateOf("")}
+    val options = listOf("WOOD", "CLAY", "SHEEP", "STONE", "WHEAT")
+
+    var recurso by remember { mutableStateOf(options[0]) }
+
 
     Dialog(onDismissRequest = { setShowDialog(false) }) {
         Surface(
@@ -4121,48 +4146,21 @@ fun showMonopolio(setShowDialog: (Boolean) -> Unit) {
 
                     Spacer(modifier = Modifier.height(15.dp))
 
-                    Row(horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
-                        
-                        Image(painter = painterResource(id = R.drawable.clay), contentDescription = null, modifier = Modifier
-                            .size(50.dp)
-                            .clickable { recurso1.value = "CLAY" })
-
-                        Spacer(modifier = Modifier.width(5.dp))
-
-                        Image(painter = painterResource(id = R.drawable.sheep), contentDescription = null, modifier = Modifier
-                            .size(50.dp)
-                            .clickable { recurso1.value = "SHEEP" })
-
-                        Spacer(modifier = Modifier.width(5.dp))
-
-                        Image(painter = painterResource(id = R.drawable.trigo), contentDescription = null, modifier = Modifier
-                            .size(50.dp)
-                            .clickable { recurso1.value = "WHEAT" })
-
-                        Spacer(modifier = Modifier.width(5.dp))
-
-                        Image(painter = painterResource(id = R.drawable.wood), contentDescription = null, modifier = Modifier
-                            .size(50.dp)
-                            .clickable { recurso1.value = "WOOD" })
-
-                        Spacer(modifier = Modifier.width(5.dp))
-                        
-                        Image(painter = painterResource(id = R.drawable.rock), contentDescription = null, modifier = Modifier
-                            .size(50.dp)
-                            .clickable { recurso1.value = "STONE" })
-                        
-                    }
+                    ButtonToggleGroup(
+                        options = options,
+                        selectedOption = recurso,
+                        onOptionSelect = { recurso = it },
+                    )
 
                     Spacer(modifier = Modifier.height(15.dp))
 
 
                     Button(
                         onClick = {
-                            if (recurso1.value != ""){
-                                use_monopoly_progress_card(recurso1.value)
-                                getGameState(Globals.lobbyId)
-                                setShowDialog(false)
-                            } },
+                            use_monopoly_progress_card(recurso)
+                            getGameState(Globals.lobbyId)
+                            setShowDialog(false)
+                             },
                         modifier = Modifier
                             //.fillMaxWidth(0.5f)
                             .width(150.dp)
@@ -4191,9 +4189,10 @@ fun showMonopolio(setShowDialog: (Boolean) -> Unit) {
 @Composable
 fun showDescubrimiento(setShowDialog: (Boolean) -> Unit) {
 
-    var recurso1 = remember {mutableStateOf("")}
-    var recurso2 = remember {mutableStateOf("")}
-    var cuenta = remember {mutableStateOf(0)}
+    val options = listOf("WOOD", "CLAY", "SHEEP", "STONE", "WHEAT")
+
+    var recurso1 by remember { mutableStateOf(options[0]) }
+    var recurso2 by remember { mutableStateOf(options[0]) }
 
     Dialog(onDismissRequest = { setShowDialog(false) }) {
         Surface(
@@ -4232,47 +4231,27 @@ fun showDescubrimiento(setShowDialog: (Boolean) -> Unit) {
 
                     Spacer(modifier = Modifier.height(15.dp))
 
-                    Row(horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
+                    ButtonToggleGroup(
+                        options = options,
+                        selectedOption = recurso1,
+                        onOptionSelect = { recurso1 = it },
+                    )
 
-                        Image(painter = painterResource(id = R.drawable.clay), contentDescription = null, modifier = Modifier
-                            .size(50.dp)
-                            .clickable { recurso1.value = "CLAY" })
-
-                        Spacer(modifier = Modifier.width(5.dp))
-
-                        Image(painter = painterResource(id = R.drawable.sheep), contentDescription = null, modifier = Modifier
-                            .size(50.dp)
-                            .clickable { recurso1.value = "SHEEP" })
-
-                        Spacer(modifier = Modifier.width(5.dp))
-
-                        Image(painter = painterResource(id = R.drawable.trigo), contentDescription = null, modifier = Modifier
-                            .size(50.dp)
-                            .clickable { recurso1.value = "WHEAT" })
-
-                        Spacer(modifier = Modifier.width(5.dp))
-
-                        Image(painter = painterResource(id = R.drawable.wood), contentDescription = null, modifier = Modifier
-                            .size(50.dp)
-                            .clickable { recurso1.value = "WOOD" })
-
-                        Spacer(modifier = Modifier.width(5.dp))
-
-                        Image(painter = painterResource(id = R.drawable.rock), contentDescription = null, modifier = Modifier
-                            .size(50.dp)
-                            .clickable { recurso1.value = "STONE" })
-
-                    }
+                    ButtonToggleGroup(
+                        options = options,
+                        selectedOption = recurso2,
+                        onOptionSelect = { recurso2 = it },
+                    )
 
                     Spacer(modifier = Modifier.height(15.dp))
 
 
                     Button(
                         onClick = {
-                            if (recurso1.value != ""){
-                                use_monopoly_progress_card(recurso1.value)
+                                use_invention_card(recurso1, recurso2)
+                                getGameState(Globals.lobbyId)
                                 setShowDialog(false)
-                            } },
+                             },
                         modifier = Modifier
                             //.fillMaxWidth(0.5f)
                             .width(150.dp)
