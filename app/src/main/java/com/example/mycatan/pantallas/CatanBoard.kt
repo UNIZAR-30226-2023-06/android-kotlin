@@ -2626,6 +2626,11 @@ fun buildCamino(){
     Partida.Madera = (Partida.Madera.toInt() -1).toString()
     Partida.Arcilla = (Partida.Arcilla.toInt() -1).toString()
 }
+fun buyCarta(){
+    Partida.Trigo = (Partida.Trigo.toInt() -2).toString()
+    Partida.Roca = (Partida.Roca.toInt() -3).toString()
+    Partida.Ovejas = (Partida.Ovejas.toInt() -1).toString()
+}
 
 @Composable
 fun showConstruir( idVert: String, setShowDialog: (Boolean) -> Unit) {
@@ -3962,6 +3967,7 @@ fun showCartasDesarrollo(setShowDialog: (Boolean) -> Unit){
                                 onClick = {
 
                                     if(buy_development_card()){
+                                        buyCarta()
                                         Toast.makeText(context, "Carta de desarrollo comprada correctamente", Toast.LENGTH_SHORT).show()
 
                                     } else{
