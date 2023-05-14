@@ -200,6 +200,8 @@ class CatanViewModel : ViewModel() {
         var nuevoTurnoPhase = remember { mutableStateOf(false) }
         var showpopUpLadron = remember { mutableStateOf(false) }
         var showpopUpBanca = remember { mutableStateOf(false) }
+        var showpopUpMonopoly = remember { mutableStateOf(false) }
+
 
         var showCartasDesarrollo = remember { mutableStateOf(false) }
 
@@ -502,7 +504,11 @@ class CatanViewModel : ViewModel() {
                 if(showCartasDesarrollo.value)
                     showCartasDesarrollo(setShowDialog = {
                         showCartasDesarrollo.value = it
-                    })
+                    }, showMonoply = { showpopUpMonopoly.value = true })
+
+                if(showpopUpMonopoly.value){
+                    showMonopolio(setShowDialog = {showpopUpMonopoly.value = it })
+                }
 
                 // DIBUJANDO LAS CARDS DE LOS PLAYERS ----------------------------------------------
                 Row(
@@ -687,6 +693,9 @@ class CatanViewModel : ViewModel() {
                         setShowDialog = { showCamino.value = it })
 
 
+
+
+
                 // SI ALGUIEN HA GANADO SE MUESTRA ESTE POPUP
                 if (jugador_0!!.puntos == puntosVictoria) {
                     showWinner(
@@ -851,6 +860,7 @@ class CatanViewModel : ViewModel() {
 
                     // MOSTRAR POP-UP: "ES TU TURNO, TIRA LOS DADOS PARA OBTENER RECURSOS" (POP-UP CON UNOS DADOS PARA CLICAR)
                     popUpBuildingTurn(playerName = Globals.gameState.getString("player_turn_name"), setShowDialog = { nuevoTurnoPhase.value = it })
+
                     // Get del tablero
                     // Colocar pueblo y carretera
                     // POST del tablero con las modificaciones que has hecho
@@ -1585,20 +1595,26 @@ fun TileGrid(tiles: List<Tile>, chosenV: (String) -> Unit, onVerticeClick: () ->
                                         .toString()
 
                                     var numColor = 0
-                                    if (Partida.miColor == "RED"){
+                                    if (Partida.miColor == "RED") {
                                         numColor = 1
-                                    } else if (Partida.miColor == "BLUE"){
+                                    } else if (Partida.miColor == "BLUE") {
                                         numColor = 2
-                                    } else if (Partida.miColor == "GREEN"){
+                                    } else if (Partida.miColor == "GREEN") {
                                         numColor = 3
-                                    } else if (Partida.miColor == "YELLOW"){
+                                    } else if (Partida.miColor == "YELLOW") {
                                         numColor = 4
                                     }
 
                                     if (Partida.nodosLegales.contains(idCoordHex)
                                         || (Partida.nodosLegales.contains(idCoordHex) &&
-                                                (Globals.gameState.getJSONObject("board").getJSONObject("nodes").getJSONArray(idCoordHex)[1] == 1)
-                                                && (Globals.gameState.getJSONObject("board").getJSONObject("nodes").getJSONArray(idCoordHex)[0] == numColor))
+                                                (Globals.gameState
+                                                    .getJSONObject("board")
+                                                    .getJSONObject("nodes")
+                                                    .getJSONArray(idCoordHex)[1] == 1)
+                                                && (Globals.gameState
+                                            .getJSONObject("board")
+                                            .getJSONObject("nodes")
+                                            .getJSONArray(idCoordHex)[0] == numColor))
                                     ) {
                                         //(Globals.gameState.getJSONObject("board").getJSONObject("nodes").getJSONArray(decimal.toString())[0] == 1)
                                         println("legal")
@@ -3817,7 +3833,7 @@ private fun ButtonToggleGroup( // 1
 }
 
 @Composable
-fun showCartasDesarrollo(setShowDialog: (Boolean) -> Unit){
+fun showCartasDesarrollo(setShowDialog: (Boolean) -> Unit, showMonoply: () -> Unit){
     val context = LocalContext.current
     Dialog(onDismissRequest = { setShowDialog(false)}) { // PARA QUE SOLO SE CIERRE CON LA X QUITAR ESTO JEJE
         Surface(
@@ -3836,9 +3852,14 @@ fun showCartasDesarrollo(setShowDialog: (Boolean) -> Unit){
                         .fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
 
+                        var cartasPV = Globals.playerState.getJSONObject("hand").getJSONObject("dev_cards").getInt("town_hall") +
+                                Globals.playerState.getJSONObject("hand").getJSONObject("dev_cards").getInt("university")  +
+                                Globals.playerState.getJSONObject("hand").getJSONObject("dev_cards").getInt("market") +
+                                Globals.playerState.getJSONObject("hand").getJSONObject("dev_cards").getInt("library") +
+                                Globals.playerState.getJSONObject("hand").getJSONObject("dev_cards").getInt("church")
 
                         Column( modifier = Modifier.clickable {
-                            if(Globals.gameState.getString("turn_phase") == "BUILDING" && Globals.gameState.getString("player_turn_phase") == Globals.Id){
+                            if(Globals.gameState.getString("turn_phase") == "BUILDING" && Globals.gameState.getString("player_turn") == Globals.Id && cartasPV > 0){
                                 use_victory_point_progress_card()
                             }
                         },
@@ -3848,11 +3869,7 @@ fun showCartasDesarrollo(setShowDialog: (Boolean) -> Unit){
                             Image(painter =  painterResource(R.drawable.carta_de_desarrollo_1), contentDescription = null, modifier = Modifier.size(75.dp))
                             Spacer(modifier = Modifier.width(10.dp))
 
-                            var cartasPV = Globals.playerState.getJSONObject("hand").getJSONObject("dev_cards").getInt("town_hall") +
-                                    Globals.playerState.getJSONObject("hand").getJSONObject("dev_cards").getInt("university")  +
-                                    Globals.playerState.getJSONObject("hand").getJSONObject("dev_cards").getInt("market") +
-                                    Globals.playerState.getJSONObject("hand").getJSONObject("dev_cards").getInt("library") +
-                                    Globals.playerState.getJSONObject("hand").getJSONObject("dev_cards").getInt("church")
+
 
                             Text(
                                 text = cartasPV.toString(),
@@ -3868,7 +3885,7 @@ fun showCartasDesarrollo(setShowDialog: (Boolean) -> Unit){
                         Spacer(modifier = Modifier.width(10.dp))
 
                         Column(modifier = Modifier.clickable {
-                            if(Globals.gameState.getString("turn_phase") == "BUILDING" && Globals.gameState.getString("player_turn_phase") == Globals.Id){
+                            if(Globals.gameState.getString("turn_phase") == "BUILDING" && Globals.gameState.getString("player_turn") == Globals.Id && Globals.playerState.getJSONObject("hand").getJSONObject("dev_cards").getInt("knight")>0) {
 
                             }
                         },
@@ -3890,7 +3907,7 @@ fun showCartasDesarrollo(setShowDialog: (Boolean) -> Unit){
                         Spacer(modifier = Modifier.width(10.dp))
 
                         Column(modifier = Modifier.clickable {
-                            if(Globals.gameState.getString("turn_phase") == "BUILDING" && Globals.gameState.getString("player_turn_phase") == Globals.Id){
+                            if(Globals.gameState.getString("turn_phase") == "BUILDING" && Globals.gameState.getString("player_turn") == Globals.Id && Globals.playerState.getJSONObject("hand").getJSONObject("dev_cards").getInt("invention_progress") > 0){
                                 //use_invention_card()
                             }
                         },
@@ -3918,7 +3935,7 @@ fun showCartasDesarrollo(setShowDialog: (Boolean) -> Unit){
                     horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
 
                         Column(modifier = Modifier.clickable {
-                            if(Globals.gameState.getString("turn_phase") == "BUILDING" && Globals.gameState.getString("player_turn_phase") == Globals.Id){
+                            if(Globals.gameState.getString("turn_phase") == "BUILDING" && Globals.gameState.getString("player_turn") == Globals.Id && Globals.playerState.getJSONObject("hand").getJSONObject("dev_cards").getInt("road_progress") > 0){
                                 //use_road_progress_card()
                             }
                         },
@@ -3940,8 +3957,9 @@ fun showCartasDesarrollo(setShowDialog: (Boolean) -> Unit){
                         Spacer(modifier = Modifier.width(10.dp))
 
                         Column(modifier = Modifier.clickable {
-                            if(Globals.gameState.getString("turn_phase") == "BUILDING" && Globals.gameState.getString("player_turn_phase") == Globals.Id){
+                            if(Globals.gameState.getString("turn_phase") == "BUILDING" && Globals.gameState.getString("player_turn") == Globals.Id && Globals.playerState.getJSONObject("hand").getJSONObject("dev_cards").getInt("monopoly_progress") >0 ){
                                 //use_monopoly_progress_card()
+                                showMonoply()
                             }
                         },
                             horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
@@ -3967,8 +3985,9 @@ fun showCartasDesarrollo(setShowDialog: (Boolean) -> Unit){
                                 onClick = {
 
                                     if(buy_development_card()){
-                                        buyCarta()
+                                        //buyCarta()
                                         Toast.makeText(context, "Carta de desarrollo comprada correctamente", Toast.LENGTH_SHORT).show()
+                                        getGameState(Globals.lobbyId)
 
                                     } else{
                                         Toast.makeText(context, "ERROR, compra fallida", Toast.LENGTH_SHORT).show()
@@ -4076,6 +4095,226 @@ fun showWinner(name: String, navController: NavHostController, setShowDialog: (B
                             )
                         )
                     }
+
+                }
+            }
+        }
+    }
+}
+
+
+@Composable
+fun showMonopolio(setShowDialog: (Boolean) -> Unit) {
+
+    var recurso1 = remember {mutableStateOf("")}
+
+    Dialog(onDismissRequest = { setShowDialog(false) }) {
+        Surface(
+            shape = RoundedCornerShape(16.dp),
+            color = AzulOscuro
+        ) {
+            Box(
+                contentAlignment = Alignment.Center
+            ) {
+                Column(modifier = Modifier.padding(20.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Seleccione una materia prima",
+                            color = Blanco,
+                            style = TextStyle(
+                                fontSize = 24.sp,
+                                fontFamily = FontFamily.Default,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "",
+                            tint = colorResource(android.R.color.darker_gray),
+                            modifier = Modifier
+                                .width(30.dp)
+                                .height(30.dp)
+                                .clickable { setShowDialog(false) }
+                        )
+                    }
+                    
+
+                    Spacer(modifier = Modifier.height(15.dp))
+
+                    Row(horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
+                        
+                        Image(painter = painterResource(id = R.drawable.clay), contentDescription = null, modifier = Modifier
+                            .size(50.dp)
+                            .clickable { recurso1.value = "CLAY" })
+
+                        Spacer(modifier = Modifier.width(5.dp))
+
+                        Image(painter = painterResource(id = R.drawable.sheep), contentDescription = null, modifier = Modifier
+                            .size(50.dp)
+                            .clickable { recurso1.value = "SHEEP" })
+
+                        Spacer(modifier = Modifier.width(5.dp))
+
+                        Image(painter = painterResource(id = R.drawable.trigo), contentDescription = null, modifier = Modifier
+                            .size(50.dp)
+                            .clickable { recurso1.value = "WHEAT" })
+
+                        Spacer(modifier = Modifier.width(5.dp))
+
+                        Image(painter = painterResource(id = R.drawable.wood), contentDescription = null, modifier = Modifier
+                            .size(50.dp)
+                            .clickable { recurso1.value = "WOOD" })
+
+                        Spacer(modifier = Modifier.width(5.dp))
+                        
+                        Image(painter = painterResource(id = R.drawable.rock), contentDescription = null, modifier = Modifier
+                            .size(50.dp)
+                            .clickable { recurso1.value = "STONE" })
+                        
+                    }
+
+                    Spacer(modifier = Modifier.height(15.dp))
+
+
+                    Button(
+                        onClick = {
+                            if (recurso1.value != ""){
+                                use_monopoly_progress_card(recurso1.value)
+                                getGameState(Globals.lobbyId)
+                                setShowDialog(false)
+                            } },
+                        modifier = Modifier
+                            //.fillMaxWidth(0.5f)
+                            .width(150.dp)
+                            .height(50.dp),
+                        colors = ButtonDefaults.buttonColors(backgroundColor = Verde),
+                        shape = RoundedCornerShape(50.dp),
+                        border = BorderStroke(3.dp, AzulOscuro),
+
+                        ) {
+                        Text(
+                            text = "Usar carta",
+                            style = TextStyle(
+                                color = AzulOscuro, fontWeight = FontWeight.Bold
+                            )
+                        )
+                    }
+
+
+
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun showDescubrimiento(setShowDialog: (Boolean) -> Unit) {
+
+    var recurso1 = remember {mutableStateOf("")}
+    var recurso2 = remember {mutableStateOf("")}
+    var cuenta = remember {mutableStateOf(0)}
+
+    Dialog(onDismissRequest = { setShowDialog(false) }) {
+        Surface(
+            shape = RoundedCornerShape(16.dp),
+            color = AzulOscuro
+        ) {
+            Box(
+                contentAlignment = Alignment.Center
+            ) {
+                Column(modifier = Modifier.padding(20.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Seleccione dos materias primas",
+                            color = Blanco,
+                            style = TextStyle(
+                                fontSize = 24.sp,
+                                fontFamily = FontFamily.Default,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "",
+                            tint = colorResource(android.R.color.darker_gray),
+                            modifier = Modifier
+                                .width(30.dp)
+                                .height(30.dp)
+                                .clickable { setShowDialog(false) }
+                        )
+                    }
+
+
+                    Spacer(modifier = Modifier.height(15.dp))
+
+                    Row(horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
+
+                        Image(painter = painterResource(id = R.drawable.clay), contentDescription = null, modifier = Modifier
+                            .size(50.dp)
+                            .clickable { recurso1.value = "CLAY" })
+
+                        Spacer(modifier = Modifier.width(5.dp))
+
+                        Image(painter = painterResource(id = R.drawable.sheep), contentDescription = null, modifier = Modifier
+                            .size(50.dp)
+                            .clickable { recurso1.value = "SHEEP" })
+
+                        Spacer(modifier = Modifier.width(5.dp))
+
+                        Image(painter = painterResource(id = R.drawable.trigo), contentDescription = null, modifier = Modifier
+                            .size(50.dp)
+                            .clickable { recurso1.value = "WHEAT" })
+
+                        Spacer(modifier = Modifier.width(5.dp))
+
+                        Image(painter = painterResource(id = R.drawable.wood), contentDescription = null, modifier = Modifier
+                            .size(50.dp)
+                            .clickable { recurso1.value = "WOOD" })
+
+                        Spacer(modifier = Modifier.width(5.dp))
+
+                        Image(painter = painterResource(id = R.drawable.rock), contentDescription = null, modifier = Modifier
+                            .size(50.dp)
+                            .clickable { recurso1.value = "STONE" })
+
+                    }
+
+                    Spacer(modifier = Modifier.height(15.dp))
+
+
+                    Button(
+                        onClick = {
+                            if (recurso1.value != ""){
+                                use_monopoly_progress_card(recurso1.value)
+                                setShowDialog(false)
+                            } },
+                        modifier = Modifier
+                            //.fillMaxWidth(0.5f)
+                            .width(150.dp)
+                            .height(50.dp),
+                        colors = ButtonDefaults.buttonColors(backgroundColor = Verde),
+                        shape = RoundedCornerShape(50.dp),
+                        border = BorderStroke(3.dp, AzulOscuro),
+
+                        ) {
+                        Text(
+                            text = "Usar carta",
+                            style = TextStyle(
+                                color = AzulOscuro, fontWeight = FontWeight.Bold
+                            )
+                        )
+                    }
+
+
 
                 }
             }
