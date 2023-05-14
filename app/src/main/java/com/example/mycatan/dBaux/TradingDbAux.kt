@@ -51,16 +51,16 @@ fun trade_with_bank(resource_type: String, amount: String, requested_type: Strin
             val json = JSONObject(respuesta)
             //get the string from the response
             val status = try {
-                json.getString("die1")
+                json.getString("message")
             } catch (e: JSONException) {
                 error  = true
             }
 
-            if (!error) {
-                println("Dados lanzados correctamente")
+            if (!error && status == "Trade with bank successful") {
+                println("Trade with bank successful")
                 result = true
             } else {
-                println("No se han podido lanzar los dados")
+                println("No se han podido intercambiar")
 
             }
             latch.countDown()
