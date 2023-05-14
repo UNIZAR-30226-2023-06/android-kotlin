@@ -31,6 +31,7 @@ fun trade_with_bank(resource_type: String, amount: String, requested_type: Strin
         .url("http://$ipBackend:8000/game_phases/trade_with_bank?lobby_id=${Globals.lobbyId}&resource_type=$resource_type&amount=$amount&requested_type=$requested_type")
         .get()
         .addHeader("accept", "application/json")
+        .addHeader("Authorization", "Bearer ${Globals.Token}")
         .addHeader("Content-Type", "application/x-www-form-urlencoded")
         .build()
 

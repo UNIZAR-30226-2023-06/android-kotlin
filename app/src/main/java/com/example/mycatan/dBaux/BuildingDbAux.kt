@@ -271,7 +271,7 @@ fun buy_development_card(): Boolean {
     val latch = CountDownLatch(1)
 
     val request = Request.Builder()
-        .url("http://$ipBackend:8000/game_phases/buy_development_card?lobby_id==${Globals.lobbyId}")
+        .url("http://$ipBackend:8000/game_phases/buy_development_card?lobby_id=${Globals.lobbyId}")
         .get()
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer ${Globals.Token}")
