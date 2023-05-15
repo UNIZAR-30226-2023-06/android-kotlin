@@ -177,7 +177,7 @@ fun use_monopoly_progress_card(resource1: String): Boolean {
     val latch = CountDownLatch(1)
 
     val request = Request.Builder()
-        .url("$ipBackend/game_phases/use_monopoly_progress_card?lobby_id=${Globals.lobbyId}&resource1=$resource1")
+        .url("$ipBackend/game_phases/use_monopoly_progress_card?lobby_id=${Globals.lobbyId}&resource=$resource1")
         .get()
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer ${Globals.Token}")

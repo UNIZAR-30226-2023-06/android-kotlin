@@ -483,7 +483,7 @@ class CatanViewModel : ViewModel() {
                 // DIBUJANDO LAS CARDS DE LOS PLAYERS ----------------------------------------------
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                    horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.Top
                 ) {
                     Column(
@@ -814,6 +814,9 @@ class CatanViewModel : ViewModel() {
 
                     // MOSTRAR POP-UP: "ES TU TURNO, TIRA LOS DADOS PARA OBTENER RECURSOS" (POP-UP CON UNOS DADOS PARA CLICAR)
 
+                    getlegalEdges(Partida.miColor)
+                    getlegalNodes(Partida.miColor)
+
                     popUpTradingTurn(playerName = Globals.gameState.getString("player_turn_name"), setShowDialog = { nuevoTurnoPhase.value = it }, setTradingBanca = { showpopUpBanca.value = true})
                    if (showpopUpBanca.value){
                         popUpBanca(setShowDialog = {
@@ -845,7 +848,7 @@ class CatanViewModel : ViewModel() {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(0.dp, 0.dp, 0.dp, 55.dp),
+                        .padding(0.dp, 0.dp, 0.dp, 0.dp),
                     contentAlignment = Alignment.BottomStart
                 ) {
                     Column(horizontalAlignment = Alignment.Start) {
@@ -909,6 +912,9 @@ class CatanViewModel : ViewModel() {
                                     tint = Blanco
                                 )
                             }
+
+                            Spacer(modifier = Modifier.width(5.dp))
+
                             //Chat
                             Button(
                                 onClick = {showChat.value = true },
@@ -3014,7 +3020,7 @@ fun construirCamino(idArista: String, setShowDialog: (Boolean) -> Unit) {
                     // 2º Es tu turno y estas en la fase inicial 1
                     // 3º Es tu turno y estas en la fase inicial 2
 
-                    if(  ((Globals.gameState.getString("player_turn")== Globals.Id && Globals.gameState.getString("turn_phase") == "BUILDING") && Partida.caminosGratis.value > 0  )
+                    if(  ((Globals.gameState.getString("player_turn")== Globals.Id && Globals.gameState.getString("turn_phase") == "TRADING") && Partida.caminosGratis.value > 0  )
                         ||
                          ((Partida.Arcilla.toInt()>=1 && Partida.Madera.toInt()>=1 && Globals.gameState.getString("player_turn")== Globals.Id && Globals.gameState.getString("turn_phase") == "BUILDING")
                                  || ((Globals.gameState.getString("player_turn")== Globals.Id && (Globals.gameState.getString("turn_phase") == "INITIAL_TURN1" || Globals.gameState.getString("turn_phase") == "INITIAL_TURN2")) && Partida.caminoINIdisp.value))
@@ -3353,9 +3359,9 @@ fun popUpTradingTurn(playerName : String, setShowDialog: (Boolean) -> Unit, setT
     var resultadoDados = Globals.gameState.getInt("die_1") + Globals.gameState.getInt("die_2").toInt()
 
     Dialog(onDismissRequest = {
-        if (Globals.gameState.getString("player_turn") != Globals.Id){
+
             setShowDialog(false)
-        }
+
     })
     { // PARA QUE SOLO SE CIERRE CON LA X QUITAR ESTO JEJE
         Surface(
@@ -3439,7 +3445,7 @@ fun popUpTradingTurn(playerName : String, setShowDialog: (Boolean) -> Unit, setT
                                     Text(text = "Negociar",color = Blanco)
                                 }
                                 Spacer(modifier = Modifier.width(5.dp))
-                                Button(
+                                /*Button(
                                     onClick = {
                                         timer.cancel()
                                         avanzarFase()
@@ -3452,7 +3458,7 @@ fun popUpTradingTurn(playerName : String, setShowDialog: (Boolean) -> Unit, setT
 
                                 ) {
                                     Text(text = "Continuar", color = Blanco)
-                                }
+                                }*/
                             }
 
 
@@ -3869,7 +3875,7 @@ fun showCartasDesarrollo(setShowDialog: (Boolean) -> Unit, showMonoply: () -> Un
                                 Globals.playerState.getJSONObject("hand").getJSONObject("dev_cards").getInt("church")
 
                         Column( modifier = Modifier.clickable {
-                            if(Globals.gameState.getString("turn_phase") == "BUILDING" && Globals.gameState.getString("player_turn") == Globals.Id && cartasPV > 0){
+                            if(Globals.gameState.getString("turn_phase") == "TRADING" && Globals.gameState.getString("player_turn") == Globals.Id && cartasPV > 0){
                                 use_victory_point_progress_card()
                                 getGameState(Globals.lobbyId)
                             }
@@ -3896,7 +3902,7 @@ fun showCartasDesarrollo(setShowDialog: (Boolean) -> Unit, showMonoply: () -> Un
                         Spacer(modifier = Modifier.width(10.dp))
 
                         Column(modifier = Modifier.clickable {
-                            if(Globals.gameState.getString("turn_phase") == "BUILDING" && Globals.gameState.getString("player_turn") == Globals.Id && Globals.playerState.getJSONObject("hand").getJSONObject("dev_cards").getInt("knight")>0) {
+                            if(Globals.gameState.getString("turn_phase") == "TRADING" && Globals.gameState.getString("player_turn") == Globals.Id && Globals.playerState.getJSONObject("hand").getJSONObject("dev_cards").getInt("knight")>0) {
                                 use_knight_card()
                                 showCaballero()
                             }
@@ -3919,7 +3925,7 @@ fun showCartasDesarrollo(setShowDialog: (Boolean) -> Unit, showMonoply: () -> Un
                         Spacer(modifier = Modifier.width(10.dp))
 
                         Column(modifier = Modifier.clickable {
-                            if(Globals.gameState.getString("turn_phase") == "BUILDING" && Globals.gameState.getString("player_turn") == Globals.Id && Globals.playerState.getJSONObject("hand").getJSONObject("dev_cards").getInt("invention_progress") > 0){
+                            if(Globals.gameState.getString("turn_phase") == "TRADING" && Globals.gameState.getString("player_turn") == Globals.Id && Globals.playerState.getJSONObject("hand").getJSONObject("dev_cards").getInt("invention_progress") > 0){
                                 showDescubrimiento()
                             }
                         },
@@ -3947,7 +3953,7 @@ fun showCartasDesarrollo(setShowDialog: (Boolean) -> Unit, showMonoply: () -> Un
                     horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
 
                         Column(modifier = Modifier.clickable {
-                            if(Globals.gameState.getString("turn_phase") == "BUILDING" && Globals.gameState.getString("player_turn") == Globals.Id && Globals.playerState.getJSONObject("hand").getJSONObject("dev_cards").getInt("road_progress") > 0){
+                            if(Globals.gameState.getString("turn_phase") == "TRADING" && Globals.gameState.getString("player_turn") == Globals.Id && Globals.playerState.getJSONObject("hand").getJSONObject("dev_cards").getInt("road_progress") > 0){
                                 use_road_progress_card()
                                 getGameState(Globals.lobbyId)
                                 Partida.caminosGratis.value = 2
@@ -3973,7 +3979,7 @@ fun showCartasDesarrollo(setShowDialog: (Boolean) -> Unit, showMonoply: () -> Un
                         Spacer(modifier = Modifier.width(10.dp))
 
                         Column(modifier = Modifier.clickable {
-                            if(Globals.gameState.getString("turn_phase") == "BUILDING" && Globals.gameState.getString("player_turn") == Globals.Id && Globals.playerState.getJSONObject("hand").getJSONObject("dev_cards").getInt("monopoly_progress") >0 ){
+                            if(Globals.gameState.getString("turn_phase") == "TRADING" && Globals.gameState.getString("player_turn") == Globals.Id && Globals.playerState.getJSONObject("hand").getJSONObject("dev_cards").getInt("monopoly_progress") >0 ){
                                 //use_monopoly_progress_card()
                                 showMonoply()
                             }
