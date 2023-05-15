@@ -228,8 +228,14 @@ fun HomePage(navController: NavHostController) {
                 Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp)) {
                     Button(
                         onClick = {
-                            unirsePartida.value = true
-                                  },
+                            if(getLobbyFromPlayer(Globals.Token)){
+                                // Si el jugador esta en un lobby, y clica aqui, le volvemos a unir al lobby
+                                //Recoger la información del lobby
+                                getGameState(Globals.lobbyId)
+                                navController.navigate(Routes.CatanBoard.route)
+                            } else{
+                                unirsePartida.value = true
+                                  }},
                         modifier = Modifier
                             .width(280.dp)
                             .height(60.dp),
@@ -253,13 +259,21 @@ fun HomePage(navController: NavHostController) {
                 Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp)) {
                     Button(
                         onClick = {
-                            // Creamos el lobby y entramos en el
-                            if(createLoby()){
-                                if(joinLobby(Globals.lobbyId.toInt())){
-                                    navController.navigate(Routes.CrearPartida.route)
-                                }
+                            if(getLobbyFromPlayer(Globals.Token)){
+                                // Si el jugador esta en un lobby, y clica aqui, le volvemos a unir al lobby
+                                //Recoger la información del lobby
+                                getGameState(Globals.lobbyId)
+                                navController.navigate(Routes.CatanBoard.route)
+                            } else{
+                                // Creamos el lobby y entramos en el
+                                if(createLoby()){
+                                    if(joinLobby(Globals.lobbyId.toInt())){
+                                        navController.navigate(Routes.CrearPartida.route)
+                                    }
 
+                                }
                             }
+
                                   },
                         modifier = Modifier
                             .width(280.dp)

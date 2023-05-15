@@ -19,8 +19,8 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 import kotlin.properties.Delegates
 
-//Javi 192.168.1.39
-val ipBackend = "http://192.168.1.39:8000"
+//Javi 192.168.1.39 "http://192.168.1.39:8000"
+val ipBackend = "https://cataninc-back-end-production-4d3e.up.railway.app"
 //railway:  "https://cataninc-back-end-production-4d3e.up.railway.app"
 //loreto: "192.168.1.133       "192.168.1.139"    10.1.54.191" "192.168.1.143" "192.168.1.135" "10.1.20.249"  "192.168.1.128"
 

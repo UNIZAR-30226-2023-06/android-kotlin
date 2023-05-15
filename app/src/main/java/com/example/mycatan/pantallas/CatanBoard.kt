@@ -89,7 +89,7 @@ class CatanViewModel : ViewModel() {
         getPlayerState()
 
         // GUARDAMOS LOS PUNTOS CON LOS QUE SE GANARIA UNA PARTIDA --------------------------------
-        val puntosVictoria = 10
+        val puntosVictoria = Globals.gameState.getInt("victory_points_to_win")
 
         // INICIALIZACIÓN DE LOS JUGADORES EN EL TABLERO -----------------------------------------
 
@@ -473,7 +473,7 @@ class CatanViewModel : ViewModel() {
                 if(showpopUpMonopoly.value){
                     showMonopolio(setShowDialog = {showpopUpMonopoly.value = it })
                 }
-                if (showCaballero.value){
+                if (showCaballero.value && Globals.gameState.getBoolean("thief_enabled")){
                     popUp7detectado(setShowDialog = {
                         showCaballero.value = it
                         showCartasDesarrollo.value = it} )
@@ -709,7 +709,7 @@ class CatanViewModel : ViewModel() {
 
                             override fun onFinish() {
                                 // Avanzamos fase y ponemos la barra de progreso a 0
-                                //avanzarFase()
+                                 //avanzarFase()
                                 //progress = 0f
                             }
                         }
@@ -809,7 +809,7 @@ class CatanViewModel : ViewModel() {
                         popUpNewTurno(playerName = Globals.gameState.getString("player_turn_name"), setShowDialog = { nuevoTurnoPhase.value = it }, setLadron = { showpopUpLadron.value = true})
                     }
 
-                     if(showpopUpLadron.value){
+                     if(showpopUpLadron.value && Globals.gameState.getBoolean("thief_enabled")){
                         popUp7detectado(setShowDialog = {
                             showpopUpLadron.value = it
                             nuevoTurnoPhase.value = it
@@ -4192,6 +4192,9 @@ fun showCartasDesarrollo(setShowDialog: (Boolean) -> Unit, showMonoply: () -> Un
                         Column( modifier = Modifier.clickable {
                             if(Globals.gameState.getString("turn_phase") == "TRADING" && Globals.gameState.getString("player_turn") == Globals.Id && cartasPV > 0){
                                 use_victory_point_progress_card()
+                                Toast
+                                    .makeText(context, "Carta PV usada", Toast.LENGTH_SHORT)
+                                    .show()
                                 getGameState(Globals.lobbyId)
                             }
                         },
@@ -4219,6 +4222,9 @@ fun showCartasDesarrollo(setShowDialog: (Boolean) -> Unit, showMonoply: () -> Un
                         Column(modifier = Modifier.clickable {
                             if(Globals.gameState.getString("turn_phase") == "TRADING" && Globals.gameState.getString("player_turn") == Globals.Id && Globals.playerState.getJSONObject("hand").getJSONObject("dev_cards").getInt("knight")>0) {
                                 use_knight_card()
+                                Toast
+                                    .makeText(context, "Carta Caballero usada", Toast.LENGTH_SHORT)
+                                    .show()
                                 showCaballero()
                             }
                         },
@@ -4270,6 +4276,9 @@ fun showCartasDesarrollo(setShowDialog: (Boolean) -> Unit, showMonoply: () -> Un
                         Column(modifier = Modifier.clickable {
                             if(Globals.gameState.getString("turn_phase") == "TRADING" && Globals.gameState.getString("player_turn") == Globals.Id && Globals.playerState.getJSONObject("hand").getJSONObject("dev_cards").getInt("road_progress") > 0){
                                 use_road_progress_card()
+                                Toast
+                                    .makeText(context, "Carta 2 caminos gratis usada", Toast.LENGTH_SHORT)
+                                    .show()
                                 getGameState(Globals.lobbyId)
                                 Partida.caminosGratis.value = 2
                                 getlegalEdges(Partida.miColor)
@@ -4443,6 +4452,7 @@ fun showWinner(name: String, navController: NavHostController, setShowDialog: (B
 @Composable
 fun showMonopolio(setShowDialog: (Boolean) -> Unit) {
 
+    val context = LocalContext.current
     val options = listOf("WOOD", "CLAY", "SHEEP", "STONE", "WHEAT")
 
     var recurso by remember { mutableStateOf(options[0]) }
@@ -4497,6 +4507,9 @@ fun showMonopolio(setShowDialog: (Boolean) -> Unit) {
                     Button(
                         onClick = {
                             use_monopoly_progress_card(recurso)
+                            Toast
+                                .makeText(context, "Carta monopolio usada", Toast.LENGTH_SHORT)
+                                .show()
                             getGameState(Globals.lobbyId)
                             setShowDialog(false)
                              },
@@ -4527,6 +4540,7 @@ fun showMonopolio(setShowDialog: (Boolean) -> Unit) {
 
 @Composable
 fun showDescubrimiento(setShowDialog: (Boolean) -> Unit) {
+    val context = LocalContext.current
 
     val options = listOf("WOOD", "CLAY", "SHEEP", "STONE", "WHEAT")
 
@@ -4588,6 +4602,9 @@ fun showDescubrimiento(setShowDialog: (Boolean) -> Unit) {
                     Button(
                         onClick = {
                                 use_invention_card(recurso1, recurso2)
+                                Toast
+                                    .makeText(context, "Carta invento usada", Toast.LENGTH_SHORT)
+                                    .show()
                                 getGameState(Globals.lobbyId)
                                 setShowDialog(false)
                              },

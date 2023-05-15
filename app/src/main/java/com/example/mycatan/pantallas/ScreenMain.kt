@@ -1,9 +1,11 @@
 package com.example.mycatan.pantallas
 
+import android.content.pm.ActivityInfo
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.mycatan.LockScreenOrientation
 import com.example.mycatan.others.Routes
 import com.example.mycatan.others.inicializarAristas
 import com.example.mycatan.others.inicializarCoords
@@ -43,6 +45,7 @@ fun ScreenMain(){
             SplashScreen(navController = navController)
         }
         composable(Routes.CatanBoard.route) {
+            //LockScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
             var clase = CatanViewModel()
             clase.CatanBoard(navController = navController)
         }
