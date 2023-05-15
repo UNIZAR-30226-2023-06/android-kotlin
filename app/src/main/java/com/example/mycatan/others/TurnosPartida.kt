@@ -42,12 +42,33 @@ suspend fun esperarTurno(): Deferred<Boolean> {
                 if (Globals.gameState.getString("turn_phase")!= Globals.lastFase){
                     Globals.lastFase = Globals.gameState.getString("turn_phase")
                 }
+
+
+
                 timer.cancel()
                 miTurno= true
             } else{
                 miTurno= false
+
+                if ( Globals.gameState.getString("turn_phase") == "TRADING"){
+                        val jsonArray = Globals.gameState.getJSONArray("trade_requests")
+                        for (i in 0 until jsonArray.length()) {
+                            val jsonObject = jsonArray.getJSONObject(i)
+                            if (jsonObject.getString("reciever") == Globals.Id){
+                                Globals.solicitudTrade = jsonObject
+                                Globals.newTrade.value = true
+                                break
+                            }
+                        }
+                }
+
+
+
+
                 getGameState(Globals.lobbyId)
                 delay(1000) // esperar un segundo antes de volver a llamar a getGameState
+
+
             }
             // Llamamos a la funcion que relaciona el estado de la partida con las acciones que se pueden hacer
             // Si no somos el jugador que tiene el turno, no se nos permite hacer nada, saldrá pop-up de esperar

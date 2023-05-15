@@ -57,6 +57,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.json.JSONArray
+import org.json.JSONObject
 
 val time = Globals.gameState.getInt("turn_time") * 1000
 var timer = object: CountDownTimer(time.toLong(), 1000) {
@@ -491,8 +492,9 @@ class CatanViewModel : ViewModel() {
                     ) {
                         if (jugador_0 != null) {
                             // Pop-up de intercambio de elementos
-                            if (tradePlayer0.value && jugador_0!!.yo != true)
+                            if (tradePlayer0.value && jugador_0!!.yo != true && Globals.gameState.getString("turn_phase") == "TRADING" && Globals.gameState.getString("player_turn")== Globals.Id )
                                 showTrading(
+                                    playerId = Globals.gameState.getJSONObject("player_0").getString("id"),
                                     name = jugador_0!!.nombre,
                                     foto = jugador_0!!.imagen,
                                     setShowDialog = { tradePlayer0.value = it })
@@ -531,8 +533,9 @@ class CatanViewModel : ViewModel() {
                         Spacer(modifier = Modifier.height(5.dp))
 
                         if (jugador_1 != null) {
-                            if (tradePlayer1.value && jugador_1!!.yo != true)
+                            if (tradePlayer1.value && jugador_1!!.yo != true&& Globals.gameState.getString("turn_phase") == "TRADING" && Globals.gameState.getString("player_turn")== Globals.Id )
                                 showTrading(
+                                    playerId = Globals.gameState.getJSONObject("player_1").getString("id"),
                                     name = jugador_1!!.nombre,
                                     foto = jugador_1!!.imagen,
                                     setShowDialog = { tradePlayer1.value = it })
@@ -573,8 +576,9 @@ class CatanViewModel : ViewModel() {
 
                     Column(modifier = Modifier.weight(1f)) {
                         if (jugador_2 != null) {
-                            if (tradePlayer2.value && jugador_2!!.yo != true)
+                            if (tradePlayer2.value && jugador_2!!.yo != true && Globals.gameState.getString("turn_phase") == "TRADING" && Globals.gameState.getString("player_turn")== Globals.Id )
                                 showTrading(
+                                    playerId = Globals.gameState.getJSONObject("player_2").getString("id"),
                                     name = jugador_2!!.nombre,
                                     foto = jugador_2!!.imagen,
                                     setShowDialog = { tradePlayer2.value = it })
@@ -612,8 +616,9 @@ class CatanViewModel : ViewModel() {
 
                         Spacer(modifier = Modifier.height(5.dp))
                         if (jugador_3 != null) {
-                            if (tradePlayer3.value && jugador_3!!.yo != true)
+                            if (tradePlayer3.value && jugador_3!!.yo != true&& Globals.gameState.getString("turn_phase") == "TRADING" && Globals.gameState.getString("player_turn")== Globals.Id )
                                 showTrading(
+                                    playerId = Globals.gameState.getJSONObject("player_3").getString("id"),
                                     name = jugador_3!!.nombre,
                                     foto = jugador_3!!.imagen,
                                     setShowDialog = { tradePlayer3.value = it })
@@ -818,7 +823,15 @@ class CatanViewModel : ViewModel() {
                     getlegalNodes(Partida.miColor)
 
                     popUpTradingTurn(playerName = Globals.gameState.getString("player_turn_name"), setShowDialog = { nuevoTurnoPhase.value = it }, setTradingBanca = { showpopUpBanca.value = true})
-                   if (showpopUpBanca.value){
+
+                    if (Globals.newTrade.value){
+                        //TODO: popup de new trade !!!! al acabarhay que poner new trade a false y resetear el jsonObject
+                        tradeRecibido(setShowDialog = {
+                            Globals.newTrade.value = it
+                            Globals.solicitudTrade = JSONObject()
+                        })
+                    }
+                    if (showpopUpBanca.value){
                         popUpBanca(setShowDialog = {
                             showpopUpBanca.value = it
                             nuevoTurnoPhase.value = it
@@ -1030,7 +1043,7 @@ fun dataRecurso(id: String, cantidad: Int) {
 }
 
 @Composable
-fun incIntercambio( tipo : String, mainPlayer: Boolean){
+fun incIntercambio( tipo : String, mainPlayer: Boolean, onInc2: (Int) -> Unit){
     // INCREMENTADOR/DECREMENTADOR NUMERO
     var inicio = 0;
     var count by remember { mutableStateOf(inicio) }
@@ -1046,6 +1059,7 @@ fun incIntercambio( tipo : String, mainPlayer: Boolean){
             onClick = {
                 if(count > 0){
                     count--
+                    onInc2(count)
                 } },
             modifier = Modifier.size(25.dp)  ) {
             Icon(Icons.Filled.KeyboardArrowDown,contentDescription = "Decrement")
@@ -1072,6 +1086,7 @@ fun incIntercambio( tipo : String, mainPlayer: Boolean){
                 }
                 else {
                     count++
+                    onInc2(count)
                 }
 
             },
@@ -1083,7 +1098,7 @@ fun incIntercambio( tipo : String, mainPlayer: Boolean){
 }
 
 @Composable
-fun intercambioRecurso(id: String, mainPlayer: Boolean) {
+fun intercambioRecurso(id: String, mainPlayer: Boolean, onInc: (Int) -> Unit) {
 
     var painterID = painterResource(R.drawable.sheep)
     when (id) {
@@ -1115,7 +1130,7 @@ fun intercambioRecurso(id: String, mainPlayer: Boolean) {
             contentDescription = null,
             modifier = Modifier.size(35.dp)
         )
-        incIntercambio(id, mainPlayer)
+        incIntercambio(id, mainPlayer, onInc2 = onInc)
 
     }
 }
@@ -1189,11 +1204,252 @@ fun playerFoto(modifier: Modifier, foto: String, colorFondo: String ){
     }
 }
 
+@Composable
+fun tradeRecibido(setShowDialog: (Boolean) -> Unit) {
+    Dialog(onDismissRequest = { }) {
+        Surface(
+            shape = RoundedCornerShape(16.dp),
+            color = AzulOscuro
+        ) {
+            Box(
+                contentAlignment = Alignment.Center
+            ) {
+                Column(modifier = Modifier.padding(20.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
 
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Solicitud de intercambio",
+                            color = Blanco,
+                            style = TextStyle(
+                                fontSize = 24.sp,
+                                fontFamily = FontFamily.Default,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    Row(horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
+
+                        //TODO : RESOURCE1
+                        Text(
+                            text = "Te ofrecen",
+                            color = Blanco,
+                            style = TextStyle(
+                                fontSize = 18.sp,
+                                fontFamily = FontFamily.Default,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+
+                        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+                            Image(painter = painterResource(id = R.drawable.clay), contentDescription = null, modifier = Modifier.size(45.dp))
+                            Text(
+                                text = Globals.solicitudTrade.getJSONArray("resource1").getInt(0).toString(),
+                                color = Blanco,
+                                style = TextStyle(
+                                    fontSize = 18.sp,
+                                    fontFamily = FontFamily.Default,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            )
+                        }
+                        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+                            Image(painter = painterResource(id = R.drawable.wood), contentDescription = null, modifier = Modifier.size(45.dp))
+                            Text(
+                                text = Globals.solicitudTrade.getJSONArray("resource1").getInt(1).toString(),
+                                color = Blanco,
+                                style = TextStyle(
+                                    fontSize = 18.sp,
+                                    fontFamily = FontFamily.Default,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            )
+                        }
+                        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+                            Image(painter = painterResource(id = R.drawable.sheep), contentDescription = null, modifier = Modifier.size(45.dp))
+                            Text(
+                                text = Globals.solicitudTrade.getJSONArray("resource1").getInt(2).toString(),
+                                color = Blanco,
+                                style = TextStyle(
+                                    fontSize = 18.sp,
+                                    fontFamily = FontFamily.Default,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            )
+                        }
+                        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+                            Image(painter = painterResource(id = R.drawable.rock), contentDescription = null, modifier = Modifier.size(45.dp))
+                            Text(
+                                text = Globals.solicitudTrade.getJSONArray("resource1").getInt(3).toString(),
+                                color = Blanco,
+                                style = TextStyle(
+                                    fontSize = 18.sp,
+                                    fontFamily = FontFamily.Default,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            )
+                        }
+                        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+                            Image(painter = painterResource(id = R.drawable.trigo), contentDescription = null, modifier = Modifier.size(45.dp))
+                            Text(
+                                text = Globals.solicitudTrade.getJSONArray("resource1").getInt(4).toString(),
+                                color = Blanco,
+                                style = TextStyle(
+                                    fontSize = 18.sp,
+                                    fontFamily = FontFamily.Default,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            )
+                        }
+                    }
+
+
+
+                    Row(horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
+
+                        //TODO : RESOURCE2
+                        Text(
+                            text = "Solicitan",
+                            color = Blanco,
+                            style = TextStyle(
+                                fontSize = 18.sp,
+                                fontFamily = FontFamily.Default,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+
+                        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+                            Image(painter = painterResource(id = R.drawable.clay), contentDescription = null, modifier = Modifier.size(45.dp))
+                            Text(
+                                text = Globals.solicitudTrade.getJSONArray("resource2").getInt(0).toString(),
+                                color = Blanco,
+                                style = TextStyle(
+                                    fontSize = 18.sp,
+                                    fontFamily = FontFamily.Default,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            )
+                        }
+                        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+                            Image(painter = painterResource(id = R.drawable.wood), contentDescription = null, modifier = Modifier.size(45.dp))
+                            Text(
+                                text = Globals.solicitudTrade.getJSONArray("resource2").getInt(1).toString(),
+                                color = Blanco,
+                                style = TextStyle(
+                                    fontSize = 18.sp,
+                                    fontFamily = FontFamily.Default,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            )
+                        }
+                        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+                            Image(painter = painterResource(id = R.drawable.sheep), contentDescription = null, modifier = Modifier.size(45.dp))
+                            Text(
+                                text = Globals.solicitudTrade.getJSONArray("resource2").getInt(2).toString(),
+                                color = Blanco,
+                                style = TextStyle(
+                                    fontSize = 18.sp,
+                                    fontFamily = FontFamily.Default,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            )
+                        }
+                        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+                            Image(painter = painterResource(id = R.drawable.rock), contentDescription = null, modifier = Modifier.size(45.dp))
+                            Text(
+                                text = Globals.solicitudTrade.getJSONArray("resource2").getInt(3).toString(),
+                                color = Blanco,
+                                style = TextStyle(
+                                    fontSize = 18.sp,
+                                    fontFamily = FontFamily.Default,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            )
+                        }
+                        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+                            Image(painter = painterResource(id = R.drawable.trigo.), contentDescription = null, modifier = Modifier.size(45.dp))
+                            Text(
+                                text = Globals.solicitudTrade.getJSONArray("resource2").getInt(4).toString(),
+                                color = Blanco,
+                                style = TextStyle(
+                                    fontSize = 18.sp,
+                                    fontFamily = FontFamily.Default,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            )
+                        }
+                    }
+
+
+                    // Solo se puede contruir en 3 ocasiones
+                    // 1º Es tu turno , tienes los recursos y estas en la fase de construccion
+                    // 2º Es tu turno y estas en la fase inicial 1
+                    // 3º Es tu turno y estas en la fase inicial 2
+
+
+                    Button(
+                        onClick = {
+                            Partida.Aristas[idArista] = "carretera"
+                            if (Globals.gameState.getString("turn_phase") == "INITIAL_TURN1" || Globals.gameState.getString("turn_phase") == "INITIAL_TURN2" || Partida.caminosGratis.value > 0){
+                                var descended = false
+                                if (Partida.caminosGratis.value > 0){
+                                    Partida.caminosGratis.value = Partida.caminosGratis.value - 1
+                                    descended = true
+                                }
+                                val decimal = Integer.parseInt(idArista, 16) // convertir a decimal
+                                firstPhaseBuildRoad(decimal.toString())
+                                Partida.caminoINIdisp.value= false
+                                if(descended)
+                                    getlegalNodes(Partida.miColor)
+                                else
+                                    getlegalNodesINI(Partida.miColor)
+                                getlegalEdges(Partida.miColor)
+
+
+                            }else {
+                                val decimal = Integer.parseInt(idArista, 16) // convertir a decimal
+                                buy_and_build_road(decimal.toString())
+                                buildCamino()
+                                getlegalEdges(Partida.miColor)
+                                getlegalNodes(Partida.miColor)
+                            }
+
+
+                            setShowDialog(false) },
+                        modifier = Modifier
+                            //.fillMaxWidth(0.5f)
+                            .width(150.dp)
+                            .height(50.dp),
+                        colors = ButtonDefaults.buttonColors(backgroundColor = Verde),
+                        shape = RoundedCornerShape(50.dp),
+                        border = BorderStroke(3.dp, AzulOscuro),
+
+                        ) {
+                        Text(
+                            text = "Construir",
+                            style = TextStyle(
+                                color = AzulOscuro, fontWeight = FontWeight.Bold
+                            )
+                        )
+                    }
+
+
+
+                }
+            }
+        }
+    }
+}
+}
 
 // DIALOG DE INTERCAMBIO DE RECURSOSO --------------------------------------------------------------
 @Composable
-fun showTrading(name: String ,foto: String, setShowDialog: (Boolean) -> Unit) {
+fun showTrading(playerId: String,name: String ,foto: String, setShowDialog: (Boolean) -> Unit) {
 
     Dialog(onDismissRequest = { setShowDialog(false) }) {
         Surface(
@@ -1267,11 +1523,11 @@ fun showTrading(name: String ,foto: String, setShowDialog: (Boolean) -> Unit) {
                         Spacer(modifier = Modifier.width(5.dp))
 
                         Column() {
-                            intercambioRecurso(id = "arcilla", true)
-                            intercambioRecurso(id = "roca", true)
-                            intercambioRecurso(id = "oveja", true)
-                            intercambioRecurso(id = "trigo", true)
-                            intercambioRecurso(id = "madera", true)
+                            intercambioRecurso(id = "arcilla", true, onInc = { Partida.interArcilla1.value = it})
+                            intercambioRecurso(id = "roca", true, onInc = { Partida.interRoca1.value = it})
+                            intercambioRecurso(id = "oveja", true, onInc = { Partida.interOvejas1.value = it})
+                            intercambioRecurso(id = "trigo", true, onInc = { Partida.interTrigo1.value = it})
+                            intercambioRecurso(id = "madera", true, onInc = { Partida.interMadera1.value = it})
 
                         }
 
@@ -1307,6 +1563,18 @@ fun showTrading(name: String ,foto: String, setShowDialog: (Boolean) -> Unit) {
 
                             Button(
                                 onClick = {
+                                    trade_with_player(playerid = playerId,
+                                        madera1 = Partida.interMadera1.value,
+                                        madera2 = Partida.interMadera2.value,
+                                        clay1 = Partida.interArcilla1.value,
+                                        clay2 = Partida.interArcilla2.value,
+                                        oveja1 = Partida.interOvejas1.value,
+                                        oveja2 = Partida.interOvejas2.value,
+                                        trigo1 = Partida.interTrigo1.value,
+                                        trigo2 = Partida.interTrigo2.value,
+                                        roca1 = Partida.interRoca1.value,
+                                        roca2 = Partida.interRoca2.value,
+                                    )
                                     setShowDialog(false)
                                 },
                                 modifier = Modifier
@@ -1330,11 +1598,11 @@ fun showTrading(name: String ,foto: String, setShowDialog: (Boolean) -> Unit) {
                         Spacer(modifier = Modifier.width(15.dp))
 
                         Column() {
-                            intercambioRecurso(id = "arcilla", false)
-                            intercambioRecurso(id = "roca", false)
-                            intercambioRecurso(id = "oveja", false)
-                            intercambioRecurso(id = "trigo", false)
-                            intercambioRecurso(id = "madera", false)
+                            intercambioRecurso(id = "arcilla", false, onInc = { Partida.interArcilla2.value = it})
+                            intercambioRecurso(id = "roca", false, onInc = { Partida.interRoca2.value = it})
+                            intercambioRecurso(id = "oveja", false, onInc = { Partida.interOvejas2.value = it})
+                            intercambioRecurso(id = "trigo", false, onInc = { Partida.interTrigo2.value = it})
+                            intercambioRecurso(id = "madera", false, onInc = { Partida.interMadera2.value = it})
                         }
 
                         Spacer(modifier = Modifier.width(5.dp))

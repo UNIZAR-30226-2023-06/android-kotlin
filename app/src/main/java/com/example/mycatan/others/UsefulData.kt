@@ -46,6 +46,8 @@ object Globals {
     lateinit var juego: JSONObject
     lateinit var gameState: JSONObject
     var playerState: JSONObject = JSONObject()
+    var solicitudTrade: JSONObject = JSONObject()
+    var newTrade = mutableStateOf(false)
     var lastPlayer = "nada"
     var lastFase = "nada"
     var newDados = mutableStateOf(false)
@@ -67,6 +69,17 @@ object Partida {
     lateinit var Aristas: HashMap<String,String>
     lateinit var CoordVertices: HashMap<Offset, String>
     lateinit var CoordAristas: HashMap<Offset, String>
+    var interArcilla1  = mutableStateOf(0)
+    var interMadera1  = mutableStateOf(0)
+    var interRoca1  = mutableStateOf(0)
+    var interTrigo1  = mutableStateOf(0)
+    var interOvejas1  = mutableStateOf(0)
+    var interArcilla2  = mutableStateOf(0)
+    var interMadera2  = mutableStateOf(0)
+    var interRoca2  = mutableStateOf(0)
+    var interTrigo2  = mutableStateOf(0)
+    var interOvejas2  = mutableStateOf(0)
+
     lateinit var miColor : String
     var casaINIdisp =  mutableStateOf(false)
     var caminoINIdisp =  mutableStateOf(false)
