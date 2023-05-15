@@ -703,7 +703,7 @@ class CatanViewModel : ViewModel() {
 
                             override fun onFinish() {
                                 // Avanzamos fase y ponemos la barra de progreso a 0
-                                avanzarFase()
+                                //avanzarFase()
                                 //progress = 0f
                             }
                         }
@@ -828,6 +828,8 @@ class CatanViewModel : ViewModel() {
                     timer.cancel()
                     timer.start()
 
+                    getlegalEdges(Partida.miColor)
+                    getlegalNodes(Partida.miColor)
                     // MOSTRAR POP-UP: "ES TU TURNO, TIRA LOS DADOS PARA OBTENER RECURSOS" (POP-UP CON UNOS DADOS PARA CLICAR)
                     popUpBuildingTurn(playerName = Globals.gameState.getString("player_turn_name"), setShowDialog = { nuevoTurnoPhase.value = it })
 
@@ -2775,10 +2777,10 @@ fun showConstruir( idVert: String, setShowDialog: (Boolean) -> Unit) {
                             // 2º Es tu turno y estas en la fase inicial 1
                             // 3º Es tu turno y estas en la fase inicial 2
 
-                            if( Partida.casaINIdisp.value
-                                && ((Partida.Trigo.toInt()>=1 && Partida.Madera.toInt()>=1 && Partida.Ovejas.toInt()>=1 && Partida.Arcilla.toInt()>=1 && Globals.gameState.getString("player_turn")== Globals.Id &&  Globals.gameState.getString("turn_phase") == "BUILDING")
-                                || (Globals.gameState.getString("player_turn")== Globals.Id
-                                        && (Globals.gameState.getString("turn_phase") == "INITIAL_TURN1" || Globals.gameState.getString("turn_phase") == "INITIAL_TURN2")))
+                            if(
+                                ((Partida.Trigo.toInt()>=1 && Partida.Madera.toInt()>=1 && Partida.Ovejas.toInt()>=1 && Partida.Arcilla.toInt()>=1 && Globals.gameState.getString("player_turn")== Globals.Id &&  Globals.gameState.getString("turn_phase") == "BUILDING")
+                                || ((Globals.gameState.getString("player_turn")== Globals.Id && (Globals.gameState.getString("turn_phase") == "INITIAL_TURN1" || Globals.gameState.getString("turn_phase") == "INITIAL_TURN2")) && Partida.casaINIdisp.value)
+                                        )
                             ){
                                 Button(
                                     onClick = {
@@ -2789,6 +2791,7 @@ fun showConstruir( idVert: String, setShowDialog: (Boolean) -> Unit) {
                                             Partida.casaINIdisp.value= false
                                             //se actualizan los edges legales al poner una  casa
                                             getlegalEdges(Partida.miColor)
+                                            getlegalNodesINI(Partida.miColor)
 
                                         }  else{
                                             // IGUAL QUE ARRIBA PERO CONTRUIMOS EN LA FASE DE CONSTRUCCION -------------------
@@ -2796,7 +2799,11 @@ fun showConstruir( idVert: String, setShowDialog: (Boolean) -> Unit) {
                                             buy_and_build_village(decimal.toString())
                                             // Resta los recursos
                                             buildPoblado()
+                                            getlegalEdges(Partida.miColor)
+                                            getlegalNodes(Partida.miColor)
                                         }
+
+
                                         setShowDialog(false) },
                                     modifier = Modifier
                                         //.fillMaxWidth(0.5f)
@@ -3008,27 +3015,38 @@ fun construirCamino(idArista: String, setShowDialog: (Boolean) -> Unit) {
                     // 3º Es tu turno y estas en la fase inicial 2
 
                     if(  ((Globals.gameState.getString("player_turn")== Globals.Id && Globals.gameState.getString("turn_phase") == "BUILDING") && Partida.caminosGratis.value > 0  )
-                        || (Partida.caminoINIdisp.value
-                        && ((Partida.Arcilla.toInt()>=1 && Partida.Madera.toInt()>=1 && Globals.gameState.getString("player_turn")== Globals.Id && Globals.gameState.getString("turn_phase") == "BUILDING")
-                            || (Globals.gameState.getString("player_turn")== Globals.Id
-                            && (Globals.gameState.getString("turn_phase") == "INITIAL_TURN1" || Globals.gameState.getString("turn_phase") == "INITIAL_TURN2"))))
-                    ){
+                        ||
+                         ((Partida.Arcilla.toInt()>=1 && Partida.Madera.toInt()>=1 && Globals.gameState.getString("player_turn")== Globals.Id && Globals.gameState.getString("turn_phase") == "BUILDING")
+                                 || ((Globals.gameState.getString("player_turn")== Globals.Id && (Globals.gameState.getString("turn_phase") == "INITIAL_TURN1" || Globals.gameState.getString("turn_phase") == "INITIAL_TURN2")) && Partida.caminoINIdisp.value))
+                    )
+                         {
                         Button(
                             onClick = {
                                 Partida.Aristas[idArista] = "carretera"
                                 if (Globals.gameState.getString("turn_phase") == "INITIAL_TURN1" || Globals.gameState.getString("turn_phase") == "INITIAL_TURN2" || Partida.caminosGratis.value > 0){
+                                    var descended = false
                                     if (Partida.caminosGratis.value > 0){
                                         Partida.caminosGratis.value = Partida.caminosGratis.value - 1
+                                         descended = true
                                     }
                                     val decimal = Integer.parseInt(idArista, 16) // convertir a decimal
                                     firstPhaseBuildRoad(decimal.toString())
                                     Partida.caminoINIdisp.value= false
+                                    if(descended)
+                                        getlegalNodes(Partida.miColor)
+                                    else
+                                        getlegalNodesINI(Partida.miColor)
+                                    getlegalEdges(Partida.miColor)
+
 
                                 }else {
                                     val decimal = Integer.parseInt(idArista, 16) // convertir a decimal
                                     buy_and_build_road(decimal.toString())
                                     buildCamino()
+                                    getlegalEdges(Partida.miColor)
+                                    getlegalNodes(Partida.miColor)
                                 }
+
 
                                 setShowDialog(false) },
                             modifier = Modifier
@@ -3696,7 +3714,7 @@ fun popUpBanca( setShowDialog: (Boolean) -> Unit) {
                         Button(
                             onClick = {
                                 // FUNCIÓN TRADING BANCA
-                                if(trade_with_bank(solicita, "1", requiere)){
+                                if(trade_with_bank(solicita, "4", requiere)){
                                     Toast.makeText(
                                         context,
                                         "Intercambio correcto",
@@ -4035,7 +4053,7 @@ fun showWinner(name: String, navController: NavHostController, setShowDialog: (B
                             text = "¡Victoria!",
                             color = Blanco,
                             style = TextStyle(
-                                fontSize = 10.sp,
+                                fontSize = 30.sp,
                                 fontFamily = FontFamily.Default,
                                 fontWeight = FontWeight.Bold
                             )
@@ -4044,7 +4062,7 @@ fun showWinner(name: String, navController: NavHostController, setShowDialog: (B
                             text = "Has ganado la partida",
                             color = Blanco,
                             style = TextStyle(
-                                fontSize = 10.sp,
+                                fontSize = 25.sp,
                                 fontFamily = FontFamily.Default,
                                 fontWeight = FontWeight.Bold
                             )
@@ -4054,7 +4072,7 @@ fun showWinner(name: String, navController: NavHostController, setShowDialog: (B
                             text = "¡Derrota!",
                             color = Blanco,
                             style = TextStyle(
-                                fontSize = 10.sp,
+                                fontSize = 30.sp,
                                 fontFamily = FontFamily.Default,
                                 fontWeight = FontWeight.Bold
                             )
@@ -4063,7 +4081,7 @@ fun showWinner(name: String, navController: NavHostController, setShowDialog: (B
                             text = "El ganador es: $name",
                             color = Blanco,
                             style = TextStyle(
-                                fontSize = 10.sp,
+                                fontSize = 25.sp,
                                 fontFamily = FontFamily.Default,
                                 fontWeight = FontWeight.Bold
                             )

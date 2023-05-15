@@ -274,7 +274,46 @@ fun firstPhaseBuildRoad( edge: String): Boolean {
 
 
 
+fun getlegalNodes( color: String ): Boolean {
+    var result = false
+    val latch = CountDownLatch(1)
 
+    val request = Request.Builder()
+        .url("$ipBackend/get-legal-building-nodes-non-initial-phases?lobby_id=${Globals.lobbyId}&color=$color")
+        .get()
+        .addHeader("accept", "application/json")
+        .addHeader("Authorization", "Bearer ${Globals.Token}")
+        .addHeader("Content-Type", "application/x-www-form-urlencoded")
+        .build()
+
+    val client = OkHttpClient()
+
+    client.newCall(request).enqueue(object : Callback {
+        override fun onFailure(call: Call, e: IOException) {
+            println("ERROR al conectar con backend")
+            latch.countDown()
+        }
+
+        override fun onResponse(call: Call, response: Response) {
+            val respuesta = response.body?.string().toString()
+
+            println(respuesta)
+            //transform the string to json array
+            val jsonArray = JSONArray(respuesta)
+
+            //Se reemplaza la lista de nodos legales con la actual
+            Partida.nodosLegales.clear()
+            for (i in 0 until jsonArray.length()) {
+                val value = jsonArray.getInt(i)
+                //println(value)
+                Partida.nodosLegales.add(value.toString())
+            }
+            latch.countDown()
+        }
+    })
+    latch.await()
+    return result
+}
 
 fun getlegalNodesINI( color: String ): Boolean {
     var result = false
