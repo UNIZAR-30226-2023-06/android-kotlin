@@ -21,8 +21,8 @@ import java.util.concurrent.CountDownLatch
     @return: id del lobby creado
  */
 
-fun createLoby(): Int {
-    var lobby_id = 0
+fun createLoby(): Boolean {
+    var lobby_id = false
     val latch = CountDownLatch(1)
 
     val mediaType = "application/x-www-form-urlencoded".toMediaTypeOrNull()
@@ -32,7 +32,7 @@ fun createLoby(): Int {
     )
 
     val request = Request.Builder()
-        .url("$ipBackend/create-lobby'")
+        .url("$ipBackend/create-lobby")
         .post(body)
         .addHeader("accept", "application/json")
         .addHeader("Content-Type", "application/x-www-form-urlencoded")
@@ -57,7 +57,8 @@ fun createLoby(): Int {
 
             if(status == "Lobby created"){
                 println("SE HA CREADO EL LOBBY CORRECTAMENTE")
-                lobby_id = json.getInt("lobby_id")
+                Globals.lobbyId = json.getString("lobby_id")
+                lobby_id = true
             } else {
                 println("ERROR AL CREAR EL LOBBY")
             }
@@ -129,8 +130,9 @@ fun deleteLobby(lobby_id: String): Boolean {
     @return: numero de jugadores en el lobby
  */
 
-fun joinLobby(lobby_id: Int, token: String): Int {
-    var num_players = 0
+fun joinLobby(lobby_id: Int): Boolean {
+    //var num_players = 0
+    var result = false
     val latch = CountDownLatch(1)
 
     val mediaType = "application/x-www-form-urlencoded".toMediaTypeOrNull()
@@ -138,12 +140,12 @@ fun joinLobby(lobby_id: Int, token: String): Int {
         mediaType,
         ""
     )
-
+    println("LOBBY ID: $lobby_id")
     val request = Request.Builder()
         .url("$ipBackend/join-lobby?lobby_id=$lobby_id")
         .post(body)
         .addHeader("accept", "application/json")
-        .addHeader("Authorization", "Bearer $token")
+        .addHeader("Authorization", "Bearer ${Globals.Token}")
         .addHeader("Content-Type", "application/x-www-form-urlencoded")
         .build()
 
@@ -158,7 +160,7 @@ fun joinLobby(lobby_id: Int, token: String): Int {
         override fun onResponse(call: Call, response: Response) {
             val respuesta = response.body?.string().toString()
 
-            //println(respuesta)
+            println(respuesta)
             //transform the string to json object
             val json = JSONObject(respuesta)
             //get the string from the response
@@ -166,7 +168,8 @@ fun joinLobby(lobby_id: Int, token: String): Int {
 
             if (status == "Lobby joined") {
                 println("SE HA UNIDO EL JUGADOR CORRECTAMENTE")
-                num_players = json.getInt("num_players")
+                //num_players = json.getInt("num_players")
+                result = true
             } else {
                 println("ERROR AL UNIR EL JUGADOR")
             }
@@ -174,7 +177,7 @@ fun joinLobby(lobby_id: Int, token: String): Int {
         }
     })
     latch.await()
-    return num_players
+    return result
 }
 
 /*
@@ -343,6 +346,55 @@ fun getLobbyFromPlayer( token: String): Boolean {
 
 }
 
+fun getLobby( token: String): Boolean {
+    var result = false
+    val latch = CountDownLatch(1)
+
+    val request = Request.Builder()
+        .url("$ipBackend/get-lobby-from-player")
+        .get()
+        .addHeader("accept", "application/json")
+        .addHeader("Authorization", "Bearer $token")
+        .addHeader("Content-Type", "application/x-www-form-urlencoded")
+        .build()
+
+    val client = OkHttpClient()
+
+    client.newCall(request).enqueue(object : Callback {
+        override fun onFailure(call: Call, e: IOException) {
+            println("ERROR al conectar con backend")
+            latch.countDown()
+        }
+
+        override fun onResponse(call: Call, response: Response) {
+            val respuesta = response.body?.string().toString()
+
+            println(respuesta)
+            //transform the string to json object
+            val json = JSONObject(respuesta)
+            //get the string from the response
+            val status = try {
+                json.getString("detail")
+            }catch (e: JSONException) {
+                "estan en un lobby"
+            }
+            println("status $status")
+            if (status == "estan en un lobby") {
+                println("SE CREO EL LOBBY")
+                Globals.lobbyId = json.getString("id")
+                Globals.juego = json
+                result = true
+            } else {
+                println("PLAYER YA ESTÁ EN UN LOBBY O ERROR AL BUSCARLO")
+            }
+            latch.countDown()
+        }
+    })
+    latch.await()
+    return result
+
+}
+
 /*
     Devuelve si hay jugadores en el lobby listos para jugar
     @param: token del jugador
@@ -400,6 +452,70 @@ fun numOfReadyPlayers( token: String): Boolean {
                     result = true
 
                 }
+            } else {
+                println("PLAYER YA ESTÁ EN UN LOBBY O ERROR AL BUSCARLO")
+            }
+            latch.countDown()
+        }
+    })
+    latch.await()
+    return result
+
+}
+
+/*
+    Devuelve si hay jugadores en el lobby listos para jugar
+    @param: token del jugador
+    @return: true si hay 4 jugadores en el lobby listos para jugar, false si no están los 4
+ */
+fun numReadyPlayers( token: String): Int {
+    var result = 0
+    val latch = CountDownLatch(1)
+
+    val request = Request.Builder()
+        .url("$ipBackend/get-lobby-from-player")
+        .get()
+        .addHeader("accept", "application/json")
+        .addHeader("Authorization", "Bearer $token")
+        .addHeader("Content-Type", "application/x-www-form-urlencoded")
+        .build()
+
+    val client = OkHttpClient()
+
+    client.newCall(request).enqueue(object : Callback {
+        override fun onFailure(call: Call, e: IOException) {
+            println("ERROR al conectar con backend")
+            latch.countDown()
+        }
+
+        override fun onResponse(call: Call, response: Response) {
+            val respuesta = response.body?.string().toString()
+
+            println(respuesta)
+            //transform the string to json object
+            val json = JSONObject(respuesta)
+            //get the string from the response
+            val status = try {
+                json.getString("detail")
+            }catch (e: JSONException) {
+                "estan en un lobby"
+            }
+            println("status $status")
+            if (status == "estan en un lobby") {
+                println("SE HA CREADO EL LOBBY CON TODOS LOS JUGADORES")
+                val game = json.getJSONObject("game")
+                val jugadores = game.getJSONArray("jugadores")
+
+                var num_activos = 0
+
+                for (i in 0 until jugadores.length()) {
+                    val jugador = jugadores.getJSONObject(i)
+                    if (jugador.getBoolean("esta_preparado")) {
+                        num_activos++
+                    }
+                }
+                println("Número de jugadores activos: $num_activos")
+                result = num_activos
             } else {
                 println("PLAYER YA ESTÁ EN UN LOBBY O ERROR AL BUSCARLO")
             }

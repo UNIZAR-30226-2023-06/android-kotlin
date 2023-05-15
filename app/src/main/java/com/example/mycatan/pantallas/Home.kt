@@ -169,7 +169,7 @@ fun HomePage(navController: NavHostController) {
                 if(unirsePartida.value)
                     UnirsePartida(value = "", setShowDialog = {
                         unirsePartida.value = it
-                    }) {}
+                    }, navController)
                 if(cancelarListo.value){
                     CancelarListo(value = "", setShowDialog = { cancelarListo.value = it }, navController)
                 }
@@ -252,7 +252,15 @@ fun HomePage(navController: NavHostController) {
                 Spacer(modifier = Modifier.height(20.dp))
                 Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp)) {
                     Button(
-                        onClick = { navController.navigate(Routes.CrearPartida.route) },
+                        onClick = {
+                            // Creamos el lobby y entramos en el
+                            if(createLoby()){
+                                if(joinLobby(Globals.lobbyId.toInt())){
+                                    navController.navigate(Routes.CrearPartida.route)
+                                }
+
+                            }
+                                  },
                         modifier = Modifier
                             .width(280.dp)
                             .height(60.dp),
@@ -455,11 +463,11 @@ fun BuscarPartida(value: String, setShowDialog: (Boolean) -> Unit, setValue: (St
 }
 
 @Composable
-fun UnirsePartida(value: String, setShowDialog: (Boolean) -> Unit, setValue: (String) -> Unit) {
-    val partida = remember { mutableStateOf(TextFieldValue()) }
+fun UnirsePartida(value: String, setShowDialog: (Boolean) -> Unit, navController: NavController) {
     val context = LocalContext.current
-
-    Dialog(onDismissRequest = { setShowDialog(false) }) {
+    val partida = remember { mutableStateOf(TextFieldValue()) }
+    val join = remember { mutableStateOf(false) }
+    Dialog(onDismissRequest = { }) {
         Surface(
             shape = RoundedCornerShape(16.dp),
             color = AzulOscuro
@@ -490,35 +498,54 @@ fun UnirsePartida(value: String, setShowDialog: (Boolean) -> Unit, setValue: (St
                             modifier = Modifier
                                 .width(30.dp)
                                 .height(30.dp)
-                                .clickable { setShowDialog(false) }
+                                .clickable {setShowDialog(false)}
                         )
                     }
 
                     Spacer(modifier = Modifier.height(20.dp))
 
-                    TextField(
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true,
-                        label = { Text(text = "1234", color= Blanco) },
-                        value = partida.value,
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                            backgroundColor = Color.Transparent,
-                            focusedBorderColor = Blanco,
-                            unfocusedBorderColor = Blanco,
-                            disabledBorderColor = Blanco,
-                            textColor = Blanco,
-                            cursorColor = Blanco
-                        ),
-                        onValueChange = {
-                            if (it.text.length <= 76)
-                                partida.value = it
-                        }
-                    )
+                    if(join.value){
+                        // Si se ha unido correctamente a un lobby sacar popup de listo
+                        CancelarListo(value = "UNION_CON_CODIGO", setShowDialog = { join.value = it }, navController)
+                    }
+                    else{
+                        // Si no se ha unido correctamente mostrar el campo para introducir el codigo
+                        TextField(
+                            modifier = Modifier.fillMaxWidth(),
+                            singleLine = true,
+                            label = { Text(text = "1234", color= Blanco) },
+                            value = partida.value,
+                            colors = TextFieldDefaults.outlinedTextFieldColors(
+                                backgroundColor = Color.Transparent,
+                                focusedBorderColor = Blanco,
+                                unfocusedBorderColor = Blanco,
+                                disabledBorderColor = Blanco,
+                                textColor = Blanco,
+                                cursorColor = Blanco
+                            ),
+                            onValueChange = {
+                                if (it.text.length <= 76)
+                                    partida.value = it
+                            }
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(20.dp))
 
                     Button(
-                        onClick = {},
+                        onClick = {
+                            // Hacer un join al lobbyy con el codigo que te pasa tu amigo
+                            if(joinLobby(partida.value.text.toInt())){
+                                // Si se ha unido correctamente hacer un ready y esperar a los demas
+                                join.value = true
+
+                            }
+                            else{
+                                // Si no se ha unido correctamente mostrar un mensaje de error
+                                Toast.makeText(context, "ERROR al unirse a la partida", Toast.LENGTH_SHORT).show()
+                            }
+
+                        },
                         shape = RoundedCornerShape(50.dp),
                         modifier = Modifier
                             .fillMaxWidth()
@@ -590,29 +617,45 @@ fun CancelarListo(value: String, setShowDialog: (Boolean) -> Unit, navController
                     ) {
                         Button(
                             onClick = {
-                                // DECIDE UNIRSE A LA PARTIDA
-                                setPlayerReady(Globals.Token)
-                                var iniciaPartica = false
-                                while(!iniciaPartica){
-                                    //Si existe el lobby y hay 4 jugadores la partida comienza
-                                    if(getLobbyFromId(Globals.lobbyId)){
+                                if(value == "UNION_CON_CODIGO"){
+                                    setPlayerReady(Globals.Token)
+                                    while(getLobby(Globals.Token)){
                                         Thread.sleep(1000)
-                                        if(numOfReadyPlayers(Globals.Token)){
-                                            iniciaPartica = true
+                                        if(Globals.juego.getString("game_has_started") == "true"){
                                             //Recoger la información del lobby
                                             getGameState(Globals.lobbyId)
                                             //Navegar a la pantalla de juego
+                                            println("Navegando a la pantalla de juego")
                                             navController.navigate(Routes.CatanBoard.route)
+                                            break
                                         }
-                                    }else{
-                                        //Si no existe el lobby, vuelve a la cola
-                                        iniciaPartica = true
-                                        //Cerrar este pop-up
-                                        setShowDialog(false)
-                                        //TODO: Abrir pop-up de buscando partida y poner otra vez al jugador en busca de sala
                                     }
-                                    Thread.sleep(1000)
+                                } else{
+                                    // DECIDE UNIRSE A LA PARTIDA
+                                    setPlayerReady(Globals.Token)
+                                    var iniciaPartica = false
+                                    while(!iniciaPartica){
+                                        //Si existe el lobby y hay 4 jugadores la partida comienza
+                                        if(getLobbyFromId(Globals.lobbyId)){
+                                            Thread.sleep(1000)
+                                            if(numOfReadyPlayers(Globals.Token)){
+                                                iniciaPartica = true
+                                                //Recoger la información del lobby
+                                                getGameState(Globals.lobbyId)
+                                                //Navegar a la pantalla de juego
+                                                navController.navigate(Routes.CatanBoard.route)
+                                            }
+                                        }else{
+                                            //Si no existe el lobby, vuelve a la cola
+                                            iniciaPartica = true
+                                            //Cerrar este pop-up
+                                            setShowDialog(false)
+                                            //TODO: Abrir pop-up de buscando partida y poner otra vez al jugador en busca de sala
+                                        }
+                                        Thread.sleep(1000)
+                                    }
                                 }
+
 
                             },
                             shape = RoundedCornerShape(50.dp),

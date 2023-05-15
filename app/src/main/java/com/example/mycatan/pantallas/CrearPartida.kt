@@ -1,8 +1,11 @@
 package com.example.mycatan.pantallas
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -18,19 +21,26 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.mycatan.R
+import com.example.mycatan.dBaux.*
+import com.example.mycatan.others.Globals
 import com.example.mycatan.others.Routes
 import com.example.mycatan.ui.theme.*
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun CrearPartidaPage(navController: NavHostController) {
     var numeroJugadores by remember { mutableStateOf(4) }
+    val options = listOf("default", "default2", "random")
+    var tablero by remember { mutableStateOf(options[0]) }
 
     BottomSheetScaffold(
         sheetContent = {
@@ -79,6 +89,34 @@ fun CrearPartidaPage(navController: NavHostController) {
                    }
                }
                item{
+                   Row (
+                       modifier = Modifier.fillMaxWidth()
+                           .padding(10.dp)
+                   ){
+                       Text(
+                           text = "Tablero",
+                           fontSize = 14.sp,
+                           color = AzulOscuro,
+                           fontFamily = FontFamily.SansSerif,
+                           fontWeight = FontWeight.Bold
+                       )
+
+                       Box(modifier = Modifier.fillMaxWidth(),
+                           contentAlignment = Alignment.BottomEnd){
+
+                           ButtonToggle(
+                               options = options,
+                               selectedOption = tablero,
+                               onOptionSelect = { tablero = it
+                                   // Actualizamos el tablero en el backend
+                                   set_board(tablero)
+                                                },
+                           )
+
+                       }
+                   }
+               }
+               item{
                    Row(
                        modifier = Modifier.fillMaxWidth()
                            .padding(10.dp))
@@ -95,7 +133,14 @@ fun CrearPartidaPage(navController: NavHostController) {
                            contentAlignment = Alignment.BottomEnd){
                            Switch(
                                checked = (ladron.value),
-                               onCheckedChange = { ladron.value = it},
+                               onCheckedChange = { ladron.value = it
+                                   // Actualizamos el estado del ladron
+                                                 if(ladron.value){
+                                                     enable_thief()
+                                                 } else{
+                                                     disable_thief()
+                                                 }
+                                                 },
                                modifier = Modifier,
                                colors = SwitchDefaults.colors(
                                    checkedThumbColor = Color.LightGray,
@@ -172,41 +217,36 @@ fun CrearPartidaPage(navController: NavHostController) {
 
 
             Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp),) {
-                Button(
-                    onClick = { },
-                    modifier = Modifier
-                        .width(280.dp)
-                        .height(60.dp)
-                        .padding(10.dp, 10.dp, 10.dp, 10.dp),
-
-                    shape = RoundedCornerShape(15.dp),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Amarillo)
-
-                ) {
-                    Text(
-                        text = "YO",
-                        style = TextStyle(
-                            color = AzulOscuro,
-                            fontWeight = FontWeight.Bold
-                        )
+                Text(
+                    text = "Código de partida: ${Globals.lobbyId}",
+                    style = TextStyle(
+                        fontSize = 30.sp,
+                        color = AzulOscuro,
+                        textAlign = TextAlign.Center,
+                        fontWeight = FontWeight.Bold
                     )
-
-                }
-            }
-            botones()
-            if (numeroJugadores == 4) {
-                botones()
-                botones()
-            } else if (numeroJugadores == 3) {
-                botones()
+                )
             }
 
+            Spacer(modifier = Modifier.height(20.dp))
             Box(
                 modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp)
             ) {
                 Button(
                     onClick = {
-                        navController.navigate(Routes.CatanBoard.route)
+                        // Comprobar si estan todos los jugadores ready
+                        while (true) {
+                            Thread.sleep(1000)// espera un segundo antes de hacer la siguiente solicitud GET
+                            val jugadores = numReadyPlayers(Globals.Token)
+                            if (jugadores == numeroJugadores - 1) {
+                                if(setPlayerReady(Globals.Token)){
+                                    getGameState(Globals.lobbyId)
+                                    navController.navigate(Routes.CatanBoard.route)
+                                }
+                                break
+                            }
+                        }
+
                     },
                     shape = RoundedCornerShape(50.dp),
                     modifier = Modifier
@@ -231,7 +271,10 @@ fun CrearPartidaPage(navController: NavHostController) {
             contentAlignment = Alignment.TopStart
         ) {
             Button(
-                onClick = { navController.navigate(Routes.Home.route) },
+                onClick = {
+                    deleteLobby(Globals.lobbyId)
+                    navController.navigate(Routes.Home.route)
+                          },
                 modifier = Modifier
                     .width(50.dp)
                     .height(50.dp),
@@ -282,8 +325,17 @@ fun incrementador(tipo: String, onFlechaClick: (num: Int) -> Unit ){
                     count--
                     if(tipo == "jugadores"){
                         onFlechaClick(count);
+                        set_max_players(count)
                     }
-                } },
+                    if(tipo == "turno") {
+                        set_time_per_turn(count)
+                    }
+                    if(tipo == "victoria"){
+                        set_points_to_win(count)
+                    }
+                }
+
+                      },
             modifier = Modifier.size(25.dp)  ) {
             Icon(Icons.Filled.KeyboardArrowDown,contentDescription = "Decrement",)
         }
@@ -292,13 +344,16 @@ fun incrementador(tipo: String, onFlechaClick: (num: Int) -> Unit ){
             onClick = {
                 if(tipo == "turno" && count != 300){
                     count++
+                    set_time_per_turn(count)
                 }
                 if(tipo == "victoria" && count != 30){
                     count++
+                    set_points_to_win(count)
                 }
                 if(tipo == "jugadores" && count != 4){
                     count++
                     onFlechaClick(count);
+                    set_max_players(count)
                 }
                  },
 
@@ -336,9 +391,84 @@ fun botones(){
 }
 
 
-@Preview(showBackground = true)
 @Composable
-fun DefaultPreview7() {
-    val navController = rememberNavController()
-    CrearPartidaPage(navController = navController)
+private fun ButtonToggle( // 1
+    options: List<String>,
+    selectedOption: String,
+    onOptionSelect: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+
+    Row(modifier = modifier) { // 2
+        options.forEachIndexed { index, option -> // 3
+            val selected = selectedOption == option // 4
+
+            val border = if (selected) BorderStroke( // 5
+                width = 1.dp,
+                color = MaterialTheme.colors.primary
+            ) else ButtonDefaults.outlinedBorder
+
+            val shape = when (index) { // 6
+                0 -> RoundedCornerShape(
+                    topStart = 4.dp,
+                    bottomStart = 4.dp,
+                    topEnd = 0.dp,
+                    bottomEnd = 0.dp
+                )
+                options.size - 1 -> RoundedCornerShape(
+                    topStart = 0.dp, bottomStart = 0.dp,
+                    topEnd = 4.dp,
+                    bottomEnd = 4.dp
+                )
+                else -> CutCornerShape(0.dp)
+            }
+
+            val zIndex = if (selected) 1f else 0f
+
+            val buttonModifier = when (index) { // 7
+                0 -> Modifier.zIndex(zIndex)
+                else -> {
+                    val offset = -1 * index
+                    Modifier
+                        .offset(x = offset.dp)
+                        .zIndex(zIndex)
+                }
+            }
+
+            val colors = ButtonDefaults.outlinedButtonColors( // 8
+                backgroundColor = if (selected) MaterialTheme.colors.primary.copy(alpha = 0.12f)
+                else MaterialTheme.colors.surface,
+                contentColor = if (selected) MaterialTheme.colors.primary else Color.DarkGray
+            )
+            OutlinedButton( // 9
+                onClick = { onOptionSelect(option) },
+                border = border,
+                shape = shape,
+                colors = colors,
+                modifier = buttonModifier.weight(1f)
+            ) {
+                if(option == "default"){
+                    Image(
+                        painter = painterResource(R.drawable.catan),
+                        contentDescription = null,
+                        modifier = Modifier.size(35.dp)
+                    )
+                }
+                if(option == "default2"){
+                    Image(
+                        painter = painterResource(R.drawable.board),
+                        contentDescription = null,
+                        modifier = Modifier.size(35.dp)
+                    )
+                }
+                if(option == "random"){
+                    Image(
+                        painter = painterResource(R.drawable.dado),
+                        contentDescription = null,
+                        modifier = Modifier.size(35.dp)
+                    )
+                }
+            }
+        }
+    }
 }
