@@ -40,11 +40,12 @@ import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse*/
 import com.example.mycatan.dBaux.enviarLogin
+import com.example.mycatan.dBaux.recover_password
 import com.example.mycatan.others.Routes
 
 
 @Composable
-fun LoginPage(navController: NavHostController) {
+fun RecuperarPage(navController: NavHostController) {
     var errorDatosIncorrectos by remember { mutableStateOf(false) }
     var errorActualizado by remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -68,15 +69,10 @@ fun LoginPage(navController: NavHostController) {
 
 
             val username = remember { mutableStateOf(TextFieldValue()) }
-            val password = remember { mutableStateOf(TextFieldValue()) }
 
 
-            Image(
-                painter = painterResource(R.drawable.icon),
-                contentDescription = "My image",
-                modifier = Modifier.width(150.dp)
-
-            )
+            Text(text = "Recuperar contraseña", style = TextStyle(fontSize = 30.sp, color = AzulOscuro, fontWeight = FontWeight.Bold))
+            Text(text = "Introduce tu correo electrónico", style = TextStyle(fontSize = 14.sp, color = AzulOscuro))
 
             TextField(
                 modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp),
@@ -88,45 +84,24 @@ fun LoginPage(navController: NavHostController) {
                 shape = RoundedCornerShape(50.dp),
                 onValueChange = { username.value = it })
 
-            TextField(
-                modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp),
-                singleLine = true,
-                label = { Text(text = "Contraseña") },
-                value = password.value,
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    backgroundColor = Color.Transparent),
-                visualTransformation = PasswordVisualTransformation(),
-                shape = RoundedCornerShape(50.dp),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                onValueChange = { password.value = it })
 
-            Spacer(modifier = Modifier.height(10.dp))
-            ClickableText(
-                text = AnnotatedString("¿Has olvidado la contraseña?"),
-                onClick = {
-                    navController.navigate(Routes.RecuperarContrasena.route)
-                },
-                style = TextStyle(
-                    fontSize = 14.sp,
-                    fontFamily = FontFamily.Default,
-                    color = AzulOscuro
-                )
-            )
             Spacer(modifier = Modifier.height(10.dp))
 
             Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp), ) {
                 Button(
 
                     onClick = {
-                        if (username.value.text.isEmpty() || password.value.text.isEmpty()){
+                        if (username.value.text.isEmpty()){
                             errorDatosIncorrectos = true
                         }
                         else{
-                            if (enviarLogin( username.value.text , password.value.text)){
-                                navController.navigate(Routes.Splash.route)
+                            if (recover_password(username.value.text)){
+                                val toast = Toast.makeText(context, "Recuperación de contraseña correcta, revise su correo electronico", Toast.LENGTH_SHORT)
+                                toast.show()
+                                navController.navigate(Routes.Login.route)
                             }
                             else{
-                                val toast = Toast.makeText(context, "ERROR: Datos incorrectos", Toast.LENGTH_SHORT)
+                                val toast = Toast.makeText(context, "ERROR: Introduce el correo electrónico", Toast.LENGTH_SHORT)
                                 toast.show()
                             }
                         }
@@ -138,37 +113,12 @@ fun LoginPage(navController: NavHostController) {
                     colors = ButtonDefaults.buttonColors(backgroundColor = AzulOscuro)
 
                 ) {
-                    Text(text = "Iniciar sesión",
+                    Text(text = "Recuperar",
                         style = TextStyle(color = Blanco)
                     )
 
                 }
             }
-
-            Spacer(modifier = Modifier.height(5.dp))
-
-            Row{
-                Text(
-                    text = AnnotatedString("¿Nuevo usuario? "),
-                    style = TextStyle(
-                        fontSize = 14.sp,
-                        fontFamily = FontFamily.Default,
-                        color = AzulOscuro
-                    )
-                )
-
-                ClickableText(
-                    text = AnnotatedString("Registrate"),
-                    onClick = { navController.navigate(Routes.Registro.route)},
-                    style = TextStyle(
-                        fontSize = 14.sp,
-                        fontFamily = FontFamily.Default,
-                        color = AzulOscuro,
-                        fontWeight = FontWeight.Bold
-                    )
-                )
-            }
-
 
         }
     }

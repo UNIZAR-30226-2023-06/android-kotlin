@@ -58,5 +58,8 @@ fun ScreenMain(){
         composable(Routes.Manual.route) {
             ManualPage(navController = navController)
         }
+        composable(Routes.RecuperarContrasena.route) {
+            RecuperarPage(navController = navController)
+        }
     }
 }
