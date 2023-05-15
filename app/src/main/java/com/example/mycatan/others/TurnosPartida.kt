@@ -6,6 +6,7 @@ import com.example.mycatan.pantallas.nuevoTurnoPhase1
 import com.example.mycatan.pantallas.stopBuscar
 import com.example.mycatan.pantallas.timer
 import kotlinx.coroutines.*
+import org.json.JSONObject
 
 /*val timer = object : CountDownTimer(60000, 1000) { // 60 segundos, 1 segundo por intervalo
         override fun onTick(millisUntilFinished: Long) {
@@ -78,6 +79,19 @@ suspend fun esperarTurno(): Deferred<Boolean> {
         }
         CompletableDeferred(miTurno)
     }
+}
+
+fun get_trade(): Boolean {
+    val jsonArray = Globals.gameState.getJSONArray("trade_requests")
+    for (i in 0 until jsonArray.length()) {
+        val jsonObject = jsonArray.getJSONObject(i)
+        if (jsonObject.getString("reciever") == Globals.Id){
+            Globals.solicitudTrade = jsonObject
+            Globals.newTrade.value = true
+            break
+        }
+    }                 
+    return Globals.newTrade.value
 }
 
 

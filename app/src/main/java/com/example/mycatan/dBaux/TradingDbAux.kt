@@ -74,9 +74,15 @@ fun trade_with_player(playerid : String, madera1 : Int, clay1: Int, oveja1: Int,
     var result = false;
     val latch = CountDownLatch(1)
 
+    val mediaType = "application/x-www-form-urlencoded".toMediaTypeOrNull()
+    val body = RequestBody.create(
+        mediaType,
+        ""
+    )
+
     val request = Request.Builder()
         .url("$ipBackend/game_phases/propose_trade?lobby_id=${Globals.lobbyId}&player2_id=$playerid&wood_amount_p1=$madera1&clay_amount_p1=$clay1&sheep_amount_p1=$oveja1&wheat_amount_p1=$trigo1&stone_amount_p1=$roca1&wood_amount_p2=$madera2&clay_amount_p2=$clay2&sheep_amount_p2=$oveja2&wheat_amount_p2=$trigo2&stone_amount_p2=$roca2")
-        .get()
+        .post(body)
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer ${Globals.Token}")
         .addHeader("Content-Type", "application/x-www-form-urlencoded")
@@ -198,7 +204,7 @@ fun reject_trade(player2: String): Boolean {
             }
 
             if (!error && status == "trade rejected successfully") {
-                println("Trade aceptado ")
+                println("Trade rechazado ")
                 result = true
             } else {
                 println("No se han podido aceptar el trade")

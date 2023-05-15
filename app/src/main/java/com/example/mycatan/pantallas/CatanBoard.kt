@@ -55,6 +55,7 @@ import com.example.mycatan.others.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+
 import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
@@ -93,7 +94,7 @@ class CatanViewModel : ViewModel() {
         // INICIALIZACIÓN DE LOS JUGADORES EN EL TABLERO -----------------------------------------
 
 
-        if (Globals.gameState.getString("player_0") != null) { // Primer jugador
+        if (Globals.gameState.getString("player_0") != "null") { // Primer jugador
             val jugador0 = Globals.gameState.getJSONObject("player_0")
             jugador_0 = Jugador(
                 yo = jugador0.getString("id") == Globals.Id,
@@ -116,7 +117,7 @@ class CatanViewModel : ViewModel() {
             }
         }
 
-        if (Globals.gameState.getString("player_1") != null) { // Segundo jugador
+        if (Globals.gameState.getString("player_1") != "null") { // Segundo jugador
             val jugador1 = Globals.gameState.getJSONObject("player_1")
             jugador_1 = Jugador(
                 yo = jugador1.getString("id") == Globals.Id,
@@ -139,7 +140,7 @@ class CatanViewModel : ViewModel() {
             }
         }
 
-        if (Globals.gameState.getString("player_2") != null) { // Tercer jugador
+        if (Globals.gameState.getString("player_2") != "null") { // Tercer jugador
             val jugador2 = Globals.gameState.getJSONObject("player_2")
             jugador_2 = Jugador(
                 yo = jugador2.getString("id") == Globals.Id,
@@ -162,7 +163,7 @@ class CatanViewModel : ViewModel() {
             }
         }
 
-        if (Globals.gameState.getString("player_3") != null) { // Tercer jugador
+        if (Globals.gameState.getString("player_3") != "null") { // Tercer jugador
             val jugador3 = Globals.gameState.getJSONObject("player_3")
             jugador_3 = Jugador(
                 yo = jugador3.getString("id") == Globals.Id,
@@ -824,8 +825,9 @@ class CatanViewModel : ViewModel() {
 
                     popUpTradingTurn(playerName = Globals.gameState.getString("player_turn_name"), setShowDialog = { nuevoTurnoPhase.value = it }, setTradingBanca = { showpopUpBanca.value = true})
 
+
                     if (Globals.newTrade.value){
-                        //TODO: popup de new trade !!!! al acabarhay que poner new trade a false y resetear el jsonObject
+                        //TODO: popup sale a la siguiente fase de trading
                         tradeRecibido(setShowDialog = {
                             Globals.newTrade.value = it
                             Globals.solicitudTrade = JSONObject()
@@ -1070,18 +1072,23 @@ fun incIntercambio( tipo : String, mainPlayer: Boolean, onInc2: (Int) -> Unit){
                 if (mainPlayer){
                     if(tipo == "arcilla" && count < Partida.Arcilla.toInt()){
                         count++
+                        onInc2(count)
                     }
                     if(tipo == "oveja" && count < Partida.Ovejas.toInt()){
                         count++
+                        onInc2(count)
                     }
                     if(tipo == "trigo" && count < Partida.Trigo.toInt()){
                         count++
+                        onInc2(count)
                     }
                     if(tipo == "roca" && count < Partida.Roca.toInt()){
                         count++
+                        onInc2(count)
                     }
                     if(tipo == "madera" && count < Partida.Madera.toInt()){
                         count++
+                        onInc2(count)
                     }
                 }
                 else {
@@ -1206,7 +1213,7 @@ fun playerFoto(modifier: Modifier, foto: String, colorFondo: String ){
 
 @Composable
 fun tradeRecibido(setShowDialog: (Boolean) -> Unit) {
-    Dialog(onDismissRequest = { }) {
+    Dialog(onDismissRequest = { setShowDialog(false) }) {
         Surface(
             shape = RoundedCornerShape(16.dp),
             color = AzulOscuro
@@ -1372,7 +1379,7 @@ fun tradeRecibido(setShowDialog: (Boolean) -> Unit) {
                             )
                         }
                         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-                            Image(painter = painterResource(id = R.drawable.trigo.), contentDescription = null, modifier = Modifier.size(45.dp))
+                            Image(painter = painterResource(id = R.drawable.trigo), contentDescription = null, modifier = Modifier.size(45.dp))
                             Text(
                                 text = Globals.solicitudTrade.getJSONArray("resource2").getInt(4).toString(),
                                 color = Blanco,
@@ -1385,59 +1392,81 @@ fun tradeRecibido(setShowDialog: (Boolean) -> Unit) {
                         }
                     }
 
-
                     // Solo se puede contruir en 3 ocasiones
                     // 1º Es tu turno , tienes los recursos y estas en la fase de construccion
                     // 2º Es tu turno y estas en la fase inicial 1
                     // 3º Es tu turno y estas en la fase inicial 2
 
+                    Row(horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically){
 
-                    Button(
-                        onClick = {
-                            Partida.Aristas[idArista] = "carretera"
-                            if (Globals.gameState.getString("turn_phase") == "INITIAL_TURN1" || Globals.gameState.getString("turn_phase") == "INITIAL_TURN2" || Partida.caminosGratis.value > 0){
-                                var descended = false
-                                if (Partida.caminosGratis.value > 0){
-                                    Partida.caminosGratis.value = Partida.caminosGratis.value - 1
-                                    descended = true
+                        val context = LocalContext.current
+
+                        Button(
+                            onClick = {
+                                if (reject_trade(Globals.solicitudTrade.getString("sender"))){
+                                    Toast
+                                        .makeText(context, "Propuesta rechazada", Toast.LENGTH_SHORT)
+                                        .show()
+                                    setShowDialog(false)
+                                }else{
+                                    Toast
+                                        .makeText(context, "Error al rechazar", Toast.LENGTH_SHORT)
+                                        .show()
                                 }
-                                val decimal = Integer.parseInt(idArista, 16) // convertir a decimal
-                                firstPhaseBuildRoad(decimal.toString())
-                                Partida.caminoINIdisp.value= false
-                                if(descended)
-                                    getlegalNodes(Partida.miColor)
-                                else
-                                    getlegalNodesINI(Partida.miColor)
-                                getlegalEdges(Partida.miColor)
 
+                            },
+                            modifier = Modifier
+                                //.fillMaxWidth(0.5f)
+                                .width(100.dp)
+                                .height(50.dp),
+                            colors = ButtonDefaults.buttonColors(backgroundColor = Rojo),
+                            shape = RoundedCornerShape(50.dp),
+                            border = BorderStroke(3.dp, AzulOscuro),
 
-                            }else {
-                                val decimal = Integer.parseInt(idArista, 16) // convertir a decimal
-                                buy_and_build_road(decimal.toString())
-                                buildCamino()
-                                getlegalEdges(Partida.miColor)
-                                getlegalNodes(Partida.miColor)
-                            }
-
-
-                            setShowDialog(false) },
-                        modifier = Modifier
-                            //.fillMaxWidth(0.5f)
-                            .width(150.dp)
-                            .height(50.dp),
-                        colors = ButtonDefaults.buttonColors(backgroundColor = Verde),
-                        shape = RoundedCornerShape(50.dp),
-                        border = BorderStroke(3.dp, AzulOscuro),
-
-                        ) {
-                        Text(
-                            text = "Construir",
-                            style = TextStyle(
-                                color = AzulOscuro, fontWeight = FontWeight.Bold
+                            ) {
+                            Text(
+                                text = "Rechazar",
+                                style = TextStyle(
+                                    color = AzulOscuro, fontWeight = FontWeight.Bold
+                                )
                             )
-                        )
-                    }
+                        }
 
+                        Spacer(modifier = Modifier.width(5.dp))
+
+                        Button(
+                            onClick = {
+
+                                if (accept_trade(Globals.solicitudTrade.getString("sender"))){
+                                    Toast
+                                        .makeText(context, "Propuesta aceptada", Toast.LENGTH_SHORT)
+                                        .show()
+                                    setShowDialog(false)
+                                }else{
+                                    Toast
+                                        .makeText(context, "Error al aceptar", Toast.LENGTH_SHORT)
+                                        .show()
+                                }
+
+                                setShowDialog(false)
+                            },
+                            modifier = Modifier
+                                //.fillMaxWidth(0.5f)
+                                .width(100.dp)
+                                .height(50.dp),
+                            colors = ButtonDefaults.buttonColors(backgroundColor = Verde),
+                            shape = RoundedCornerShape(50.dp),
+                            border = BorderStroke(3.dp, AzulOscuro),
+
+                            ) {
+                            Text(
+                                text = "Aceptar",
+                                style = TextStyle(
+                                    color = AzulOscuro, fontWeight = FontWeight.Bold
+                                )
+                            )
+                        }
+                    }
 
 
                 }
@@ -1445,7 +1474,7 @@ fun tradeRecibido(setShowDialog: (Boolean) -> Unit) {
         }
     }
 }
-}
+
 
 // DIALOG DE INTERCAMBIO DE RECURSOSO --------------------------------------------------------------
 @Composable
